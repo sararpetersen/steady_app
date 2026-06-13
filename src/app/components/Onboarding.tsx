@@ -125,7 +125,7 @@ export function Onboarding({ onComplete, onSkip }: Props) {
       {step >= 1 && (
         <>
           {/* Progress bar */}
-          <div className="px-6 pt-6 pb-2 flex items-center gap-3">
+          <div className="px-6 pt-6 pb-2 flex items-center gap-3 max-w-lg mx-auto w-full">
             <button onClick={() => setStep((s) => Math.max(1, s - 1))} className="text-muted-foreground hover:text-foreground p-1" style={{ transition: "color 0.15s" }}>
               <ArrowLeft size={20} />
             </button>

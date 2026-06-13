@@ -146,7 +146,7 @@ export function HabitTracker() {
             {/* Delete — visible on hover (desktop) / always on mobile */}
             <button
               onClick={() => deleteHabit(habit.id)}
-              className="flex-shrink-0 p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-muted opacity-0 group-hover:opacity-100"
+              className="flex-shrink-0 p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-muted sm:opacity-0 sm:group-hover:opacity-100"
               style={{ transition: "all 0.15s" }}
               aria-label={t.habits.deleteHabit}
             >

@@ -52,9 +52,9 @@ function OptionRow<V extends string>({ label, options, value, onChange }: {
   onChange: (v: V) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 py-1">
+    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 py-1">
       <span className="text-foreground" style={{ fontWeight: 600 }}>{label}</span>
-      <div className="flex gap-1.5">
+      <div className="flex gap-1.5 flex-wrap">
         {options.map((opt) => (
           <button
             key={opt.value}

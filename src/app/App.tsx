@@ -123,7 +123,7 @@ export default function App() {
   // Consistent circular avatar button — photo fills circle, emoji sits on tinted background
   const AvatarButton = () => (
     <button
-      onClick={() => setActiveTab("profile")}
+      onClick={() => { setActiveTab("profile"); setSettingsOpen(false); }}
       className="rounded-full flex items-center justify-center overflow-hidden hover:opacity-80"
       style={{
         width: 44,
@@ -148,6 +148,8 @@ export default function App() {
     return profile.name ? `${base}, ${profile.name}` : base;
   })();
 
+  const dateStr = new Date().toLocaleDateString(t.dateLocale, { weekday: "short", day: "numeric", month: "short" });
+
   return (
     <LangContext.Provider value={t}>
       <style>{`
@@ -157,65 +159,56 @@ export default function App() {
         .nav-tab { transition: background-color 0.15s, color 0.15s; }
         .nav-tab-active { background-color: var(--green-bg); }
         .nav-tab-inactive:hover { background-color: var(--muted); }
+        .nav-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        .nav-scroll::-webkit-scrollbar { display: none; }
       `}</style>
 
       <div className="min-h-screen bg-background" style={{ fontFamily: "var(--app-font-body, 'Nunito Sans', sans-serif)" }}>
 
-        {/* Header */}
-        <header className="sticky top-0 z-10 border-b border-border px-5 py-3" style={{ backgroundColor: "var(--card)" }}>
-          <div className="max-w-xl mx-auto flex items-center justify-between gap-4">
-            {/* Logo — clickable, goes to Overview */}
+        {/* ── Desktop sidebar (lg+) ─────────────────────────────────── */}
+        <aside
+          className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-60 border-r border-border z-20"
+          style={{ backgroundColor: "var(--card)" }}
+        >
+          {/* Brand */}
+          <div className="px-4 py-5 border-b border-border">
             <button
-              onClick={() => setActiveTab("overview")}
-              className="flex items-center gap-2.5 hover:opacity-80 rounded-xl"
+              onClick={() => { setActiveTab("overview"); setSettingsOpen(false); }}
+              className="flex items-center gap-2.5 hover:opacity-80 rounded-xl w-full"
               style={{ transition: "opacity 0.15s" }}
               aria-label="Go to Overview"
             >
               <SteadyLogo size={30} />
-              <div className="text-left">
-                <span style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800, fontSize: "1.25rem", color: "var(--primary)", letterSpacing: "-0.02em" }}>
+              <div className="text-left min-w-0">
+                <span style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800, fontSize: "1.2rem", color: "var(--primary)", letterSpacing: "-0.02em", display: "block" }}>
                   Steady
                 </span>
-                <p className="text-muted-foreground" style={{ fontSize: "0.78rem", marginTop: 0, lineHeight: 1.2 }}>
-                  {greeting} · {new Date().toLocaleDateString(t.dateLocale, { weekday: "short", day: "numeric", month: "short" })}
+                <p className="text-muted-foreground truncate" style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>
+                  {greeting}
                 </p>
               </div>
             </button>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setSettingsOpen((o) => !o)}
-                className="rounded-xl p-2 hover:bg-muted"
-                style={{ transition: "background-color 0.15s", color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
-                aria-label="Open settings"
-                aria-pressed={settingsOpen}
-              >
-                <Settings size={20} />
-              </button>
-              <AvatarButton />
-            </div>
           </div>
-        </header>
 
-        {/* Tab navigation — under the header */}
-        <nav className="sticky top-[61px] z-10 border-b border-border" style={{ backgroundColor: "var(--card)" }}>
-          <div className="max-w-xl mx-auto flex px-3 py-2 gap-1">
+          {/* Vertical nav */}
+          <nav className="flex-1 overflow-y-auto p-2 py-3 space-y-0.5">
             {TABS.map((tab) => {
               const Icon = tab.icon;
-              const active = activeTab === tab.key;
+              const active = activeTab === tab.key && !settingsOpen;
               return (
                 <button
                   key={tab.key}
                   onClick={() => { setActiveTab(tab.key); setSettingsOpen(false); }}
-                  className={`nav-tab flex-1 flex flex-col items-center gap-0.5 py-2 px-1 rounded-xl ${active ? "nav-tab-active" : "nav-tab-inactive"}`}
+                  className={`nav-tab w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left ${active ? "nav-tab-active" : "nav-tab-inactive"}`}
                   aria-current={active ? "page" : undefined}
                 >
                   <Icon
                     size={18}
-                    style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }}
+                    style={{ color: active ? "var(--primary)" : "var(--muted-foreground)", flexShrink: 0 }}
                     strokeWidth={active ? 2.5 : 1.8}
                   />
                   <span style={{
-                    fontSize: "0.68rem",
+                    fontSize: "0.9rem",
                     fontWeight: active ? 700 : 500,
                     color: active ? "var(--primary)" : "var(--muted-foreground)",
                     fontFamily: "var(--app-font-heading, Nunito)",
@@ -226,55 +219,150 @@ export default function App() {
                 </button>
               );
             })}
+          </nav>
+
+          {/* Bottom: date + settings + avatar */}
+          <div className="p-4 border-t border-border space-y-3">
+            <p className="text-muted-foreground" style={{ fontSize: "0.75rem" }}>
+              {dateStr}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSettingsOpen((o) => !o)}
+                className={`nav-tab flex-1 flex items-center justify-center gap-2 rounded-xl py-2 ${settingsOpen ? "nav-tab-active" : "nav-tab-inactive"}`}
+                style={{ color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
+                aria-label="Open settings"
+                aria-pressed={settingsOpen}
+              >
+                <Settings size={18} />
+                <span style={{ fontSize: "0.88rem", fontWeight: settingsOpen ? 700 : 500, fontFamily: "var(--app-font-heading, Nunito)" }}>
+                  {t.settings.title}
+                </span>
+              </button>
+              <AvatarButton />
+            </div>
           </div>
-        </nav>
+        </aside>
 
-        {/* Main content */}
-        <main className="max-w-xl mx-auto px-4 pt-5 pb-8 space-y-4">
+        {/* ── Content area (offset on lg) ──────────────────────────── */}
+        <div className="lg:pl-60 flex flex-col min-h-screen">
 
-          {settingsOpen ? (
-            <SettingsPage
-              settings={profile.a11y}
-              onChange={(a11y) => setProfile({ ...profile, a11y })}
-              onClose={() => setSettingsOpen(false)}
-              onResetOnboarding={() => { setOnboarded(false); setSettingsOpen(false); }}
-              onClearData={() => { clearAllData(); setProfile({ ...DEFAULT_PROFILE, a11y: profile.a11y }); }}
-            />
-          ) : (
-            <>
-              {activeTab === "overview" && (
-                <>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { label: t.overview.tasksLeft, value: String(tasksLeft), bg: "var(--green-bg)", fg: "var(--green-text)" },
-                      { label: t.overview.habitsDone, value: `${habitsDone} / 4`, bg: "var(--purple-bg)", fg: "var(--purple-text)" },
-                      { label: t.overview.streakDays, value: "🔥", bg: "var(--yellow-bg)", fg: "var(--yellow-text)" },
-                    ].map((stat) => (
-                      <div key={stat.label} className="steady-card rounded-2xl p-4 flex flex-col items-center text-center border border-border" style={{ backgroundColor: stat.bg }}>
-                        <span style={{ fontWeight: 800, fontSize: "1.4rem", color: stat.fg, lineHeight: 1.2 }}>{stat.value}</span>
-                        <span style={{ fontSize: "0.75rem", color: stat.fg, fontWeight: 600, marginTop: 4 }}>{stat.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <MoodCheck />
-                  <PersonalizedTip support={profile.support} sensory={profile.sensory} />
-                  <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
-                </>
-              )}
-              {activeTab === "tasks" && <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />}
-              {activeTab === "routines" && <Routines />}
-              {activeTab === "habits" && <HabitTracker />}
-              {activeTab === "focus" && <FocusTimer />}
-              {activeTab === "note" && <DailyNote />}
-              {activeTab === "profile" && (
-                <Profile profile={profile} onChange={setProfile} photo={profilePhoto} onPhotoChange={setProfilePhoto} />
-              )}
-            </>
-          )}
+          {/* Mobile / tablet header — hidden on lg */}
+          <header className="sticky top-0 z-10 border-b border-border px-5 py-3 lg:hidden" style={{ backgroundColor: "var(--card)" }}>
+            <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
+              {/* Logo — clickable, goes to Overview */}
+              <button
+                onClick={() => { setActiveTab("overview"); setSettingsOpen(false); }}
+                className="flex items-center gap-2.5 hover:opacity-80 rounded-xl"
+                style={{ transition: "opacity 0.15s" }}
+                aria-label="Go to Overview"
+              >
+                <SteadyLogo size={30} />
+                <div className="text-left">
+                  <span style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800, fontSize: "1.25rem", color: "var(--primary)", letterSpacing: "-0.02em" }}>
+                    Steady
+                  </span>
+                  <p className="text-muted-foreground" style={{ fontSize: "0.78rem", marginTop: 0, lineHeight: 1.2 }}>
+                    {greeting} · {dateStr}
+                  </p>
+                </div>
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setSettingsOpen((o) => !o)}
+                  className="rounded-xl p-2 hover:bg-muted"
+                  style={{ transition: "background-color 0.15s", color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
+                  aria-label="Open settings"
+                  aria-pressed={settingsOpen}
+                >
+                  <Settings size={20} />
+                </button>
+                <AvatarButton />
+              </div>
+            </div>
+          </header>
 
-        </main>
+          {/* Mobile / tablet tab navigation — hidden on lg */}
+          <nav className="sticky top-[61px] z-10 border-b border-border lg:hidden" style={{ backgroundColor: "var(--card)" }}>
+            <div className="nav-scroll overflow-x-auto">
+              <div className="flex px-3 py-2 gap-1 max-w-2xl mx-auto">
+                {TABS.map((tab) => {
+                  const Icon = tab.icon;
+                  const active = activeTab === tab.key && !settingsOpen;
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => { setActiveTab(tab.key); setSettingsOpen(false); }}
+                      className={`nav-tab flex-1 flex flex-col items-center gap-0.5 py-2 px-1 rounded-xl min-w-[44px] ${active ? "nav-tab-active" : "nav-tab-inactive"}`}
+                      aria-current={active ? "page" : undefined}
+                    >
+                      <Icon
+                        size={18}
+                        style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }}
+                        strokeWidth={active ? 2.5 : 1.8}
+                      />
+                      <span style={{
+                        fontSize: "0.65rem",
+                        fontWeight: active ? 700 : 500,
+                        color: active ? "var(--primary)" : "var(--muted-foreground)",
+                        fontFamily: "var(--app-font-heading, Nunito)",
+                        whiteSpace: "nowrap",
+                      }}>
+                        {tab.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </nav>
 
+          {/* Main content */}
+          <main className="flex-1 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-5 pb-8 space-y-4">
 
+            {settingsOpen ? (
+              <SettingsPage
+                settings={profile.a11y}
+                onChange={(a11y) => setProfile({ ...profile, a11y })}
+                onClose={() => setSettingsOpen(false)}
+                onResetOnboarding={() => { setOnboarded(false); setSettingsOpen(false); }}
+                onClearData={() => { clearAllData(); setProfile({ ...DEFAULT_PROFILE, a11y: profile.a11y }); }}
+              />
+            ) : (
+              <>
+                {activeTab === "overview" && (
+                  <>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { label: t.overview.tasksLeft, value: String(tasksLeft), bg: "var(--green-bg)", fg: "var(--green-text)" },
+                        { label: t.overview.habitsDone, value: `${habitsDone} / 4`, bg: "var(--purple-bg)", fg: "var(--purple-text)" },
+                        { label: t.overview.streakDays, value: "🔥", bg: "var(--yellow-bg)", fg: "var(--yellow-text)" },
+                      ].map((stat) => (
+                        <div key={stat.label} className="steady-card rounded-2xl p-4 flex flex-col items-center text-center border border-border" style={{ backgroundColor: stat.bg }}>
+                          <span style={{ fontWeight: 800, fontSize: "1.4rem", color: stat.fg, lineHeight: 1.2 }}>{stat.value}</span>
+                          <span style={{ fontSize: "0.75rem", color: stat.fg, fontWeight: 600, marginTop: 4 }}>{stat.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <MoodCheck />
+                    <PersonalizedTip support={profile.support} sensory={profile.sensory} />
+                    <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
+                  </>
+                )}
+                {activeTab === "tasks" && <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />}
+                {activeTab === "routines" && <Routines />}
+                {activeTab === "habits" && <HabitTracker />}
+                {activeTab === "focus" && <FocusTimer />}
+                {activeTab === "note" && <DailyNote />}
+                {activeTab === "profile" && (
+                  <Profile profile={profile} onChange={setProfile} photo={profilePhoto} onPhotoChange={setProfilePhoto} />
+                )}
+              </>
+            )}
+
+          </main>
+
+        </div>
       </div>
     </LangContext.Provider>
   );

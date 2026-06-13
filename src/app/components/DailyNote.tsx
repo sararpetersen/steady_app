@@ -112,7 +112,7 @@ export function DailyNote() {
                       </span>
                       <button
                         onClick={() => deleteEntry(entry.id)}
-                        className="text-muted-foreground hover:text-destructive p-1 rounded-lg opacity-0 group-hover:opacity-100"
+                        className="text-muted-foreground hover:text-destructive p-1 rounded-lg sm:opacity-0 sm:group-hover:opacity-100"
                         style={{ transition: "all 0.15s" }}
                         aria-label={t.noteHistory.deleteEntry}
                       >

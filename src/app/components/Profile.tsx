@@ -136,7 +136,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           </div>
         </div>
 
-        <div className="grid gap-3 mb-3" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
           <div>
             <label className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>{p.namePlaceholder}</label>
             <input type="text" value={profile.name} onChange={(e) => update({ name: e.target.value })} className="w-full rounded-xl px-4 py-3 border border-border bg-input-background text-foreground outline-none focus:border-primary" style={{ transition: "border-color 0.15s" }} />

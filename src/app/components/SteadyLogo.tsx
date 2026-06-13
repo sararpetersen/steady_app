@@ -3,6 +3,14 @@ interface Props {
   className?: string;
 }
 
+/**
+ * Inline SVG logo used inside the app (colours follow CSS custom properties
+ * so dark-mode and high-contrast themes work automatically).
+ *
+ * A standalone, self-contained version with hardcoded colours lives at
+ * /public/logo.svg and is served as /logo.svg — use that for favicons,
+ * Open Graph images, or anywhere outside the app's CSS context.
+ */
 export function SteadyLogo({ size = 28, className }: Props) {
   return (
     <svg
@@ -31,7 +39,7 @@ export function SteadyLogo({ size = 28, className }: Props) {
         strokeWidth="2.2"
         strokeLinecap="round"
       />
-      {/* Small soil arc */}
+      {/* Soil arc */}
       <path
         d="M11 27 Q15 25.5 19 27"
         stroke="var(--primary)"

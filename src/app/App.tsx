@@ -383,27 +383,6 @@ export default function App() {
           {/* Main content */}
           <main className="flex-1 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-5 pb-8">
 
-            {/* ── Prominent date banner — always visible, not tab-specific ── */}
-            {!settingsOpen && (
-              <div
-                className="flex items-center gap-3 rounded-2xl px-4 py-3 mb-4 border border-border"
-                style={{ backgroundColor: "var(--green-bg)" }}
-              >
-                <div
-                  className="rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ width: 40, height: 40, backgroundColor: "var(--primary)" }}
-                >
-                  <CalendarDays size={20} color="white" />
-                </div>
-                <div>
-                  <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--muted-foreground)", textTransform: "uppercase", letterSpacing: "0.07em", lineHeight: 1 }}>Today</p>
-                  <p style={{ fontSize: "1rem", fontWeight: 800, color: "var(--green-text)", lineHeight: 1.3, fontFamily: "var(--app-font-heading, Nunito)" }}>
-                    {new Date().toLocaleDateString(t.dateLocale, { weekday: "long", day: "numeric", month: "long" })}
-                  </p>
-                </div>
-              </div>
-            )}
-
             {settingsOpen ? (
               <SettingsPage
                 settings={profile.a11y}

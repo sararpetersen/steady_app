@@ -17,8 +17,9 @@ import { DEFAULT_A11Y } from "./components/AccessibilityPanel";
 import { LayoutDashboard, ClipboardList, Repeat2, Flame, UserCircle2, Timer, NotebookPen, Settings, CalendarDays } from "lucide-react";
 import { SteadyLogo } from "./components/SteadyLogo";
 
-{/* MARKER-MAKE-KIT-INVOKED */}
-
+{
+  /* MARKER-MAKE-KIT-INVOKED */
+}
 
 export default function App() {
   const [authState, setAuthState] = useLocalStorage<AuthState | null>("steady-auth-state", null);
@@ -41,7 +42,9 @@ export default function App() {
       const data = JSON.parse(raw);
       if (Array.isArray(data)) return; // old format, ignore
       setHabitsDone(Object.values(data as Record<string, { doneToday: boolean }>).filter((h) => h.doneToday).length);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, [activeTab]);
 
   const profile: ProfileData = {
@@ -57,7 +60,7 @@ export default function App() {
     if (!rawProfile.sensory || !rawProfile.support || !rawProfile.a11y) {
       setProfile(profile);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Apply all accessibility settings globally
@@ -137,7 +140,10 @@ export default function App() {
   // Consistent circular avatar button — photo fills circle, emoji sits on tinted background
   const AvatarButton = () => (
     <button
-      onClick={() => { setActiveTab("profile"); setSettingsOpen(false); }}
+      onClick={() => {
+        setActiveTab("profile");
+        setSettingsOpen(false);
+      }}
       className="rounded-full flex items-center justify-center overflow-hidden hover:opacity-80"
       style={{
         width: 44,
@@ -149,10 +155,11 @@ export default function App() {
       }}
       aria-label="Open profile"
     >
-      {profilePhoto
-        ? <img src={profilePhoto} alt="Your profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        : <span style={{ fontSize: "1.3rem", lineHeight: 1 }}>{profile.avatar}</span>
-      }
+      {profilePhoto ? (
+        <img src={profilePhoto} alt="Your profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      ) : (
+        <span style={{ fontSize: "1.3rem", lineHeight: 1 }}>{profile.avatar}</span>
+      )}
     </button>
   );
 
@@ -218,7 +225,6 @@ export default function App() {
       `}</style>
 
       <div className="min-h-screen bg-background" style={{ fontFamily: "var(--app-font-body, 'Nunito Sans', sans-serif)" }}>
-
         {/* ── Desktop sidebar (lg+) ─────────────────────────────────── */}
         <aside
           className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-60 border-r border-border z-20"
@@ -227,14 +233,26 @@ export default function App() {
           {/* Brand */}
           <div className="px-4 pt-5 pb-4 border-b border-border space-y-3">
             <button
-              onClick={() => { setActiveTab("overview"); setSettingsOpen(false); }}
+              onClick={() => {
+                setActiveTab("overview");
+                setSettingsOpen(false);
+              }}
               className="flex items-center gap-2.5 hover:opacity-80 rounded-xl w-full"
               style={{ transition: "opacity 0.15s" }}
               aria-label="Go to Overview"
             >
               <SteadyLogo size={30} />
               <div className="text-left min-w-0">
-                <span style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800, fontSize: "1.2rem", color: "var(--primary)", letterSpacing: "-0.02em", display: "block" }}>
+                <span
+                  style={{
+                    fontFamily: "var(--app-font-heading, Nunito)",
+                    fontWeight: 800,
+                    fontSize: "1.2rem",
+                    color: "var(--primary)",
+                    letterSpacing: "-0.02em",
+                    display: "block",
+                  }}
+                >
                   Steady
                 </span>
                 <p className="text-muted-foreground truncate" style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>
@@ -250,8 +268,22 @@ export default function App() {
             >
               <CalendarDays size={18} style={{ color: "var(--primary)", flexShrink: 0 }} />
               <div className="min-w-0">
-                <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "var(--muted-foreground)", textTransform: "uppercase", letterSpacing: "0.06em", lineHeight: 1 }}>Today</p>
-                <p style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--green-text)", lineHeight: 1.3 }} className="truncate">{dateStr}</p>
+                <p
+                  style={{
+                    fontSize: "0.65rem",
+                    fontWeight: 700,
+                    color: "var(--muted-foreground)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                    lineHeight: 1,
+                    marginBottom: 8,
+                  }}
+                >
+                  Today
+                </p>
+                <p style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--green-text)", lineHeight: 1.3 }} className="truncate">
+                  {dateStr}
+                </p>
               </div>
             </div>
           </div>
@@ -264,7 +296,10 @@ export default function App() {
               return (
                 <button
                   key={tab.key}
-                  onClick={() => { setActiveTab(tab.key); setSettingsOpen(false); }}
+                  onClick={() => {
+                    setActiveTab(tab.key);
+                    setSettingsOpen(false);
+                  }}
                   className={`nav-tab w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left ${active ? "nav-tab-active" : "nav-tab-inactive"}`}
                   aria-current={active ? "page" : undefined}
                 >
@@ -273,13 +308,15 @@ export default function App() {
                     style={{ color: active ? "var(--primary)" : "var(--muted-foreground)", flexShrink: 0 }}
                     strokeWidth={active ? 2.5 : 1.8}
                   />
-                  <span style={{
-                    fontSize: "0.9rem",
-                    fontWeight: active ? 700 : 500,
-                    color: active ? "var(--primary)" : "var(--muted-foreground)",
-                    fontFamily: "var(--app-font-heading, Nunito)",
-                    whiteSpace: "nowrap",
-                  }}>
+                  <span
+                    style={{
+                      fontSize: "0.9rem",
+                      fontWeight: active ? 700 : 500,
+                      color: active ? "var(--primary)" : "var(--muted-foreground)",
+                      fontFamily: "var(--app-font-heading, Nunito)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     {tab.label}
                   </span>
                 </button>
@@ -309,20 +346,30 @@ export default function App() {
 
         {/* ── Content area (offset on lg) ──────────────────────────── */}
         <div className="lg:pl-60 flex flex-col min-h-screen">
-
           {/* Mobile / tablet header — hidden on lg */}
           <header className="sticky top-0 z-10 border-b border-border px-5 py-3 lg:hidden" style={{ backgroundColor: "var(--card)" }}>
             <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
               {/* Logo — clickable, goes to Overview */}
               <button
-                onClick={() => { setActiveTab("overview"); setSettingsOpen(false); }}
+                onClick={() => {
+                  setActiveTab("overview");
+                  setSettingsOpen(false);
+                }}
                 className="flex items-center gap-2.5 hover:opacity-80 rounded-xl"
                 style={{ transition: "opacity 0.15s" }}
                 aria-label="Go to Overview"
               >
                 <SteadyLogo size={30} />
                 <div className="text-left">
-                  <span style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800, fontSize: "1.25rem", color: "var(--primary)", letterSpacing: "-0.02em" }}>
+                  <span
+                    style={{
+                      fontFamily: "var(--app-font-heading, Nunito)",
+                      fontWeight: 800,
+                      fontSize: "1.25rem",
+                      color: "var(--primary)",
+                      letterSpacing: "-0.02em",
+                    }}
+                  >
                     Steady
                   </span>
                   <p className="text-muted-foreground" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
@@ -355,22 +402,23 @@ export default function App() {
                   return (
                     <button
                       key={tab.key}
-                      onClick={() => { setActiveTab(tab.key); setSettingsOpen(false); }}
+                      onClick={() => {
+                        setActiveTab(tab.key);
+                        setSettingsOpen(false);
+                      }}
                       className={`nav-tab flex-1 flex flex-col items-center gap-0.5 py-2 px-1 rounded-xl min-w-[44px] ${active ? "nav-tab-active" : "nav-tab-inactive"}`}
                       aria-current={active ? "page" : undefined}
                     >
-                      <Icon
-                        size={18}
-                        style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }}
-                        strokeWidth={active ? 2.5 : 1.8}
-                      />
-                      <span style={{
-                        fontSize: "0.65rem",
-                        fontWeight: active ? 700 : 500,
-                        color: active ? "var(--primary)" : "var(--muted-foreground)",
-                        fontFamily: "var(--app-font-heading, Nunito)",
-                        whiteSpace: "nowrap",
-                      }}>
+                      <Icon size={18} style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }} strokeWidth={active ? 2.5 : 1.8} />
+                      <span
+                        style={{
+                          fontSize: "0.65rem",
+                          fontWeight: active ? 700 : 500,
+                          color: active ? "var(--primary)" : "var(--muted-foreground)",
+                          fontFamily: "var(--app-font-heading, Nunito)",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
                         {tab.label}
                       </span>
                     </button>
@@ -382,14 +430,19 @@ export default function App() {
 
           {/* Main content */}
           <main className="flex-1 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-5 pb-8">
-
             {settingsOpen ? (
               <SettingsPage
                 settings={profile.a11y}
                 onChange={(a11y) => setProfile({ ...profile, a11y })}
                 onClose={() => setSettingsOpen(false)}
-                onResetOnboarding={() => { setOnboarded(false); setSettingsOpen(false); }}
-                onClearData={() => { clearAllData(); setProfile({ ...DEFAULT_PROFILE, a11y: profile.a11y }); }}
+                onResetOnboarding={() => {
+                  setOnboarded(false);
+                  setSettingsOpen(false);
+                }}
+                onClearData={() => {
+                  clearAllData();
+                  setProfile({ ...DEFAULT_PROFILE, a11y: profile.a11y });
+                }}
                 auth={authState}
                 onSignOut={handleSignOut}
                 onAuthUpdate={handleAuthUpdate}
@@ -404,7 +457,11 @@ export default function App() {
                         { label: t.overview.habitsDone, value: `${habitsDone} / 4`, bg: "var(--purple-bg)", fg: "var(--purple-text)" },
                         { label: t.overview.streakDays, value: "🔥", bg: "var(--yellow-bg)", fg: "var(--yellow-text)" },
                       ].map((stat) => (
-                        <div key={stat.label} className="stat-card steady-card rounded-2xl p-4 flex flex-col items-center text-center border border-border" style={{ backgroundColor: stat.bg }}>
+                        <div
+                          key={stat.label}
+                          className="stat-card steady-card rounded-2xl p-4 flex flex-col items-center text-center border border-border"
+                          style={{ backgroundColor: stat.bg }}
+                        >
                           <span style={{ fontWeight: 800, fontSize: "1.4rem", color: stat.fg, lineHeight: 1.2 }}>{stat.value}</span>
                           <span style={{ fontSize: "0.75rem", color: stat.fg, fontWeight: 600, marginTop: 4 }}>{stat.label}</span>
                         </div>
@@ -420,14 +477,10 @@ export default function App() {
                 {activeTab === "habits" && <HabitTracker />}
                 {activeTab === "focus" && <FocusTimer />}
                 {activeTab === "note" && <DailyNote />}
-                {activeTab === "profile" && (
-                  <Profile profile={profile} onChange={setProfile} photo={profilePhoto} onPhotoChange={setProfilePhoto} />
-                )}
+                {activeTab === "profile" && <Profile profile={profile} onChange={setProfile} photo={profilePhoto} onPhotoChange={setProfilePhoto} />}
               </div>
             )}
-
           </main>
-
         </div>
       </div>
     </LangContext.Provider>

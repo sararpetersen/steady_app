@@ -104,7 +104,8 @@ export function HabitTracker() {
               style={{
                 backgroundColor: habit.doneToday ? getDoneColor(index) : "var(--surface-1)",
                 border: habit.doneToday ? "2px solid var(--primary)" : "2px solid transparent",
-                transition: "all 0.15s",
+                transition: "background-color 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s cubic-bezier(0.34,1.56,0.64,1), transform 0.25s cubic-bezier(0.34,1.56,0.64,1)",
+                transform: habit.doneToday ? "scale(1.01)" : "scale(1)",
               }}
             >
               <span style={{ fontSize: "1.7rem", flexShrink: 0 }}>{habit.emoji}</span>
@@ -133,6 +134,7 @@ export function HabitTracker() {
                   height: 24,
                   borderColor: habit.doneToday ? "var(--primary)" : "var(--muted-foreground)",
                   backgroundColor: habit.doneToday ? "var(--primary)" : "transparent",
+                  transition: "all 0.25s cubic-bezier(0.34,1.56,0.64,1)",
                 }}
               >
                 {habit.doneToday && (

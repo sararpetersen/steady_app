@@ -111,7 +111,7 @@ export function TaskList({
           >
             <button
               onClick={() => toggle(task.id)}
-              className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
+              className={`flex-shrink-0 rounded-full border-2 flex items-center justify-center${task.done ? " task-checked" : ""}`}
               style={{
                 width: 28,
                 height: 28,
@@ -121,7 +121,7 @@ export function TaskList({
                 backgroundColor: task.done
                   ? "var(--primary)"
                   : "transparent",
-                transition: "all 0.15s",
+                transition: "background-color 0.2s, border-color 0.2s",
               }}
               aria-label={
                 task.done

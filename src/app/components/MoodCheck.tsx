@@ -47,8 +47,8 @@ export function MoodCheck() {
             style={{
               borderColor: selected === i ? "var(--primary)" : "transparent",
               backgroundColor: selected === i ? MOOD_COLOR_VARS[i] : "var(--surface-1)",
-              transform: selected === i ? "scale(1.08)" : "scale(1)",
-              transition: "all 0.15s",
+              transform: selected === i ? "scale(1.12)" : "scale(1)",
+              transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)",
             }}
             aria-pressed={selected === i}
           >

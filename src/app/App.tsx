@@ -14,7 +14,7 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/AccessibilityPanel";
-import { LayoutDashboard, ClipboardList, Repeat2, Flame, UserCircle2, Timer, NotebookPen, Settings } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Repeat2, Flame, UserCircle2, Timer, NotebookPen, Settings, CalendarDays } from "lucide-react";
 import { SteadyLogo } from "./components/SteadyLogo";
 
 {/* MARKER-MAKE-KIT-INVOKED */}
@@ -170,11 +170,51 @@ export default function App() {
         .reduce-motion * { transition: none !important; animation: none !important; }
         body { line-height: var(--app-line-height, 1.5); }
         .steady-card { box-shadow: var(--shadow-card); }
-        .nav-tab { transition: background-color 0.15s, color 0.15s; }
+        .nav-tab { transition: background-color 0.18s, color 0.18s; }
         .nav-tab-active { background-color: var(--green-bg); }
         .nav-tab-inactive:hover { background-color: var(--muted); }
         .nav-scroll { scrollbar-width: none; -ms-overflow-style: none; }
         .nav-scroll::-webkit-scrollbar { display: none; }
+
+        /* ── Tab content entrance ── */
+        @keyframes fade-slide-up {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .tab-content { animation: fade-slide-up 0.22s ease-out both; }
+
+        /* ── Stat card stagger ── */
+        @keyframes pop-in {
+          0%   { opacity: 0; transform: scale(0.93); }
+          60%  { transform: scale(1.03); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        .stat-card { animation: pop-in 0.28s cubic-bezier(0.34,1.56,0.64,1) both; }
+        .stat-card:nth-child(1) { animation-delay: 0.04s; }
+        .stat-card:nth-child(2) { animation-delay: 0.09s; }
+        .stat-card:nth-child(3) { animation-delay: 0.14s; }
+
+        /* ── Task checkbox pop ── */
+        @keyframes check-pop {
+          0%   { transform: scale(1); }
+          35%  { transform: scale(0.75); }
+          70%  { transform: scale(1.25); }
+          100% { transform: scale(1); }
+        }
+        .task-checked { animation: check-pop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+
+        /* ── Habit row bounce ── */
+        @keyframes habit-bounce {
+          0%   { transform: scale(1); }
+          30%  { transform: scale(0.96); }
+          65%  { transform: scale(1.03); }
+          100% { transform: scale(1); }
+        }
+
+        .reduce-motion .tab-content,
+        .reduce-motion .stat-card,
+        .reduce-motion .task-checked,
+        .reduce-motion .habit-bounce { animation: none !important; }
       `}</style>
 
       <div className="min-h-screen bg-background" style={{ fontFamily: "var(--app-font-body, 'Nunito Sans', sans-serif)" }}>
@@ -237,9 +277,10 @@ export default function App() {
 
           {/* Bottom: date + settings + avatar */}
           <div className="p-4 border-t border-border space-y-3">
-            <p className="text-muted-foreground" style={{ fontSize: "0.75rem" }}>
-              {dateStr}
-            </p>
+            <div className="flex items-center gap-1.5 rounded-xl px-3 py-2" style={{ backgroundColor: "var(--green-bg)" }}>
+              <CalendarDays size={14} style={{ color: "var(--primary)", flexShrink: 0 }} />
+              <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--green-text)" }}>{dateStr}</span>
+            </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setSettingsOpen((o) => !o)}
@@ -276,9 +317,13 @@ export default function App() {
                   <span style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800, fontSize: "1.25rem", color: "var(--primary)", letterSpacing: "-0.02em" }}>
                     Steady
                   </span>
-                  <p className="text-muted-foreground" style={{ fontSize: "0.78rem", marginTop: 0, lineHeight: 1.2 }}>
-                    {greeting} · {dateStr}
+                  <p className="text-muted-foreground" style={{ fontSize: "0.75rem", lineHeight: 1.2 }}>
+                    {greeting}
                   </p>
+                  <div className="flex items-center gap-1" style={{ marginTop: 2 }}>
+                    <CalendarDays size={11} style={{ color: "var(--primary)", flexShrink: 0 }} />
+                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--primary)" }}>{dateStr}</span>
+                  </div>
                 </div>
               </button>
               <div className="flex items-center gap-2">
@@ -332,7 +377,7 @@ export default function App() {
           </nav>
 
           {/* Main content */}
-          <main className="flex-1 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-5 pb-8 space-y-4">
+          <main className="flex-1 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-5 pb-8">
 
             {settingsOpen ? (
               <SettingsPage
@@ -346,7 +391,7 @@ export default function App() {
                 onAuthUpdate={handleAuthUpdate}
               />
             ) : (
-              <>
+              <div key={activeTab} className="tab-content space-y-4">
                 {activeTab === "overview" && (
                   <>
                     <div className="grid grid-cols-3 gap-3">
@@ -355,7 +400,7 @@ export default function App() {
                         { label: t.overview.habitsDone, value: `${habitsDone} / 4`, bg: "var(--purple-bg)", fg: "var(--purple-text)" },
                         { label: t.overview.streakDays, value: "🔥", bg: "var(--yellow-bg)", fg: "var(--yellow-text)" },
                       ].map((stat) => (
-                        <div key={stat.label} className="steady-card rounded-2xl p-4 flex flex-col items-center text-center border border-border" style={{ backgroundColor: stat.bg }}>
+                        <div key={stat.label} className="stat-card steady-card rounded-2xl p-4 flex flex-col items-center text-center border border-border" style={{ backgroundColor: stat.bg }}>
                           <span style={{ fontWeight: 800, fontSize: "1.4rem", color: stat.fg, lineHeight: 1.2 }}>{stat.value}</span>
                           <span style={{ fontSize: "0.75rem", color: stat.fg, fontWeight: 600, marginTop: 4 }}>{stat.label}</span>
                         </div>
@@ -374,7 +419,7 @@ export default function App() {
                 {activeTab === "profile" && (
                   <Profile profile={profile} onChange={setProfile} photo={profilePhoto} onPhotoChange={setProfilePhoto} />
                 )}
-              </>
+              </div>
             )}
 
           </main>

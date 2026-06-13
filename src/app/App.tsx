@@ -9,6 +9,7 @@ import { Profile, DEFAULT_PROFILE, type ProfileData } from "./components/Profile
 import { PersonalizedTip } from "./components/PersonalizedTip";
 import { Onboarding } from "./components/Onboarding";
 import { SettingsPage } from "./components/SettingsPage";
+import { AuthPage, type AuthState } from "./components/AuthPage";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
@@ -20,6 +21,7 @@ import { SteadyLogo } from "./components/SteadyLogo";
 
 
 export default function App() {
+  const [authState, setAuthState] = useLocalStorage<AuthState | null>("steady-auth-state", null);
   const [onboarded, setOnboarded] = useLocalStorage("steady-onboarded", false);
   const [activeTab, setActiveTab] = useLocalStorage("steady-active-tab", "overview");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -81,6 +83,14 @@ export default function App() {
     }
   }, [profile.a11y]);
 
+  const handleSignOut = () => {
+    setAuthState(null);
+  };
+
+  const handleAuthUpdate = (newEmail: string) => {
+    setAuthState({ email: newEmail, isGuest: false });
+  };
+
   const clearAllData = () => {
     setTasks([]);
     setNextId(1);
@@ -98,6 +108,10 @@ export default function App() {
     clearAllData();
     setOnboarded(true);
   };
+
+  if (!authState) {
+    return <AuthPage onAuth={(s) => setAuthState(s)} />;
+  }
 
   if (!onboarded) {
     return (
@@ -327,6 +341,9 @@ export default function App() {
                 onClose={() => setSettingsOpen(false)}
                 onResetOnboarding={() => { setOnboarded(false); setSettingsOpen(false); }}
                 onClearData={() => { clearAllData(); setProfile({ ...DEFAULT_PROFILE, a11y: profile.a11y }); }}
+                auth={authState}
+                onSignOut={handleSignOut}
+                onAuthUpdate={handleAuthUpdate}
               />
             ) : (
               <>

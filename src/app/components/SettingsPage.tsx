@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, ChevronDown, ChevronUp } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
 import type { A11ySettings } from "./AccessibilityPanel";
 import type { Lang } from "../i18n/translations";
+import type { AuthState } from "./AuthPage";
 
 interface Props {
   settings: A11ySettings;
@@ -10,6 +11,9 @@ interface Props {
   onClose: () => void;
   onResetOnboarding: () => void;
   onClearData: () => void;
+  auth: AuthState | null;
+  onSignOut: () => void;
+  onAuthUpdate: (newEmail: string) => void;
 }
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
@@ -78,7 +82,182 @@ function OptionRow<V extends string>({ label, options, value, onChange }: {
   );
 }
 
-export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, onClearData }: Props) {
+function getAccounts(): Record<string, { password: string }> {
+  try { return JSON.parse(localStorage.getItem("steady-accounts") ?? "{}"); } catch { return {}; }
+}
+function saveAccounts(a: Record<string, { password: string }>) {
+  localStorage.setItem("steady-accounts", JSON.stringify(a));
+}
+
+function AccountSection({ auth, onSignOut, onAuthUpdate }: {
+  auth: AuthState | null;
+  onSignOut: () => void;
+  onAuthUpdate: (newEmail: string) => void;
+}) {
+  const t = useLang();
+  const a = t.account;
+
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [pwOpen, setPwOpen] = useState(false);
+
+  const [newEmail, setNewEmail] = useState("");
+  const [verifyPw, setVerifyPw] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [emailSaved, setEmailSaved] = useState(false);
+
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [pwError, setPwError] = useState("");
+  const [pwSaved, setPwSaved] = useState(false);
+
+  const isGuest = !auth || auth.isGuest;
+
+  const saveEmail = () => {
+    setEmailError("");
+    if (!newEmail.trim()) { setEmailError(a.emailRequired); return; }
+    const accounts = getAccounts();
+    const stored = accounts[auth!.email];
+    if (!stored || stored.password !== verifyPw) { setEmailError(a.wrongPassword); return; }
+    if (accounts[newEmail.toLowerCase()] && newEmail.toLowerCase() !== auth!.email) {
+      setEmailError(a.emailInUse); return;
+    }
+    // Move account to new email key
+    accounts[newEmail.toLowerCase()] = stored;
+    if (newEmail.toLowerCase() !== auth!.email) delete accounts[auth!.email];
+    saveAccounts(accounts);
+    onAuthUpdate(newEmail.toLowerCase());
+    setEmailOpen(false);
+    setNewEmail("");
+    setVerifyPw("");
+    setEmailSaved(true);
+    setTimeout(() => setEmailSaved(false), 2500);
+  };
+
+  const savePassword = () => {
+    setPwError("");
+    const accounts = getAccounts();
+    const stored = accounts[auth!.email];
+    if (!stored || stored.password !== currentPw) { setPwError(a.wrongPassword); return; }
+    if (newPw.length < 6) { setPwError(a.passwordTooShort); return; }
+    if (newPw !== confirmPw) { setPwError(a.passwordsNoMatch); return; }
+    accounts[auth!.email] = { password: newPw };
+    saveAccounts(accounts);
+    setPwOpen(false);
+    setCurrentPw(""); setNewPw(""); setConfirmPw("");
+    setPwSaved(true);
+    setTimeout(() => setPwSaved(false), 2500);
+  };
+
+  const inputCls = "w-full rounded-xl px-4 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary";
+  const inputStyle = { fontSize: "0.9rem", transition: "border-color 0.15s" };
+
+  if (isGuest) {
+    return (
+      <div className="space-y-3">
+        <div className="rounded-xl px-4 py-3" style={{ backgroundColor: "var(--purple-bg)" }}>
+          <p className="text-foreground" style={{ fontWeight: 700, marginBottom: 4 }}>{a.guestHeading}</p>
+          <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{a.guestNote}</p>
+        </div>
+        <button
+          onClick={onSignOut}
+          className="w-full rounded-xl px-4 py-3 bg-primary text-primary-foreground hover:opacity-90 text-left"
+          style={{ fontWeight: 700, transition: "opacity 0.15s" }}
+        >
+          {a.createAccount}
+        </button>
+        <button
+          onClick={onSignOut}
+          className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-left"
+          style={{ fontWeight: 600, transition: "background-color 0.15s" }}
+        >
+          {a.signOut}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* Current email display */}
+      <div className="rounded-xl px-4 py-3" style={{ backgroundColor: "var(--surface-1)" }}>
+        <p className="text-muted-foreground" style={{ fontSize: "0.78rem", fontWeight: 600, marginBottom: 2 }}>{a.emailLabel}</p>
+        <p className="text-foreground" style={{ fontWeight: 600 }}>{auth!.email}</p>
+      </div>
+
+      {/* Change email */}
+      <div className="rounded-xl border border-border overflow-hidden">
+        <button
+          onClick={() => { setEmailOpen((o) => !o); setEmailError(""); }}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted text-left"
+          style={{ transition: "background-color 0.15s" }}
+        >
+          <span className="text-foreground" style={{ fontWeight: 600 }}>{emailSaved ? a.saved : a.changeEmail}</span>
+          {emailOpen ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
+        </button>
+        {emailOpen && (
+          <div className="px-4 pb-4 space-y-3 border-t border-border" style={{ paddingTop: 12 }}>
+            <div>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{a.newEmailLabel}</label>
+              <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder={a.newEmailPlaceholder} className={inputCls} style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{a.verifyPasswordLabel}</label>
+              <input type="password" value={verifyPw} onChange={(e) => setVerifyPw(e.target.value)} placeholder="••••••" className={inputCls} style={inputStyle} autoComplete="current-password" />
+            </div>
+            {emailError && <p style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{emailError}</p>}
+            <div className="flex gap-2">
+              <button onClick={saveEmail} className="flex-1 rounded-xl py-2.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "0.88rem", transition: "opacity 0.15s" }}>{a.save}</button>
+              <button onClick={() => setEmailOpen(false)} className="rounded-xl px-4 py-2.5 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, fontSize: "0.88rem", transition: "background-color 0.15s" }}>{a.cancel}</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Change password */}
+      <div className="rounded-xl border border-border overflow-hidden">
+        <button
+          onClick={() => { setPwOpen((o) => !o); setPwError(""); }}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted text-left"
+          style={{ transition: "background-color 0.15s" }}
+        >
+          <span className="text-foreground" style={{ fontWeight: 600 }}>{pwSaved ? a.saved : a.changePassword}</span>
+          {pwOpen ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
+        </button>
+        {pwOpen && (
+          <div className="px-4 pb-4 space-y-3 border-t border-border" style={{ paddingTop: 12 }}>
+            {[
+              { label: a.currentPasswordLabel, value: currentPw, set: setCurrentPw, autocomplete: "current-password" },
+              { label: a.newPasswordLabel, value: newPw, set: setNewPw, autocomplete: "new-password" },
+              { label: a.confirmNewPasswordLabel, value: confirmPw, set: setConfirmPw, autocomplete: "new-password" },
+            ].map(({ label, value, set, autocomplete }) => (
+              <div key={label}>
+                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{label}</label>
+                <input type="password" value={value} onChange={(e) => set(e.target.value)} placeholder="••••••" className={inputCls} style={inputStyle} autoComplete={autocomplete} />
+              </div>
+            ))}
+            {pwError && <p style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{pwError}</p>}
+            <div className="flex gap-2">
+              <button onClick={savePassword} className="flex-1 rounded-xl py-2.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "0.88rem", transition: "opacity 0.15s" }}>{a.save}</button>
+              <button onClick={() => setPwOpen(false)} className="rounded-xl px-4 py-2.5 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, fontSize: "0.88rem", transition: "background-color 0.15s" }}>{a.cancel}</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Sign out */}
+      <button
+        onClick={onSignOut}
+        className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-left"
+        style={{ fontWeight: 600, transition: "background-color 0.15s" }}
+      >
+        {a.signOut}
+      </button>
+    </div>
+  );
+}
+
+export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, onClearData, auth, onSignOut, onAuthUpdate }: Props) {
   const t = useLang();
   const s = t.settings;
   const [confirmClear, setConfirmClear] = useState(false);
@@ -99,6 +278,12 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
         <button onClick={onClose} className="rounded-xl p-2 hover:bg-muted" style={{ transition: "background-color 0.15s" }} aria-label="Close settings">
           <X size={20} className="text-foreground" />
         </button>
+      </div>
+
+      {/* Account */}
+      <div className="steady-card bg-card rounded-2xl p-5 border border-border space-y-3">
+        <SectionHeading>{s.sections.account}</SectionHeading>
+        <AccountSection auth={auth} onSignOut={onSignOut} onAuthUpdate={onAuthUpdate} />
       </div>
 
       {/* Appearance */}

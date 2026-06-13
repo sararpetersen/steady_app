@@ -225,7 +225,7 @@ export default function App() {
           style={{ backgroundColor: "var(--card)" }}
         >
           {/* Brand */}
-          <div className="px-4 py-5 border-b border-border">
+          <div className="px-4 pt-5 pb-4 border-b border-border space-y-3">
             <button
               onClick={() => { setActiveTab("overview"); setSettingsOpen(false); }}
               className="flex items-center gap-2.5 hover:opacity-80 rounded-xl w-full"
@@ -242,6 +242,18 @@ export default function App() {
                 </p>
               </div>
             </button>
+
+            {/* Prominent date chip */}
+            <div
+              className="flex items-center gap-2.5 rounded-2xl px-3 py-2.5 w-full"
+              style={{ backgroundColor: "var(--green-bg)", border: "1.5px solid var(--border)" }}
+            >
+              <CalendarDays size={18} style={{ color: "var(--primary)", flexShrink: 0 }} />
+              <div className="min-w-0">
+                <p style={{ fontSize: "0.65rem", fontWeight: 700, color: "var(--muted-foreground)", textTransform: "uppercase", letterSpacing: "0.06em", lineHeight: 1 }}>Today</p>
+                <p style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--green-text)", lineHeight: 1.3 }} className="truncate">{dateStr}</p>
+              </div>
+            </div>
           </div>
 
           {/* Vertical nav */}
@@ -275,12 +287,8 @@ export default function App() {
             })}
           </nav>
 
-          {/* Bottom: date + settings + avatar */}
+          {/* Bottom: settings + avatar */}
           <div className="p-4 border-t border-border space-y-3">
-            <div className="flex items-center gap-1.5 rounded-xl px-3 py-2" style={{ backgroundColor: "var(--green-bg)" }}>
-              <CalendarDays size={14} style={{ color: "var(--primary)", flexShrink: 0 }} />
-              <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--green-text)" }}>{dateStr}</span>
-            </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setSettingsOpen((o) => !o)}
@@ -317,13 +325,9 @@ export default function App() {
                   <span style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800, fontSize: "1.25rem", color: "var(--primary)", letterSpacing: "-0.02em" }}>
                     Steady
                   </span>
-                  <p className="text-muted-foreground" style={{ fontSize: "0.75rem", lineHeight: 1.2 }}>
+                  <p className="text-muted-foreground" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
                     {greeting}
                   </p>
-                  <div className="flex items-center gap-1" style={{ marginTop: 2 }}>
-                    <CalendarDays size={11} style={{ color: "var(--primary)", flexShrink: 0 }} />
-                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--primary)" }}>{dateStr}</span>
-                  </div>
                 </div>
               </button>
               <div className="flex items-center gap-2">
@@ -378,6 +382,27 @@ export default function App() {
 
           {/* Main content */}
           <main className="flex-1 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-5 pb-8">
+
+            {/* ── Prominent date banner — always visible, not tab-specific ── */}
+            {!settingsOpen && (
+              <div
+                className="flex items-center gap-3 rounded-2xl px-4 py-3 mb-4 border border-border"
+                style={{ backgroundColor: "var(--green-bg)" }}
+              >
+                <div
+                  className="rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ width: 40, height: 40, backgroundColor: "var(--primary)" }}
+                >
+                  <CalendarDays size={20} color="white" />
+                </div>
+                <div>
+                  <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--muted-foreground)", textTransform: "uppercase", letterSpacing: "0.07em", lineHeight: 1 }}>Today</p>
+                  <p style={{ fontSize: "1rem", fontWeight: 800, color: "var(--green-text)", lineHeight: 1.3, fontFamily: "var(--app-font-heading, Nunito)" }}>
+                    {new Date().toLocaleDateString(t.dateLocale, { weekday: "long", day: "numeric", month: "long" })}
+                  </p>
+                </div>
+              </div>
+            )}
 
             {settingsOpen ? (
               <SettingsPage

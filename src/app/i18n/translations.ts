@@ -296,6 +296,7 @@ const en = {
     photoSet: "Photo set",
     namePlaceholder: "Your name or nickname",
     pronounsLabel: "Pronouns (optional)",
+    pronounsOptions: ["he/him", "she/her", "they/them", "he/they", "she/they", "any/all"],
     aboutLabel: "A note to yourself (optional)",
 
     sensory: {
@@ -716,6 +717,7 @@ const da: typeof en = {
     photoSet: "Foto valgt",
     namePlaceholder: "Dit navn eller kaldenavn",
     pronounsLabel: "Pronomener (valgfrit)",
+    pronounsOptions: ["han/ham", "hun/hende", "de/dem", "han/de", "hun/de", "alle"],
     aboutLabel: "En note til dig selv (valgfrit)",
 
     sensory: {

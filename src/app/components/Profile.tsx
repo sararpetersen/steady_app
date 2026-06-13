@@ -142,8 +142,31 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
             <input type="text" value={profile.name} onChange={(e) => update({ name: e.target.value })} className="w-full rounded-xl px-4 py-3 border border-border bg-input-background text-foreground outline-none focus:border-primary" style={{ transition: "border-color 0.15s" }} />
           </div>
           <div>
-            <label className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>{p.pronounsLabel}</label>
-            <input type="text" value={profile.pronoun} onChange={(e) => update({ pronoun: e.target.value })} className="w-full rounded-xl px-4 py-3 border border-border bg-input-background text-foreground outline-none focus:border-primary" style={{ transition: "border-color 0.15s" }} />
+            <label className="text-foreground" style={{ display: "block", marginBottom: 8, fontSize: "0.9rem" }}>{p.pronounsLabel}</label>
+            <div className="flex flex-wrap gap-2">
+              {p.pronounsOptions.map((opt) => {
+                const active = profile.pronoun === opt;
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => update({ pronoun: active ? "" : opt })}
+                    className="rounded-xl px-3 py-2 border-2 hover:opacity-85"
+                    style={{
+                      backgroundColor: active ? "var(--green-bg)" : "var(--surface-1)",
+                      borderColor: active ? "var(--primary)" : "transparent",
+                      color: active ? "var(--green-text)" : "var(--foreground)",
+                      fontWeight: active ? 700 : 500,
+                      fontSize: "0.88rem",
+                      transition: "all 0.15s",
+                    }}
+                    aria-pressed={active}
+                  >
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
         <div>

@@ -167,14 +167,35 @@ export function Onboarding({ onComplete, onSkip }: Props) {
                   className="w-full rounded-2xl px-5 py-4 border border-border bg-card text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
                   style={{ fontSize: "1.1rem", transition: "border-color 0.15s" }}
                 />
-                <input
-                  type="text"
-                  value={pronoun}
-                  onChange={(e) => setPronoun(e.target.value)}
-                  placeholder={t.onboarding.name.pronounPlaceholder}
-                  className="w-full rounded-2xl px-5 py-4 border border-border bg-card text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
-                  style={{ fontSize: "1rem", transition: "border-color 0.15s" }}
-                />
+                <div>
+                  <p className="text-muted-foreground mb-2" style={{ fontSize: "0.9rem" }}>
+                    {t.onboarding.name.pronounPlaceholder}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {t.profile.pronounsOptions.map((opt) => {
+                      const active = pronoun === opt;
+                      return (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => setPronoun(active ? "" : opt)}
+                          className="rounded-xl px-4 py-2.5 border-2 hover:opacity-85"
+                          style={{
+                            backgroundColor: active ? "var(--green-bg)" : "var(--surface-1)",
+                            borderColor: active ? "var(--primary)" : "transparent",
+                            color: active ? "var(--green-text)" : "var(--foreground)",
+                            fontWeight: active ? 700 : 500,
+                            fontSize: "0.95rem",
+                            transition: "all 0.15s",
+                          }}
+                          aria-pressed={active}
+                        >
+                          {opt}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             )}
 

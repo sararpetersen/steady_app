@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, ChevronDown, ChevronUp } from "lucide-react";
+import { X, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
 import type { A11ySettings } from "./AccessibilityPanel";
 import type { Lang } from "../i18n/translations";
@@ -152,20 +152,102 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
   const inputCls = "w-full rounded-xl px-4 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary";
   const inputStyle = { fontSize: "0.9rem", transition: "border-color 0.15s" };
 
+  // ── Guest: inline sign-up form ──────────────────────────────────────
+  const [signUpEmail, setSignUpEmail] = useState("");
+  const [signUpPw, setSignUpPw] = useState("");
+  const [signUpConfirm, setSignUpConfirm] = useState("");
+  const [signUpShowPw, setSignUpShowPw] = useState(false);
+  const [signUpError, setSignUpError] = useState("");
+
+  const registerFromGuest = () => {
+    setSignUpError("");
+    if (!signUpEmail.trim()) { setSignUpError(a.emailRequired); return; }
+    if (signUpPw.length < 6) { setSignUpError(a.passwordTooShort); return; }
+    if (signUpPw !== signUpConfirm) { setSignUpError(a.passwordsNoMatch); return; }
+    const accounts = getAccounts();
+    if (accounts[signUpEmail.toLowerCase()]) { setSignUpError(a.emailInUse); return; }
+    accounts[signUpEmail.toLowerCase()] = { password: signUpPw };
+    saveAccounts(accounts);
+    onAuthUpdate(signUpEmail.toLowerCase());
+  };
+
   if (isGuest) {
     return (
       <div className="space-y-3">
-        <div className="rounded-xl px-4 py-3" style={{ backgroundColor: "var(--purple-bg)" }}>
-          <p className="text-foreground" style={{ fontWeight: 700, marginBottom: 4 }}>{a.guestHeading}</p>
-          <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{a.guestNote}</p>
+        <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{a.guestNote}</p>
+
+        {/* Email */}
+        <div>
+          <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>
+            {a.emailLabel}
+          </label>
+          <input
+            type="email"
+            value={signUpEmail}
+            onChange={(e) => setSignUpEmail(e.target.value)}
+            placeholder="you@example.com"
+            className={inputCls}
+            style={inputStyle}
+            autoComplete="email"
+          />
         </div>
+
+        {/* Password */}
+        <div>
+          <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>
+            {a.newPasswordLabel}
+          </label>
+          <div className="relative">
+            <input
+              type={signUpShowPw ? "text" : "password"}
+              value={signUpPw}
+              onChange={(e) => setSignUpPw(e.target.value)}
+              placeholder="At least 6 characters"
+              className={inputCls}
+              style={{ ...inputStyle, paddingRight: "2.5rem" }}
+              autoComplete="new-password"
+            />
+            <button
+              type="button"
+              onClick={() => setSignUpShowPw((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label={signUpShowPw ? "Hide password" : "Show password"}
+            >
+              {signUpShowPw ? <EyeOff size={15} /> : <Eye size={15} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Confirm */}
+        <div>
+          <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>
+            {a.confirmNewPasswordLabel}
+          </label>
+          <input
+            type={signUpShowPw ? "text" : "password"}
+            value={signUpConfirm}
+            onChange={(e) => setSignUpConfirm(e.target.value)}
+            placeholder="Repeat your password"
+            className={inputCls}
+            style={inputStyle}
+            autoComplete="new-password"
+          />
+        </div>
+
+        {signUpError && (
+          <p className="rounded-xl px-3 py-2" style={{ backgroundColor: "rgba(192,57,43,0.1)", color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>
+            {signUpError}
+          </p>
+        )}
+
         <button
-          onClick={onSignOut}
-          className="w-full rounded-xl px-4 py-3 bg-primary text-primary-foreground hover:opacity-90 text-left"
+          onClick={registerFromGuest}
+          className="w-full rounded-xl px-4 py-3 bg-primary text-primary-foreground hover:opacity-90"
           style={{ fontWeight: 700, transition: "opacity 0.15s" }}
         >
           {a.createAccount}
         </button>
+
         <button
           onClick={onSignOut}
           className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-left"

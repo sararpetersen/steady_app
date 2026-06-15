@@ -289,7 +289,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
             </div>
             {emailError && <p style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{emailError}</p>}
             <div className="flex gap-2">
-              <button onClick={saveEmail} className="flex-1 rounded-xl py-2.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "0.88rem", transition: "opacity 0.15s" }}>{a.save}</button>
+              <button onClick={saveEmail} className="rounded-xl px-5 py-2.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "0.88rem", transition: "opacity 0.15s" }}>{a.save}</button>
               <button onClick={() => setEmailOpen(false)} className="rounded-xl px-4 py-2.5 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, fontSize: "0.88rem", transition: "background-color 0.15s" }}>{a.cancel}</button>
             </div>
           </div>
@@ -320,7 +320,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
             ))}
             {pwError && <p style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{pwError}</p>}
             <div className="flex gap-2">
-              <button onClick={savePassword} className="flex-1 rounded-xl py-2.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "0.88rem", transition: "opacity 0.15s" }}>{a.save}</button>
+              <button onClick={savePassword} className="rounded-xl px-5 py-2.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "0.88rem", transition: "opacity 0.15s" }}>{a.save}</button>
               <button onClick={() => setPwOpen(false)} className="rounded-xl px-4 py-2.5 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, fontSize: "0.88rem", transition: "background-color 0.15s" }}>{a.cancel}</button>
             </div>
           </div>
@@ -412,12 +412,12 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
       {/* Language */}
       <div className="steady-card bg-card rounded-2xl p-5 border border-border space-y-3">
         <SectionHeading>{s.sections.language}</SectionHeading>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           {(["en", "da"] as Lang[]).map((lang) => (
             <button
               key={lang}
               onClick={() => update({ language: lang })}
-              className="flex-1 flex items-center gap-3 rounded-xl px-4 py-3 border-2 hover:opacity-85"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 border-2 hover:opacity-85"
               style={{
                 borderColor: settings.language === lang ? "var(--primary)" : "var(--border)",
                 backgroundColor: settings.language === lang ? "var(--green-bg)" : "var(--surface-1)",
@@ -460,10 +460,10 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
           <div className="rounded-xl p-4 border-2" style={{ borderColor: "var(--destructive)", backgroundColor: "var(--surface-1)" }}>
             <p className="text-foreground mb-3" style={{ fontSize: "0.9rem" }}>{s.clearConfirm}</p>
             <div className="flex gap-2">
-              <button onClick={handleClear} className="flex-1 rounded-xl py-2 text-white hover:opacity-85" style={{ backgroundColor: "var(--destructive)", fontWeight: 700, transition: "opacity 0.15s" }}>
+              <button onClick={handleClear} className="rounded-xl px-5 py-2 text-white hover:opacity-85" style={{ backgroundColor: "var(--destructive)", fontWeight: 700, transition: "opacity 0.15s" }}>
                 {s.clearYes}
               </button>
-              <button onClick={() => setConfirmClear(false)} className="flex-1 rounded-xl py-2 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, transition: "background-color 0.15s" }}>
+              <button onClick={() => setConfirmClear(false)} className="rounded-xl px-5 py-2 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, transition: "background-color 0.15s" }}>
                 {s.clearNo}
               </button>
             </div>

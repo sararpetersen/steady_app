@@ -181,14 +181,14 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
         {moodHistory.length === 0 ? (
           <p className="text-muted-foreground" style={{ fontSize: "0.9rem" }}>{t.moodHistory.noData}</p>
         ) : (
-          <div className="flex gap-2 justify-between">
+          <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(7, 1fr)" }}>
             {days.map((date) => {
               const entry = moodHistory.find((e) => e.date === date);
               const mood = entry !== undefined ? moods[entry.moodIndex] : null;
               const dayIndex = new Date(date).getDay();
               const dayLabel = t.moodHistory.days[(dayIndex + 6) % 7]; // Mon=0
               return (
-                <div key={date} className="flex flex-col items-center gap-1.5 flex-1">
+                <div key={date} className="flex flex-col items-center gap-1.5">
                   <div className="rounded-full flex items-center justify-center" style={{ width: 40, height: 40, backgroundColor: mood ? "var(--surface-2)" : "var(--surface-1)", fontSize: "1.4rem" }}>
                     {mood ? mood.emoji : <span style={{ color: "var(--muted-foreground)", fontSize: "1rem" }}>·</span>}
                   </div>

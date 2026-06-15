@@ -348,7 +348,7 @@ export default function App() {
         <div className="lg:pl-60 flex flex-col min-h-screen">
           {/* Mobile / tablet header — hidden on lg */}
           <header className="sticky top-0 z-10 border-b border-border px-5 py-3 lg:hidden" style={{ backgroundColor: "var(--card)" }}>
-            <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
+            <div className="max-w-xl mx-auto flex items-center justify-between gap-4">
               {/* Logo — clickable, goes to Overview */}
               <button
                 onClick={() => {
@@ -395,7 +395,7 @@ export default function App() {
           {/* Mobile / tablet tab navigation — hidden on lg */}
           <nav className="sticky top-[61px] z-10 border-b border-border lg:hidden" style={{ backgroundColor: "var(--card)" }}>
             <div className="nav-scroll overflow-x-auto">
-              <div className="flex px-3 py-2 gap-1 max-w-2xl mx-auto">
+              <div className="flex px-3 py-2 gap-1 max-w-xl mx-auto">
                 {TABS.map((tab) => {
                   const Icon = tab.icon;
                   const active = activeTab === tab.key && !settingsOpen;
@@ -429,7 +429,7 @@ export default function App() {
           </nav>
 
           {/* Main content */}
-          <main className="flex-1 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto px-4 pt-5 pb-8">
+          <main className="flex-1 w-full max-w-xl lg:max-w-2xl mx-auto px-4 pt-5 pb-8">
             {settingsOpen ? (
               <SettingsPage
                 settings={profile.a11y}

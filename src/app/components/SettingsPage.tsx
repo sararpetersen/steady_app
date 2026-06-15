@@ -440,7 +440,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
 
         <button
           onClick={onResetOnboarding}
-          className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-left"
+          className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
           style={{ fontWeight: 600, transition: "background-color 0.15s" }}
         >
           {s.resetOnboarding}
@@ -449,7 +449,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
         {!confirmClear && !cleared && (
           <button
             onClick={() => setConfirmClear(true)}
-            className="w-full rounded-xl px-4 py-3 text-left hover:opacity-85"
+            className="w-full rounded-xl px-4 py-3 text-center hover:opacity-85"
             style={{ backgroundColor: "var(--destructive)", color: "white", fontWeight: 600, transition: "opacity 0.15s", borderRadius: "0.75rem" }}
           >
             {s.clearData}

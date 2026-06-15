@@ -238,16 +238,10 @@ export function HabitTracker() {
       ) : (
         <button
           onClick={() => setShowForm(true)}
-          className="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-dashed text-muted-foreground hover:text-primary hover:border-primary"
+          className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed text-muted-foreground hover:text-primary hover:border-primary"
           style={{ borderColor: "var(--border)", transition: "all 0.15s" }}
         >
-          {/* Circle matches the emoji size of habit rows */}
-          <div
-            className="flex items-center justify-center rounded-full flex-shrink-0"
-            style={{ width: 36, height: 36, border: "2px dashed currentColor" }}
-          >
-            <Plus size={16} />
-          </div>
+          <Plus size={18} style={{ flexShrink: 0 }} />
           <span style={{ fontWeight: 600, fontSize: "1rem" }}>{t.habits.addHabit}</span>
         </button>
       )}

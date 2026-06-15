@@ -250,7 +250,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
 
         <button
           onClick={onSignOut}
-          className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-left"
+          className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
           style={{ fontWeight: 600, transition: "background-color 0.15s" }}
         >
           {a.signOut}
@@ -330,7 +330,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
       {/* Sign out */}
       <button
         onClick={onSignOut}
-        className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-left"
+        className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
         style={{ fontWeight: 600, transition: "background-color 0.15s" }}
       >
         {a.signOut}

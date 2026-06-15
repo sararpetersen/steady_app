@@ -236,17 +236,20 @@ export function HabitTracker() {
           </div>
         </div>
       ) : (
-        <button
-          onClick={() => setShowForm(true)}
-          className="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-dashed text-muted-foreground hover:text-primary hover:border-primary"
-          style={{ borderColor: "var(--border)", transition: "all 0.15s" }}
-        >
-          {/* Same font-size as habit emoji so the row is the same height */}
-          <span style={{ fontSize: "1.7rem", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Plus size={22} />
-          </span>
-          <span style={{ fontWeight: 600, fontSize: "1rem" }}>{t.habits.addHabit}</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex-1 flex items-center gap-3 p-3 rounded-xl border-2 border-dashed text-muted-foreground hover:text-primary hover:border-primary"
+            style={{ borderColor: "var(--border)", transition: "all 0.15s" }}
+          >
+            <span style={{ fontSize: "1.7rem", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Plus size={22} />
+            </span>
+            <span style={{ fontWeight: 600, fontSize: "1rem" }}>{t.habits.addHabit}</span>
+          </button>
+          {/* Invisible spacer matching the delete button so widths align */}
+          <div className="flex-shrink-0 p-2" style={{ width: 32 }} aria-hidden="true" />
+        </div>
       )}
     </div>
   );

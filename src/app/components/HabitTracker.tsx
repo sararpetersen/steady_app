@@ -93,14 +93,11 @@ export function HabitTracker() {
 
       <div className="space-y-2 mb-3">
         {habits.map((habit, index) => (
-          <div
-            key={habit.id}
-            className="flex items-center gap-3 rounded-xl overflow-hidden group"
-          >
-            {/* Main tap area */}
+          <div key={habit.id} className="relative group">
+            {/* Main tap area — full width */}
             <button
               onClick={() => toggle(habit.id)}
-              className="flex-1 flex items-center gap-3 p-3 rounded-xl hover:opacity-90 text-left"
+              className="w-full flex items-center gap-3 p-3 pr-10 rounded-xl hover:opacity-90 text-left"
               style={{
                 backgroundColor: habit.doneToday ? getDoneColor(index) : "var(--surface-1)",
                 border: habit.doneToday ? "2px solid var(--primary)" : "2px solid transparent",
@@ -113,17 +110,8 @@ export function HabitTracker() {
                 {habit.name}
               </span>
               <div className="flex items-center gap-1">
-                <Flame
-                  size={15}
-                  style={{ color: habit.streak > 0 ? "#E8834A" : "var(--muted-foreground)" }}
-                />
-                <span
-                  style={{
-                    fontWeight: 700,
-                    fontSize: "0.9rem",
-                    color: habit.streak > 0 ? "#E8834A" : "var(--muted-foreground)",
-                  }}
-                >
+                <Flame size={15} style={{ color: habit.streak > 0 ? "#E8834A" : "var(--muted-foreground)" }} />
+                <span style={{ fontWeight: 700, fontSize: "0.9rem", color: habit.streak > 0 ? "#E8834A" : "var(--muted-foreground)" }}>
                   {habit.streak}
                 </span>
               </div>
@@ -145,14 +133,14 @@ export function HabitTracker() {
               </div>
             </button>
 
-            {/* Delete — visible on hover (desktop) / always on mobile */}
+            {/* Delete — absolutely positioned so it doesn't affect button width */}
             <button
               onClick={() => deleteHabit(habit.id)}
-              className="flex-shrink-0 p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-muted sm:opacity-0 sm:group-hover:opacity-100"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted sm:opacity-0 sm:group-hover:opacity-100"
               style={{ transition: "all 0.15s" }}
               aria-label={t.habits.deleteHabit}
             >
-              <X size={16} />
+              <X size={15} />
             </button>
           </div>
         ))}
@@ -236,20 +224,16 @@ export function HabitTracker() {
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowForm(true)}
-            className="flex-1 flex items-center gap-3 p-3 rounded-xl border-2 border-dashed text-muted-foreground hover:text-primary hover:border-primary"
-            style={{ borderColor: "var(--border)", transition: "all 0.15s" }}
-          >
-            <span style={{ fontSize: "1.7rem", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Plus size={22} />
-            </span>
-            <span style={{ fontWeight: 600, fontSize: "1rem" }}>{t.habits.addHabit}</span>
-          </button>
-          {/* Invisible spacer matching the delete button so widths align */}
-          <div className="flex-shrink-0 p-2" style={{ width: 32 }} aria-hidden="true" />
-        </div>
+        <button
+          onClick={() => setShowForm(true)}
+          className="w-full flex items-center justify-center gap-2.5 p-3 rounded-xl border-2 border-dashed text-muted-foreground hover:text-primary hover:border-primary"
+          style={{ borderColor: "var(--border)", transition: "all 0.15s" }}
+        >
+          <span style={{ fontSize: "1.7rem", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Plus size={22} />
+          </span>
+          <span style={{ fontWeight: 600, fontSize: "1rem" }}>{t.habits.addHabit}</span>
+        </button>
       )}
     </div>
   );

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 52" fill="none" role="img" aria-label="Steady">
+  <defs>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@800&amp;display=swap');</style>
+  </defs>
+  <!-- Sprout mark (original 32×32 viewBox scaled ×1.375 to fill 44px, offset 4px from top) -->
+  <g transform="translate(4, 4) scale(1.375)">
+    <!-- Left leaf -->
+    <path d="M15 17 C15 17 9 15 6 8 C6 8 11 5 15 11 L15 17Z" fill="#4E7C6A"/>
+    <!-- Right leaf -->
+    <path d="M15 17 C15 17 21 15 24 8 C24 8 19 5 15 11 L15 17Z" fill="#4E7C6A" opacity="0.55"/>
+    <!-- Stem -->
+    <path d="M15 17 L15 27" stroke="#4E7C6A" stroke-width="2.2" stroke-linecap="round"/>
+    <!-- Soil arc -->
+    <path d="M11 27 Q15 25.5 19 27" stroke="#4E7C6A" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+  </g>
+  <!-- Wordmark -->
+  <text
+    x="58"
+    y="37"
+    font-family="Nunito, 'Nunito Sans', sans-serif"
+    font-size="32"
+    font-weight="800"
+    fill="#4E7C6A"
+    letter-spacing="-0.6"
+  >Steady</text>
+</svg>

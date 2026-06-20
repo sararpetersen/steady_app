@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { MoodCheck } from "./components/MoodCheck";
 import { TaskList, type Task } from "./components/TaskList";
 import { Routines } from "./components/Routines";
-import { HabitTracker } from "./components/HabitTracker";
+import { HabitTracker, type Habit } from "./components/HabitTracker";
 import { FocusTimer } from "./components/FocusTimer";
 import { DailyNote } from "./components/DailyNote";
 import { Profile, DEFAULT_PROFILE, type ProfileData } from "./components/Profile";
@@ -33,15 +33,19 @@ export default function App() {
   const [tasks, setTasks] = useLocalStorage<Task[]>("steady-tasks", []);
   const [nextId, setNextId] = useLocalStorage<number>("steady-task-nextid", 1);
 
-  // Habit done count — re-read from localStorage when tab changes (habits live in HabitTracker)
+  // Habit stats — re-read from localStorage when tab changes (habits live in HabitTracker)
   const [habitsDone, setHabitsDone] = useState(0);
+  const [habitsTotal, setHabitsTotal] = useState(0);
+  const [streakDays, setStreakDays] = useState(0);
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("steady-habits");
+      const raw = localStorage.getItem("steady-habits-v2");
       if (!raw) return;
-      const data = JSON.parse(raw);
-      if (Array.isArray(data)) return; // old format, ignore
-      setHabitsDone(Object.values(data as Record<string, { doneToday: boolean }>).filter((h) => h.doneToday).length);
+      const data = JSON.parse(raw) as Habit[];
+      if (!Array.isArray(data)) return;
+      setHabitsDone(data.filter((h) => h.doneToday).length);
+      setHabitsTotal(data.length);
+      setStreakDays(data.length > 0 ? Math.max(...data.map((h) => h.streak)) : 0);
     } catch {
       /* ignore */
     }
@@ -120,7 +124,7 @@ export default function App() {
     return (
       <LangContext.Provider value={t}>
         <style>{`.reduce-motion * { transition: none !important; animation: none !important; } body { line-height: var(--app-line-height, 1.5); }`}</style>
-        <Onboarding onComplete={handleOnboardingComplete} onSkip={() => setOnboarded(true)} />
+        <Onboarding onComplete={handleOnboardingComplete} onSkip={() => setOnboarded(true)} isGuest={authState.isGuest} />
       </LangContext.Provider>
     );
   }
@@ -406,7 +410,7 @@ export default function App() {
                         setActiveTab(tab.key);
                         setSettingsOpen(false);
                       }}
-                      className={`nav-tab flex-1 flex flex-col items-center gap-0.5 py-2 px-1 rounded-xl min-w-[44px] ${active ? "nav-tab-active" : "nav-tab-inactive"}`}
+                      className="flex-1 flex flex-col items-center gap-0.5 py-2 px-1 min-w-[44px]"
                       aria-current={active ? "page" : undefined}
                     >
                       <Icon size={18} style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }} strokeWidth={active ? 2.5 : 1.8} />
@@ -454,8 +458,8 @@ export default function App() {
                     <div className="grid grid-cols-3 gap-3">
                       {[
                         { label: t.overview.tasksLeft, value: String(tasksLeft), bg: "var(--green-bg)", fg: "var(--green-text)" },
-                        { label: t.overview.habitsDone, value: `${habitsDone} / 4`, bg: "var(--purple-bg)", fg: "var(--purple-text)" },
-                        { label: t.overview.streakDays, value: "🔥", bg: "var(--yellow-bg)", fg: "var(--yellow-text)" },
+                        { label: t.overview.habitsDone, value: habitsTotal > 0 ? `${habitsDone} / ${habitsTotal}` : "–", bg: "var(--purple-bg)", fg: "var(--purple-text)" },
+                        { label: t.overview.streakDays, value: streakDays > 0 ? `${streakDays} 🔥` : "–", bg: "var(--yellow-bg)", fg: "var(--yellow-text)" },
                       ].map((stat) => (
                         <div
                           key={stat.label}

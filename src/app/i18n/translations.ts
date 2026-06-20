@@ -241,6 +241,8 @@ const en = {
     markComplete: "Mark complete",
     markIncomplete: "Mark incomplete",
     remove: "Remove task",
+    emptyTitle: "No tasks yet",
+    emptySubtitle: "Add something small to start — even one thing is enough.",
   },
 
   routines: {
@@ -250,6 +252,7 @@ const en = {
     addStepPlaceholder: "Add a step…",
     addStepButton: "Add",
     deleteStep: "Delete step",
+    noSteps: "No steps yet — tap below to add your first one.",
     sections: {
       morning: { label: "Morning", time: "7:00 – 9:00 AM" },
       afternoon: {
@@ -282,6 +285,8 @@ const en = {
     namePlaceholder: "Habit name…",
     deleteHabit: "Delete habit",
     noHabits: "No habits yet. Add one below!",
+    emptyTitle: "No habits yet",
+    emptySubtitle: "Start with something simple — one small habit makes a difference.",
     cancel: "Cancel",
     items: [
       {
@@ -714,6 +719,8 @@ const da: typeof en = {
     markComplete: "Markér som færdig",
     markIncomplete: "Markér som ufærdig",
     remove: "Fjern opgave",
+    emptyTitle: "Ingen opgaver endnu",
+    emptySubtitle: "Tilføj noget lille for at starte — selv én ting er nok.",
   },
 
   routines: {
@@ -723,6 +730,7 @@ const da: typeof en = {
     addStepPlaceholder: "Tilføj et trin…",
     addStepButton: "Tilføj",
     deleteStep: "Slet trin",
+    noSteps: "Ingen trin endnu — tryk nedenfor for at tilføje det første.",
     sections: {
       morning: { label: "Morgen", time: "7:00 – 9:00" },
       afternoon: {
@@ -755,6 +763,8 @@ const da: typeof en = {
     namePlaceholder: "Vanenavn…",
     deleteHabit: "Slet vane",
     noHabits: "Ingen vaner endnu. Tilføj en nedenfor!",
+    emptyTitle: "Ingen vaner endnu",
+    emptySubtitle: "Start med noget enkelt — én lille vane gør en forskel.",
     cancel: "Annuller",
     items: [
       { key: "water", name: "Drik 8 glas vand", emoji: "💧" },

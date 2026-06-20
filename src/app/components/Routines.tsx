@@ -18,12 +18,6 @@ const SECTION_COLOR_VARS: Record<SectionKey, string> = {
   evening: "var(--evening-bg)",
 };
 
-const SECTION_ITEM_IDS: Record<SectionKey, number[]> = {
-  morning: [1, 2, 3, 4, 5],
-  afternoon: [6, 7, 8],
-  evening: [9, 10, 11, 12],
-};
-
 interface CustomItem {
   id: number;
   text: string;
@@ -50,12 +44,11 @@ function SectionPanel({
 }) {
   const t = useLang();
   const section = t.routines.sections[sectionKey];
-  const builtInIds = SECTION_ITEM_IDS[sectionKey];
   const [open, setOpen] = useState(sectionKey === "morning");
   const [addingStep, setAddingStep] = useState(false);
   const [stepDraft, setStepDraft] = useState("");
 
-  const allIds = [...builtInIds, ...customItems.map((c) => c.id)];
+  const allIds = customItems.map((c) => c.id);
   const doneCount = allIds.filter((id) => doneIds.includes(id)).length;
 
   const submitStep = () => {
@@ -138,13 +131,12 @@ function SectionPanel({
 
       {open && (
         <div className="p-4 space-y-1 bg-card">
-          {/* Built-in items */}
-          {builtInIds.map((id) => {
-            const text = t.routines.items[id as keyof typeof t.routines.items];
-            return renderItem(id, text, false);
-          })}
-
           {/* Custom items */}
+          {customItems.length === 0 && !addingStep && (
+            <p className="text-muted-foreground py-2 pl-1" style={{ fontSize: "0.88rem" }}>
+              {t.routines.noSteps}
+            </p>
+          )}
           {customItems.map((item) => renderItem(item.id, item.text, true))}
 
           {/* Add step */}

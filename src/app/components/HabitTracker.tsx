@@ -86,9 +86,10 @@ export function HabitTracker() {
       </p>
 
       {habits.length === 0 && !showForm && (
-        <p className="text-muted-foreground text-center py-4" style={{ fontSize: "0.9rem" }}>
-          {t.habits.noHabits}
-        </p>
+        <div className="text-center py-6 space-y-1">
+          <p className="text-foreground" style={{ fontWeight: 700 }}>{t.habits.emptyTitle}</p>
+          <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{t.habits.emptySubtitle}</p>
+        </div>
       )}
 
       <div className="space-y-2 mb-3">

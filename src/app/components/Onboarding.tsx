@@ -31,9 +31,10 @@ const TOTAL_STEPS = 7;
 interface Props {
   onComplete: (profile: ProfileData) => void;
   onSkip: () => void;
+  isGuest?: boolean;
 }
 
-export function Onboarding({ onComplete, onSkip }: Props) {
+export function Onboarding({ onComplete, onSkip, isGuest }: Props) {
   const [step, setStep] = useState(0);
   const [lang, setLang] = useState<Lang>("en");
   const [name, setName] = useState("");
@@ -115,9 +116,18 @@ export function Onboarding({ onComplete, onSkip }: Props) {
           >
             {t.onboarding.welcome.start}
           </button>
-          <button onClick={onSkip} className="text-muted-foreground hover:text-foreground" style={{ fontSize: "0.9rem", transition: "color 0.15s" }}>
-            {t.onboarding.welcome.returning}
-          </button>
+          {!isGuest && (
+            <>
+              <div className="flex items-center gap-3 w-full max-w-xs">
+                <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
+                <span className="text-muted-foreground" style={{ fontSize: "0.75rem" }}>or</span>
+                <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
+              </div>
+              <button onClick={onSkip} className="text-muted-foreground hover:text-foreground" style={{ fontSize: "0.88rem", transition: "color 0.15s" }}>
+                {t.onboarding.welcome.returning}
+              </button>
+            </>
+          )}
         </div>
       )}
 

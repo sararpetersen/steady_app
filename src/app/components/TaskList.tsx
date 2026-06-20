@@ -90,12 +90,10 @@ export function TaskList({
       </p>
 
       {tasks.length === 0 && (
-        <p
-          className="text-muted-foreground text-center py-4"
-          style={{ fontSize: "0.9rem" }}
-        >
-          {t.tasks.placeholder.replace("...", "")} ↓
-        </p>
+        <div className="text-center py-6 space-y-1">
+          <p className="text-foreground" style={{ fontWeight: 700 }}>{t.tasks.emptyTitle}</p>
+          <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{t.tasks.emptySubtitle}</p>
+        </div>
       )}
 
       <div className="space-y-2 mb-4">
@@ -205,14 +203,14 @@ export function TaskList({
         />
         <button
           onClick={add}
-          className="rounded-xl px-4 py-3 bg-primary text-primary-foreground flex items-center gap-2 hover:opacity-90"
+          className="rounded-xl px-4 py-3 bg-primary text-primary-foreground flex items-center gap-2 hover:opacity-90 flex-shrink-0"
           style={{
             fontWeight: 700,
             transition: "opacity 0.15s",
           }}
         >
           <Plus size={18} />
-          {t.tasks.add}
+          <span className="hidden sm:inline">{t.tasks.add}</span>
         </button>
       </div>
     </div>

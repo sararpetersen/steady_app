@@ -24,7 +24,12 @@ export interface AuthState {
 }
 
 interface StoredAccount {
-  password: string;
+  passwordHash: string;
+}
+
+async function hashPassword(password: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(password));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 function getAccounts(): Record<string, StoredAccount> {
@@ -55,22 +60,23 @@ export function AuthPage({ onAuth }: Props) {
     setError("");
   };
 
-  const submit = () => {
+  const submit = async () => {
     setError("");
     if (!email.trim()) { setError(t.emailRequired); return; }
     if (password.length < 6) { setError(t.passwordTooShort); return; }
 
     const accounts = getAccounts();
+    const passwordHash = await hashPassword(password);
 
     if (mode === "signup") {
       if (confirmPassword !== password) { setError(t.passwordsNoMatch); return; }
       if (accounts[email.toLowerCase()]) { setError(t.emailInUse); return; }
-      accounts[email.toLowerCase()] = { password };
+      accounts[email.toLowerCase()] = { passwordHash };
       saveAccounts(accounts);
       onAuth({ email: email.toLowerCase(), isGuest: false });
     } else {
       const stored = accounts[email.toLowerCase()];
-      if (!stored || stored.password !== password) { setError(t.invalidCredentials); return; }
+      if (!stored || stored.passwordHash !== passwordHash) { setError(t.invalidCredentials); return; }
       onAuth({ email: email.toLowerCase(), isGuest: false });
     }
   };

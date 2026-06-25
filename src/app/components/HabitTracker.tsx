@@ -43,7 +43,7 @@ export const DEFAULT_HABITS: Habit[] = [
 
 export function HabitTracker() {
   const t = useLang();
-  const [habits, setHabits] = useLocalStorage<Habit[]>("steady-habits-v2", DEFAULT_HABITS);
+  const [habits, setHabits] = useLocalStorage<Habit[]>("steady-habits-v2", []);
   const [showForm, setShowForm] = useState(false);
   const [newEmoji, setNewEmoji] = useState("🎯");
   const [newName, setNewName] = useState("");
@@ -139,7 +139,7 @@ export function HabitTracker() {
               onClick={() => deleteHabit(habit.id)}
               className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted sm:opacity-0 sm:group-hover:opacity-100"
               style={{ transition: "all 0.15s" }}
-              aria-label={t.habits.deleteHabit}
+              aria-label={`${t.habits.deleteHabit}: ${habit.name}`}
             >
               <X size={15} />
             </button>

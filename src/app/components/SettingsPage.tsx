@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { hashPassword } from "../utils/crypto";
 import { X, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
 import type { A11ySettings } from "./AccessibilityPanel";
@@ -49,43 +50,56 @@ function ToggleRow({ label, description, value, onChange }: {
   );
 }
 
-function OptionRow<V extends string>({ label, options, value, onChange }: {
+function OptionRow<V extends string>({ label, options, value, onChange, stacked }: {
   label: string;
   options: { value: V; label: string }[];
   value: V;
   onChange: (v: V) => void;
+  stacked?: boolean;
 }) {
+  const btn = (opt: { value: V; label: string }) => (
+    <button
+      key={opt.value}
+      onClick={() => onChange(opt.value)}
+      className={`rounded-lg border-2 hover:opacity-85${stacked ? " w-full px-4 py-2.5 text-left" : " px-3 py-1.5"}`}
+      style={{
+        borderColor: value === opt.value ? "var(--primary)" : "transparent",
+        backgroundColor: value === opt.value ? "var(--green-bg)" : "var(--surface-1)",
+        color: value === opt.value ? "var(--green-text)" : "var(--foreground)",
+        fontWeight: value === opt.value ? 700 : 500,
+        fontSize: "14px",
+        transition: "all 0.15s",
+        whiteSpace: stacked ? "normal" : "nowrap",
+      }}
+      aria-pressed={value === opt.value}
+    >
+      {opt.label}
+    </button>
+  );
+
+  if (stacked) {
+    return (
+      <div className="py-1 space-y-1.5">
+        <span className="text-foreground" style={{ fontWeight: 600, display: "block", marginBottom: 6 }}>{label}</span>
+        {options.map(btn)}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 py-1">
+    <div className="flex items-center justify-between gap-x-3 gap-y-2 py-1 flex-wrap">
       <span className="text-foreground" style={{ fontWeight: 600 }}>{label}</span>
-      <div className="flex gap-1.5 flex-wrap">
-        {options.map((opt) => (
-          <button
-            key={opt.value}
-            onClick={() => onChange(opt.value)}
-            className="rounded-lg px-3 py-1.5 border-2 hover:opacity-85"
-            style={{
-              borderColor: value === opt.value ? "var(--primary)" : "transparent",
-              backgroundColor: value === opt.value ? "var(--green-bg)" : "var(--surface-1)",
-              color: value === opt.value ? "var(--green-text)" : "var(--foreground)",
-              fontWeight: value === opt.value ? 700 : 500,
-              fontSize: "0.85rem",
-              transition: "all 0.15s",
-            }}
-            aria-pressed={value === opt.value}
-          >
-            {opt.label}
-          </button>
-        ))}
+      <div className="flex gap-1.5">
+        {options.map(btn)}
       </div>
     </div>
   );
 }
 
-function getAccounts(): Record<string, { password: string }> {
+function getAccounts(): Record<string, { passwordHash: string }> {
   try { return JSON.parse(localStorage.getItem("steady-accounts") ?? "{}"); } catch { return {}; }
 }
-function saveAccounts(a: Record<string, { password: string }>) {
+function saveAccounts(a: Record<string, { passwordHash: string }>) {
   localStorage.setItem("steady-accounts", JSON.stringify(a));
 }
 
@@ -113,16 +127,15 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
 
   const isGuest = !auth || auth.isGuest;
 
-  const saveEmail = () => {
+  const saveEmail = async () => {
     setEmailError("");
     if (!newEmail.trim()) { setEmailError(a.emailRequired); return; }
     const accounts = getAccounts();
     const stored = accounts[auth!.email];
-    if (!stored || stored.password !== verifyPw) { setEmailError(a.wrongPassword); return; }
+    if (!stored || stored.passwordHash !== await hashPassword(verifyPw)) { setEmailError(a.wrongPassword); return; }
     if (accounts[newEmail.toLowerCase()] && newEmail.toLowerCase() !== auth!.email) {
       setEmailError(a.emailInUse); return;
     }
-    // Move account to new email key
     accounts[newEmail.toLowerCase()] = stored;
     if (newEmail.toLowerCase() !== auth!.email) delete accounts[auth!.email];
     saveAccounts(accounts);
@@ -134,14 +147,14 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
     setTimeout(() => setEmailSaved(false), 2500);
   };
 
-  const savePassword = () => {
+  const savePassword = async () => {
     setPwError("");
     const accounts = getAccounts();
     const stored = accounts[auth!.email];
-    if (!stored || stored.password !== currentPw) { setPwError(a.wrongPassword); return; }
+    if (!stored || stored.passwordHash !== await hashPassword(currentPw)) { setPwError(a.wrongPassword); return; }
     if (newPw.length < 6) { setPwError(a.passwordTooShort); return; }
     if (newPw !== confirmPw) { setPwError(a.passwordsNoMatch); return; }
-    accounts[auth!.email] = { password: newPw };
+    accounts[auth!.email] = { passwordHash: await hashPassword(newPw) };
     saveAccounts(accounts);
     setPwOpen(false);
     setCurrentPw(""); setNewPw(""); setConfirmPw("");
@@ -159,14 +172,14 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
   const [signUpShowPw, setSignUpShowPw] = useState(false);
   const [signUpError, setSignUpError] = useState("");
 
-  const registerFromGuest = () => {
+  const registerFromGuest = async () => {
     setSignUpError("");
     if (!signUpEmail.trim()) { setSignUpError(a.emailRequired); return; }
     if (signUpPw.length < 6) { setSignUpError(a.passwordTooShort); return; }
     if (signUpPw !== signUpConfirm) { setSignUpError(a.passwordsNoMatch); return; }
     const accounts = getAccounts();
     if (accounts[signUpEmail.toLowerCase()]) { setSignUpError(a.emailInUse); return; }
-    accounts[signUpEmail.toLowerCase()] = { password: signUpPw };
+    accounts[signUpEmail.toLowerCase()] = { passwordHash: await hashPassword(signUpPw) };
     saveAccounts(accounts);
     onAuthUpdate(signUpEmail.toLowerCase());
   };
@@ -235,26 +248,27 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
         </div>
 
         {signUpError && (
-          <p className="rounded-xl px-3 py-2" style={{ backgroundColor: "rgba(192,57,43,0.1)", color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>
+          <p role="alert" className="rounded-xl px-3 py-2" style={{ backgroundColor: "rgba(192,57,43,0.1)", color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>
             {signUpError}
           </p>
         )}
 
-        <button
-          onClick={registerFromGuest}
-          className="w-full rounded-xl px-4 py-3 bg-primary text-primary-foreground hover:opacity-90"
-          style={{ fontWeight: 700, transition: "opacity 0.15s" }}
-        >
-          {a.createAccount}
-        </button>
-
-        <button
-          onClick={onSignOut}
-          className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
-          style={{ fontWeight: 600, transition: "background-color 0.15s" }}
-        >
-          {a.signOut}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={registerFromGuest}
+            className="flex-1 rounded-xl px-4 py-3 bg-primary text-primary-foreground hover:opacity-90 text-center"
+            style={{ fontWeight: 700, transition: "opacity 0.15s" }}
+          >
+            {a.createAccount}
+          </button>
+          <button
+            onClick={onSignOut}
+            className="flex-1 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
+            style={{ fontWeight: 600, transition: "background-color 0.15s" }}
+          >
+            {a.signOut}
+          </button>
+        </div>
       </div>
     );
   }
@@ -287,7 +301,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
               <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{a.verifyPasswordLabel}</label>
               <input type="password" value={verifyPw} onChange={(e) => setVerifyPw(e.target.value)} placeholder="••••••" className={inputCls} style={inputStyle} autoComplete="current-password" />
             </div>
-            {emailError && <p style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{emailError}</p>}
+            {emailError && <p role="alert" style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{emailError}</p>}
             <div className="flex gap-2">
               <button onClick={saveEmail} className="rounded-xl px-5 py-2.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "0.88rem", transition: "opacity 0.15s" }}>{a.save}</button>
               <button onClick={() => setEmailOpen(false)} className="rounded-xl px-4 py-2.5 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, fontSize: "0.88rem", transition: "background-color 0.15s" }}>{a.cancel}</button>
@@ -318,7 +332,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
                 <input type="password" value={value} onChange={(e) => set(e.target.value)} placeholder="••••••" className={inputCls} style={inputStyle} autoComplete={autocomplete} />
               </div>
             ))}
-            {pwError && <p style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{pwError}</p>}
+            {pwError && <p role="alert" style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{pwError}</p>}
             <div className="flex gap-2">
               <button onClick={savePassword} className="rounded-xl px-5 py-2.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "0.88rem", transition: "opacity 0.15s" }}>{a.save}</button>
               <button onClick={() => setPwOpen(false)} className="rounded-xl px-4 py-2.5 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, fontSize: "0.88rem", transition: "background-color 0.15s" }}>{a.cancel}</button>
@@ -344,6 +358,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
   const s = t.settings;
   const [confirmClear, setConfirmClear] = useState(false);
   const [cleared, setCleared] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
   const update = (patch: Partial<A11ySettings>) => onChange({ ...settings, ...patch });
 
   const handleClear = () => {
@@ -395,6 +410,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
             { value: "standard", label: s.font.standard },
             { value: "readable", label: s.font.readable },
           ]}
+          stacked
         />
         <OptionRow
           label={s.lineSpacing.label}
@@ -434,26 +450,36 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
         </div>
       </div>
 
-      {/* Data */}
+      {/* Data & Privacy */}
       <div className="steady-card bg-card rounded-2xl p-5 border border-border space-y-3">
         <SectionHeading>{s.sections.data}</SectionHeading>
 
+        <p className="text-muted-foreground" style={{ fontSize: "0.85rem", lineHeight: 1.6 }}>{s.privacy}</p>
         <button
-          onClick={onResetOnboarding}
-          className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
-          style={{ fontWeight: 600, transition: "background-color 0.15s" }}
+          onClick={() => setPrivacyOpen(true)}
+          className="text-left hover:opacity-70"
+          style={{ color: "var(--primary)", fontSize: "0.85rem", fontWeight: 600, transition: "opacity 0.15s" }}
         >
-          {s.resetOnboarding}
+          {s.privacyLink} →
         </button>
 
         {!confirmClear && !cleared && (
-          <button
-            onClick={() => setConfirmClear(true)}
-            className="w-full rounded-xl px-4 py-3 text-center hover:opacity-85"
-            style={{ backgroundColor: "var(--destructive)", color: "white", fontWeight: 600, transition: "opacity 0.15s", borderRadius: "0.75rem" }}
-          >
-            {s.clearData}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={onResetOnboarding}
+              className="flex-1 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
+              style={{ fontWeight: 600, transition: "background-color 0.15s" }}
+            >
+              {s.resetOnboarding}
+            </button>
+            <button
+              onClick={() => setConfirmClear(true)}
+              className="flex-1 rounded-xl px-4 py-3 text-center hover:opacity-85"
+              style={{ backgroundColor: "var(--destructive)", color: "white", fontWeight: 600, transition: "opacity 0.15s", borderRadius: "0.75rem" }}
+            >
+              {s.clearData}
+            </button>
+          </div>
         )}
 
         {confirmClear && (
@@ -474,6 +500,47 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
           <p className="text-primary text-center" style={{ fontWeight: 600 }}>{s.dataCleared}</p>
         )}
       </div>
+
+      {/* Privacy policy modal */}
+      {privacyOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
+          onClick={(e) => { if (e.target === e.currentTarget) setPrivacyOpen(false); }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="privacy-dialog-title"
+            className="w-full max-w-lg rounded-2xl border border-border flex flex-col"
+            style={{ backgroundColor: "var(--card)", maxHeight: "85vh" }}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
+              <div>
+                <h3 id="privacy-dialog-title" className="text-foreground" style={{ fontFamily: "var(--app-font-heading, Nunito)" }}>{s.privacyPolicy.title}</h3>
+                <p className="text-muted-foreground" style={{ fontSize: "0.78rem", marginTop: 2 }}>{s.privacyPolicy.lastUpdated}</p>
+              </div>
+              <button
+                onClick={() => setPrivacyOpen(false)}
+                className="rounded-xl p-2 hover:bg-muted"
+                style={{ transition: "background-color 0.15s" }}
+                aria-label="Close privacy policy"
+              >
+                <X size={20} className="text-foreground" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto px-6 py-5 space-y-5">
+              {s.privacyPolicy.sections.map((section) => (
+                <div key={section.heading}>
+                  <p className="text-foreground mb-1" style={{ fontWeight: 700, fontSize: "0.9rem" }}>{section.heading}</p>
+                  <p className="text-muted-foreground" style={{ fontSize: "0.875rem", lineHeight: 1.7 }}>{section.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

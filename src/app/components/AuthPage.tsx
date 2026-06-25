@@ -27,10 +27,7 @@ interface StoredAccount {
   passwordHash: string;
 }
 
-async function hashPassword(password: string): Promise<string> {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(password));
-  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
+import { hashPassword } from "../utils/crypto";
 
 function getAccounts(): Record<string, StoredAccount> {
   try { return JSON.parse(localStorage.getItem("steady-accounts") ?? "{}"); } catch { return {}; }
@@ -195,6 +192,7 @@ export function AuthPage({ onAuth }: Props) {
         {/* Error message */}
         {error && (
           <p
+            role="alert"
             className="rounded-xl px-4 py-2.5"
             style={{ backgroundColor: "rgba(192,57,43,0.1)", color: "var(--destructive)", fontSize: "0.88rem", fontWeight: 600 }}
           >

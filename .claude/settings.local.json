@@ -3,7 +3,17 @@
     "allow": [
       "Bash(npm run *)",
       "mcp__visualize__read_me",
-      "mcp__visualize__show_widget"
+      "mcp__visualize__show_widget",
+      "Bash(grep -n \"w-full rounded-xl\\\\|w-full rounded-2xl\\\\|w-full flex\" \"/Users/sararingkow/Desktop/Hobbies/Coding/Side hustles/Steady/VS Code/steady_app/src/app/components/SettingsPage.tsx\" \"/Users/sararingkow/Desktop/Hobbies/Coding/Side hustles/Steady/VS Code/steady_app/src/app/components/AuthPage.tsx\" \"/Users/sararingkow/Desktop/Hobbies/Coding/Side hustles/Steady/VS Code/steady_app/src/app/components/Onboarding.tsx\" \"/Users/sararingkow/Desktop/Hobbies/Coding/Side hystles/Steady/VS Code/steady_app/src/app/components/Profile.tsx\" 2>/dev/null | head -60)",
+      "Bash(ls \"/Users/sararingkow/Desktop/Hobbies/Coding/Side hustles/Steady/VS Code/\")",
+      "Bash(mkdir -p \"/Users/sararingkow/Desktop/Hobbies/Coding/Side hustles/Steady/VS Code/steady_web/.claude\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm install *)",
+      "Bash(lsof -ti:3001)",
+      "Bash(xargs kill -9)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

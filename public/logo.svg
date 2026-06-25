@@ -1,12 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-label="Steady logo">
-  <!-- Background -->
-  <rect width="32" height="32" rx="8" fill="#D4EBE3"/>
-  <!-- Left leaf -->
-  <path d="M15 17 C15 17 9 15 6 8 C6 8 11 5 15 11 L15 17Z" fill="#4E7C6A"/>
-  <!-- Right leaf -->
-  <path d="M15 17 C15 17 21 15 24 8 C24 8 19 5 15 11 L15 17Z" fill="#4E7C6A" opacity="0.55"/>
-  <!-- Stem -->
-  <path d="M15 17 L15 27" stroke="#4E7C6A" stroke-width="2.2" stroke-linecap="round"/>
-  <!-- Soil arc -->
-  <path d="M11 27 Q15 25.5 19 27" stroke="#4E7C6A" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+<svg width="188" height="188" viewBox="0 0 188 188" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M141 0H47C21.0426 0 0 21.0426 0 47V141C0 166.957 21.0426 188 47 188H141C166.957 188 188 166.957 188 141V47C188 21.0426 166.957 0 141 0Z" fill="#D4EBE3"/>
+<path d="M94 92.5312C94 92.5312 58.75 80.7812 41.125 39.6562C41.125 39.6562 70.5 22.0312 94 57.2812V92.5312Z" fill="#4E7C6A"/>
+<path opacity="0.55" d="M94 92.5312C94 92.5312 129.25 80.7812 146.875 39.6562C146.875 39.6562 117.5 22.0312 94 57.2812V92.5312Z" fill="#4E7C6A"/>
+<path d="M94 92.5312V151.281" stroke="#4E7C6A" stroke-width="8.8" stroke-linecap="round"/>
+<path d="M70.5 157.156C86.1667 151.281 101.833 151.281 117.5 157.156" stroke="#6B6560" stroke-width="8.8" stroke-linecap="round"/>
 </svg>

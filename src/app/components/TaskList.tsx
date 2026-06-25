@@ -159,7 +159,7 @@ export function TaskList({
               onClick={() => remove(task.id)}
               className="text-muted-foreground hover:text-destructive p-1 rounded-lg"
               style={{ transition: "color 0.15s" }}
-              aria-label={t.tasks.remove}
+              aria-label={`${t.tasks.remove}: ${task.text}`}
             >
               <X size={16} />
             </button>
@@ -198,7 +198,7 @@ export function TaskList({
           onChange={(e) => setNewText(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && add()}
           placeholder={t.tasks.placeholder}
-          className="flex-1 rounded-xl px-4 py-3 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+          className="flex-1 min-w-0 rounded-xl px-4 py-3 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
           style={{ transition: "border-color 0.15s" }}
         />
         <button

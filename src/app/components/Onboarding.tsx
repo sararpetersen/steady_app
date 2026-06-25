@@ -5,6 +5,7 @@ import { translations, type Lang } from "../i18n/translations";
 import type { ProfileData } from "./Profile";
 import { DEFAULT_PROFILE } from "./Profile";
 import { DEFAULT_A11Y } from "./AccessibilityPanel";
+import { hashPassword } from "../utils/crypto";
 
 const AVATARS = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨", "🍵", "🐾"];
 
@@ -32,9 +33,10 @@ interface Props {
   onComplete: (profile: ProfileData) => void;
   onSkip: () => void;
   isGuest?: boolean;
+  onRegister?: (email: string) => void;
 }
 
-export function Onboarding({ onComplete, onSkip, isGuest }: Props) {
+export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
   const [step, setStep] = useState(0);
   const [lang, setLang] = useState<Lang>("en");
   const [name, setName] = useState("");
@@ -47,6 +49,25 @@ export function Onboarding({ onComplete, onSkip, isGuest }: Props) {
   const [readableFont, setReadableFont] = useState(false);
 
   const t = translations[lang];
+
+  const [signUpOpen, setSignUpOpen] = useState(false);
+  const [signUpEmail, setSignUpEmail] = useState("");
+  const [signUpPassword, setSignUpPassword] = useState("");
+  const [signUpError, setSignUpError] = useState("");
+
+  const registerAndFinish = async () => {
+    setSignUpError("");
+    if (!signUpEmail.trim()) { setSignUpError("Please enter your email."); return; }
+    if (signUpPassword.length < 6) { setSignUpError("Password must be at least 6 characters."); return; }
+    const accounts: Record<string, { passwordHash: string }> = (() => {
+      try { return JSON.parse(localStorage.getItem("steady-accounts") ?? "{}"); } catch { return {}; }
+    })();
+    if (accounts[signUpEmail.toLowerCase()]) { setSignUpError("That email is already in use."); return; }
+    accounts[signUpEmail.toLowerCase()] = { passwordHash: await hashPassword(signUpPassword) };
+    localStorage.setItem("steady-accounts", JSON.stringify(accounts));
+    onRegister?.(signUpEmail.toLowerCase());
+    finish();
+  };
 
   const toggleSensory = (key: string) => {
     const isAdding = !sensory.includes(key);
@@ -369,8 +390,9 @@ export function Onboarding({ onComplete, onSkip, isGuest }: Props) {
                               backgroundColor: fontSize === size ? "var(--green-bg)" : "var(--surface-1)",
                               borderColor: fontSize === size ? "var(--primary)" : "transparent",
                               color: "var(--foreground)",
-                              fontWeight: fontSize === size ? 700 : 500,
-                              fontSize: size === "normal" ? "0.85rem" : size === "large" ? "0.95rem" : "1.05rem",
+                              fontWeight: 600,
+                              fontSize: size === "normal" ? "13px" : size === "large" ? "15px" : "17px",
+                              whiteSpace: "nowrap",
                               transition: "all 0.15s",
                             }}
                           >
@@ -436,9 +458,59 @@ export function Onboarding({ onComplete, onSkip, isGuest }: Props) {
             {/* Bottom buttons */}
             <div className="pt-6 pb-4 flex flex-col gap-3">
               {step === 7 ? (
-                <button onClick={finish} className="w-full rounded-2xl py-4 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "1.05rem", transition: "opacity 0.15s" }}>
-                  {t.onboarding.done.enter}
-                </button>
+                <>
+                  {isGuest && onRegister && (
+                    <div className="rounded-2xl border border-border overflow-hidden" style={{ backgroundColor: "var(--surface-1)" }}>
+                      <button
+                        onClick={() => { setSignUpOpen((o) => !o); setSignUpError(""); }}
+                        className="w-full flex items-center justify-between px-4 py-3 text-left hover:opacity-85"
+                        style={{ transition: "opacity 0.15s" }}
+                      >
+                        <div>
+                          <p className="text-foreground" style={{ fontWeight: 700, fontSize: "0.95rem" }}>Save your setup</p>
+                          <p className="text-muted-foreground" style={{ fontSize: "0.8rem" }}>Create a free account to keep your data</p>
+                        </div>
+                        <span className="text-muted-foreground" style={{ fontSize: "1.2rem", lineHeight: 1 }}>{signUpOpen ? "−" : "+"}</span>
+                      </button>
+                      {signUpOpen && (
+                        <div className="px-4 pb-4 space-y-2.5 border-t border-border" style={{ paddingTop: 12 }}>
+                          <input
+                            type="email"
+                            value={signUpEmail}
+                            onChange={(e) => setSignUpEmail(e.target.value)}
+                            placeholder="you@example.com"
+                            className="w-full rounded-xl px-4 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                            style={{ fontSize: "0.9rem", transition: "border-color 0.15s" }}
+                            autoComplete="email"
+                          />
+                          <input
+                            type="password"
+                            value={signUpPassword}
+                            onChange={(e) => setSignUpPassword(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && registerAndFinish()}
+                            placeholder="Password (6+ characters)"
+                            className="w-full rounded-xl px-4 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                            style={{ fontSize: "0.9rem", transition: "border-color 0.15s" }}
+                            autoComplete="new-password"
+                          />
+                          {signUpError && (
+                            <p style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{signUpError}</p>
+                          )}
+                          <button
+                            onClick={registerAndFinish}
+                            className="w-full rounded-xl py-3 bg-primary text-primary-foreground hover:opacity-90"
+                            style={{ fontWeight: 700, fontSize: "0.95rem", transition: "opacity 0.15s" }}
+                          >
+                            Create account &amp; enter Steady
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <button onClick={finish} className="w-full rounded-2xl py-4 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "1.05rem", transition: "opacity 0.15s" }}>
+                    {t.onboarding.done.enter}
+                  </button>
+                </>
               ) : (
                 <>
                   <button

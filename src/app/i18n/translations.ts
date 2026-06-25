@@ -88,6 +88,54 @@ const en = {
     clearYes: "Yes, clear everything",
     clearNo: "Cancel",
     dataCleared: "All data cleared.",
+    privacy: "Your data stays on this device only — nothing is sent to any server, and there is no tracking or advertising of any kind. Account creation is optional.",
+    privacyLink: "Read full privacy policy",
+    privacyPolicy: {
+      title: "Privacy policy",
+      lastUpdated: "Last updated: June 2026",
+      sections: [
+        {
+          heading: "Who we are",
+          body: "Steady is a calm daily companion app designed for neurodivergent people. It is built to work entirely on your device, with your privacy protected by default.",
+        },
+        {
+          heading: "What data is stored",
+          body: "Steady stores your profile (name, pronouns, avatar, preferences), tasks, habits, routines, daily mood check-ins, and notes. If you create an account, your email address and a secure hash of your password are also stored. None of this is linked to any external identity.",
+        },
+        {
+          heading: "Where data is stored",
+          body: "Everything is stored in your browser's local storage — on this device only. Nothing is ever sent to a server. Steady has no backend, no database, and no cloud storage.",
+        },
+        {
+          heading: "Account creation",
+          body: "Creating an account is completely optional. You can always use Steady as a guest. If you do create an account, it exists only in your browser. You cannot log in from another device.",
+        },
+        {
+          heading: "Deleting your data",
+          body: "You can delete all your data at any time from Settings → Data & Privacy → Clear all my data. You can also clear your browser's local storage directly. Either way, all data is permanently removed.",
+        },
+        {
+          heading: "Tracking and analytics",
+          body: "Steady does not use any analytics tools, advertising networks, cookies, or tracking of any kind. We do not know how you use the app, and we do not want to.",
+        },
+        {
+          heading: "Data sharing",
+          body: "Your data is never shared with anyone. There are no third-party services, no data processors, and no partners receiving any information about you.",
+        },
+        {
+          heading: "Children",
+          body: "Steady does not knowingly collect data from children. Because all data stays on-device and no accounts are required, the app is safe for users of all ages.",
+        },
+        {
+          heading: "Changes to this policy",
+          body: "If this policy ever changes in a meaningful way, the update date above will reflect that. We will always aim to keep Steady's privacy approach simple and honest.",
+        },
+        {
+          heading: "Questions",
+          body: "If you have any questions about how Steady handles your data, you are welcome to reach out. Contact details will be available once the Steady website launches.",
+        },
+      ],
+    },
   },
 
   moodHistory: {
@@ -167,6 +215,7 @@ const en = {
       subtitle:
         "Steady is ready. Let's take today one step at a time.",
       enter: "Start my day",
+      guestNote: "You're using Steady as a guest. To save your data, create an account any time in Settings.",
     },
     next: "Next",
     back: "Back",
@@ -566,6 +615,54 @@ const da: typeof en = {
     clearYes: "Ja, ryd alt",
     clearNo: "Annuller",
     dataCleared: "Alle data er ryddet.",
+    privacy: "Dine data forbliver kun på denne enhed — intet sendes til nogen server, og der er ingen sporing eller reklamer af nogen art. Kontooprettelse er valgfrit.",
+    privacyLink: "Læs fuld privatlivspolitik",
+    privacyPolicy: {
+      title: "Privatlivspolitik",
+      lastUpdated: "Sidst opdateret: juni 2026",
+      sections: [
+        {
+          heading: "Hvem er vi",
+          body: "Steady er en rolig daglig følgesvend-app designet til neurodivergente mennesker. Den er bygget til at fungere helt på din enhed, med dit privatliv beskyttet som standard.",
+        },
+        {
+          heading: "Hvilke data gemmes",
+          body: "Steady gemmer din profil (navn, pronomen, avatar, præferencer), opgaver, vaner, rutiner, daglige humørtjek og noter. Hvis du opretter en konto, gemmes din e-mailadresse og en sikker hashværdi af dit adgangskode også. Intet af dette er knyttet til en ekstern identitet.",
+        },
+        {
+          heading: "Hvor data gemmes",
+          body: "Alt gemmes i din browsers lokale lager — kun på denne enhed. Intet sendes nogensinde til en server. Steady har ingen backend, ingen database og ingen cloud-lagring.",
+        },
+        {
+          heading: "Oprettelse af konto",
+          body: "At oprette en konto er fuldstændig valgfrit. Du kan altid bruge Steady som gæst. Hvis du opretter en konto, findes den kun i din browser. Du kan ikke logge ind fra en anden enhed.",
+        },
+        {
+          heading: "Sletning af dine data",
+          body: "Du kan slette alle dine data til enhver tid fra Indstillinger → Data og privatliv → Ryd alle mine data. Du kan også rydde din browsers lokale lager direkte. Uanset hvad fjernes alle data permanent.",
+        },
+        {
+          heading: "Sporing og analyser",
+          body: "Steady bruger ingen analyseværktøjer, reklamenetværk, cookies eller sporing af nogen art. Vi ved ikke, hvordan du bruger appen, og det ønsker vi heller ikke at vide.",
+        },
+        {
+          heading: "Deling af data",
+          body: "Dine data deles aldrig med nogen. Der er ingen tredjepartstjenester, ingen databehandlere og ingen partnere, der modtager oplysninger om dig.",
+        },
+        {
+          heading: "Børn",
+          body: "Steady indsamler ikke bevidst data fra børn. Da alle data forbliver på enheden og ingen konti er påkrævet, er appen sikker for brugere i alle aldre.",
+        },
+        {
+          heading: "Ændringer af denne politik",
+          body: "Hvis denne politik nogensinde ændres på en meningsfuld måde, vil opdateringsdatoen ovenfor afspejle det. Vi vil altid bestræbe os på at holde Steadys privatlivstilgang enkel og ærlig.",
+        },
+        {
+          heading: "Spørgsmål",
+          body: "Hvis du har spørgsmål om, hvordan Steady håndterer dine data, er du velkommen til at kontakte os. Kontaktoplysninger vil være tilgængelige, når Steadys hjemmeside lanceres.",
+        },
+      ],
+    },
   },
 
   moodHistory: {
@@ -646,6 +743,7 @@ const da: typeof en = {
       subtitle:
         "Steady er klar. Lad os tage dagen ét lille skridt ad gangen.",
       enter: "Start min dag",
+      guestNote: "Du bruger Steady som gæst. For at gemme dine data, opret en konto når som helst i Indstillinger.",
     },
     next: "Næste",
     back: "Tilbage",

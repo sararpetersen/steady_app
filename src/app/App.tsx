@@ -23,6 +23,9 @@ import { SteadyLogo } from "./components/SteadyLogo";
 
 export default function App() {
   const [authState, setAuthState] = useLocalStorage<AuthState | null>("steady-auth-state", null);
+  const [forceAuth, setForceAuth] = useState(() =>
+    new URLSearchParams(window.location.search).has("start")
+  );
   const [onboarded, setOnboarded] = useLocalStorage("steady-onboarded", false);
   const [activeTab, setActiveTab] = useLocalStorage("steady-active-tab", "overview");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -77,6 +80,7 @@ export default function App() {
     root.style.setProperty("--app-font-body", readable ? "'Atkinson Hyperlegible', sans-serif" : "'Nunito Sans', 'Nunito', sans-serif");
     root.style.setProperty("--app-font-heading", readable ? "'Atkinson Hyperlegible', sans-serif" : "'Nunito', sans-serif");
     root.style.setProperty("--app-line-height", a11y.lineSpacing === "spacious" ? "1.9" : "1.5");
+    document.documentElement.lang = a11y.language ?? "en";
     root.classList.toggle("reduce-motion", a11y.reduceMotion);
     root.classList.toggle("dark", a11y.darkMode);
     if (a11y.highContrast) {
@@ -116,15 +120,26 @@ export default function App() {
     setOnboarded(true);
   };
 
-  if (!authState) {
-    return <AuthPage onAuth={(s) => setAuthState(s)} />;
+  if (!authState || forceAuth) {
+    return <AuthPage onAuth={(s) => {
+      setAuthState(s);
+      if (forceAuth) {
+        setForceAuth(false);
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+    }} />;
   }
 
   if (!onboarded) {
     return (
       <LangContext.Provider value={t}>
         <style>{`.reduce-motion * { transition: none !important; animation: none !important; } body { line-height: var(--app-line-height, 1.5); }`}</style>
-        <Onboarding onComplete={handleOnboardingComplete} onSkip={() => setOnboarded(true)} isGuest={authState.isGuest} />
+        <Onboarding
+          onComplete={handleOnboardingComplete}
+          onSkip={() => setOnboarded(true)}
+          isGuest={authState.isGuest}
+          onRegister={(email) => setAuthState({ email, isGuest: false })}
+        />
       </LangContext.Provider>
     );
   }
@@ -226,11 +241,20 @@ export default function App() {
         .reduce-motion .stat-card,
         .reduce-motion .task-checked,
         .reduce-motion .habit-bounce { animation: none !important; }
+
+        @media (max-width: 360px) {
+          .mood-label { display: none; }
+        }
+        @media (max-width: 320px) {
+          .nav-tab-label { display: none; }
+          .nav-tabs-row { padding-left: 4px; padding-right: 4px; gap: 0; }
+        }
       `}</style>
 
       <div className="min-h-screen bg-background" style={{ fontFamily: "var(--app-font-body, 'Nunito Sans', sans-serif)" }}>
         {/* ── Desktop sidebar (lg+) ─────────────────────────────────── */}
         <aside
+          aria-label="Sidebar navigation"
           className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-60 border-r border-border z-20"
           style={{ backgroundColor: "var(--card)" }}
         >
@@ -359,12 +383,12 @@ export default function App() {
                   setActiveTab("overview");
                   setSettingsOpen(false);
                 }}
-                className="flex items-center gap-2.5 hover:opacity-80 rounded-xl"
+                className="flex items-center gap-2.5 hover:opacity-80 rounded-xl min-w-0"
                 style={{ transition: "opacity 0.15s" }}
                 aria-label="Go to Overview"
               >
-                <SteadyLogo size={30} />
-                <div className="text-left">
+                <SteadyLogo size={30} className="flex-shrink-0" />
+                <div className="text-left min-w-0">
                   <span
                     style={{
                       fontFamily: "var(--app-font-heading, Nunito)",
@@ -372,11 +396,12 @@ export default function App() {
                       fontSize: "1.25rem",
                       color: "var(--primary)",
                       letterSpacing: "-0.02em",
+                      display: "block",
                     }}
                   >
                     Steady
                   </span>
-                  <p className="text-muted-foreground" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
+                  <p className="text-muted-foreground truncate" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
                     {greeting}
                   </p>
                 </div>
@@ -397,9 +422,9 @@ export default function App() {
           </header>
 
           {/* Mobile / tablet tab navigation — hidden on lg */}
-          <nav className="sticky top-[61px] z-10 border-b border-border lg:hidden" style={{ backgroundColor: "var(--card)" }}>
+          <nav aria-label="Tab navigation" className="sticky top-[61px] z-10 border-b border-border lg:hidden" style={{ backgroundColor: "var(--card)" }}>
             <div className="nav-scroll overflow-x-auto">
-              <div className="flex px-3 py-2 gap-1 max-w-xl mx-auto">
+              <div className="nav-tabs-row flex px-3 py-2 gap-1 max-w-xl mx-auto">
                 {TABS.map((tab) => {
                   const Icon = tab.icon;
                   const active = activeTab === tab.key && !settingsOpen;
@@ -415,6 +440,7 @@ export default function App() {
                     >
                       <Icon size={18} style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }} strokeWidth={active ? 2.5 : 1.8} />
                       <span
+                        className="nav-tab-label"
                         style={{
                           fontSize: "0.65rem",
                           fontWeight: active ? 700 : 500,
@@ -457,17 +483,17 @@ export default function App() {
                   <>
                     <div className="grid grid-cols-3 gap-3">
                       {[
-                        { label: t.overview.tasksLeft, value: String(tasksLeft), bg: "var(--green-bg)", fg: "var(--green-text)" },
-                        { label: t.overview.habitsDone, value: habitsTotal > 0 ? `${habitsDone} / ${habitsTotal}` : "–", bg: "var(--purple-bg)", fg: "var(--purple-text)" },
-                        { label: t.overview.streakDays, value: streakDays > 0 ? `${streakDays} 🔥` : "–", bg: "var(--yellow-bg)", fg: "var(--yellow-text)" },
+                        { label: t.overview.tasksLeft, value: String(tasksLeft), ariaLabel: undefined, bg: "var(--green-bg)", fg: "var(--green-text)" },
+                        { label: t.overview.habitsDone, value: habitsTotal > 0 ? `${habitsDone} / ${habitsTotal}` : "–", ariaLabel: undefined, bg: "var(--purple-bg)", fg: "var(--purple-text)" },
+                        { label: t.overview.streakDays, value: streakDays > 0 ? `${streakDays} 🔥` : "–", ariaLabel: streakDays > 0 ? `${streakDays} day streak` : "No streak yet", bg: "var(--yellow-bg)", fg: "var(--yellow-text)" },
                       ].map((stat) => (
                         <div
                           key={stat.label}
-                          className="stat-card steady-card rounded-2xl p-4 flex flex-col items-center text-center border border-border"
+                          className="stat-card steady-card rounded-2xl p-3 sm:p-4 flex flex-col items-center text-center border border-border"
                           style={{ backgroundColor: stat.bg }}
                         >
-                          <span style={{ fontWeight: 800, fontSize: "1.4rem", color: stat.fg, lineHeight: 1.2 }}>{stat.value}</span>
-                          <span style={{ fontSize: "0.75rem", color: stat.fg, fontWeight: 600, marginTop: 4 }}>{stat.label}</span>
+                          <span aria-label={stat.ariaLabel} style={{ fontWeight: 800, fontSize: "clamp(16px, 1.4rem, 20px)", color: stat.fg, lineHeight: 1.2 }}>{stat.value}</span>
+                          <span style={{ fontSize: "11px", color: stat.fg, fontWeight: 600, marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", maxWidth: "100%" }}>{stat.label}</span>
                         </div>
                       ))}
                     </div>

@@ -38,23 +38,26 @@ export function MoodCheck() {
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <h3 className="mb-1 text-foreground">{t.mood.heading}</h3>
       <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>{t.mood.description}</p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "8px" }}>
+      <div style={{ display: "flex", gap: "6px" }}>
         {moods.map((mood, i) => (
           <button
             key={mood.key}
             onClick={() => select(i)}
             className="flex flex-col items-center gap-1 rounded-xl border-2 cursor-pointer hover:opacity-85"
             style={{
-              padding: "10px 4px",
+              flex: 1,
+              minWidth: 0,
+              padding: "8px 2px",
               borderColor: selected === i ? "var(--primary)" : "transparent",
               backgroundColor: selected === i ? MOOD_COLOR_VARS[i] : "var(--surface-1)",
-              transform: selected === i ? "scale(1.08)" : "scale(1)",
+              transform: selected === i ? "scale(1.06)" : "scale(1)",
               transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)",
             }}
+            aria-label={mood.label}
             aria-pressed={selected === i}
           >
-            <span style={{ fontSize: "1.5rem" }}>{mood.emoji}</span>
-            <span className="text-foreground" style={{ fontSize: "0.75rem", fontWeight: 600 }}>{mood.label}</span>
+            <span aria-hidden="true" style={{ fontSize: "1.4rem" }}>{mood.emoji}</span>
+            <span className="mood-label text-foreground" style={{ fontSize: "11px", fontWeight: 600, lineHeight: 1.2, overflow: "hidden", maxWidth: "100%" }}>{mood.label}</span>
           </button>
         ))}
       </div>

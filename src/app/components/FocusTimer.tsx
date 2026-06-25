@@ -93,6 +93,7 @@ export function FocusTimer() {
               <button
                 key={s}
                 onClick={() => reset(s)}
+                aria-pressed={total === s}
                 className="rounded-xl px-4 py-2 border border-border hover:opacity-80"
                 style={{
                   backgroundColor: total === s ? "var(--primary)" : "var(--surface-1)",
@@ -113,6 +114,7 @@ export function FocusTimer() {
               width="148"
               height="148"
               viewBox="0 0 148 148"
+              aria-hidden="true"
               className={running ? "timer-ring-running" : ""}
             >
               <circle cx="74" cy="74" r="60" fill="none" stroke="var(--surface-2)" strokeWidth="11" />
@@ -128,6 +130,8 @@ export function FocusTimer() {
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
               <span
+                role="timer"
+                aria-label={`${mm} minutes ${ss} seconds remaining`}
                 style={{
                   fontSize: running ? "2rem" : "1.8rem",
                   fontWeight: 800,
@@ -154,6 +158,7 @@ export function FocusTimer() {
           <div className="flex gap-3">
             <button
               onClick={() => setRunning((r) => !r)}
+              aria-label={running ? t.focus.pause : t.focus.start}
               className="flex items-center gap-2 rounded-xl px-6 py-3 bg-primary text-primary-foreground hover:opacity-90"
               style={{
                 fontWeight: 700,

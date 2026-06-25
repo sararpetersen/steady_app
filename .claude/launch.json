@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "steady-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3001,
+      "cwd": "/Users/sararingkow/Desktop/Hobbies/Coding/Side hustles/Steady/VS Code/steady_web"
+    }
+  ]
+}

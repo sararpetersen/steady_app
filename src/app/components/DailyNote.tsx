@@ -59,7 +59,7 @@ export function DailyNote() {
         <h3 className="mb-1 text-foreground">{t.note.heading}</h3>
         <p className="text-muted-foreground mb-1" style={{ fontSize: "0.95rem" }}>{t.note.description}</p>
         <p className="mb-3 rounded-xl px-4 py-3" style={{ backgroundColor: "var(--purple-bg)", fontSize: "0.95rem", color: "var(--purple-text)", fontStyle: "italic" }}>
-          💭 {t.note.prompts[promptIndex]}
+          <span aria-hidden="true">💭 </span>{t.note.prompts[promptIndex]}
         </p>
         <textarea
           value={draft}
@@ -86,6 +86,7 @@ export function DailyNote() {
       <div className="steady-card bg-card rounded-2xl border border-border overflow-hidden">
         <button
           onClick={() => setHistoryOpen((o) => !o)}
+          aria-expanded={historyOpen}
           className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted"
           style={{ transition: "background-color 0.15s" }}
         >
@@ -114,7 +115,7 @@ export function DailyNote() {
                         onClick={() => deleteEntry(entry.id)}
                         className="text-muted-foreground hover:text-destructive p-1 rounded-lg sm:opacity-0 sm:group-hover:opacity-100"
                         style={{ transition: "all 0.15s" }}
-                        aria-label={t.noteHistory.deleteEntry}
+                        aria-label={`${t.noteHistory.deleteEntry}: ${formatEntryDate(entry.date, t.dateLocale, t.noteHistory.today)}`}
                       >
                         <Trash2 size={14} />
                       </button>

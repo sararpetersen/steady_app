@@ -142,7 +142,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
 
       {/* Preview card */}
       <div className="rounded-2xl p-5 border border-border flex items-center gap-4" style={{ backgroundColor: "var(--purple-bg)" }}>
-        <div className="rounded-full overflow-hidden flex items-center justify-center flex-shrink-0" style={{ width: 60, height: 60, backgroundColor: "var(--surface-2)" }}>
+        <div className="rounded-full overflow-hidden flex items-center justify-center flex-shrink-0" style={{ width: 60, height: 60, backgroundColor: "var(--card)", border: "2px solid var(--purple-vivid)" }}>
           {photo ? <img src={photo} alt="Profile" style={{ width: 60, height: 60, objectFit: "cover" }} /> : <span style={{ fontSize: "2.2rem" }}>{profile.avatar}</span>}
         </div>
         <div>

@@ -35,7 +35,7 @@ export function DailyNote() {
     const trimmed = draft.trim();
     if (!trimmed) return;
     if (todayEntry) {
-      setEntries((prev) => prev.map((e) => e.date === today ? { ...e, text: trimmed } : e));
+      setEntries((prev) => prev.map((e) => (e.date === today ? { ...e, text: trimmed } : e)));
     } else {
       setEntries((prev) => [...prev, { id: nextId, date: today, text: trimmed }]);
       setNextId((n) => n + 1);
@@ -48,18 +48,22 @@ export function DailyNote() {
     setEntries((prev) => prev.filter((e) => e.id !== id));
   };
 
-  const pastEntries = [...entries]
-    .filter((e) => e.date !== today)
-    .sort((a, b) => b.date.localeCompare(a.date));
+  const pastEntries = [...entries].filter((e) => e.date !== today).sort((a, b) => b.date.localeCompare(a.date));
 
   return (
     <div className="space-y-4">
       {/* Today's note */}
       <div className="steady-card bg-card rounded-2xl p-5 border border-border">
         <h3 className="mb-1 text-foreground">{t.note.heading}</h3>
-        <p className="text-muted-foreground mb-1" style={{ fontSize: "0.95rem" }}>{t.note.description}</p>
-        <p className="mb-3 rounded-xl px-4 py-3" style={{ backgroundColor: "var(--purple-bg)", fontSize: "0.95rem", color: "var(--purple-text)", fontStyle: "italic" }}>
-          <span aria-hidden="true">💭 </span>{t.note.prompts[promptIndex]}
+        <p className="text-muted-foreground mb-3" style={{ fontSize: "0.95rem" }}>
+          {t.note.description}
+        </p>
+        <p
+          className="mb-6 rounded-xl px-4 py-3"
+          style={{ backgroundColor: "var(--purple-bg)", fontSize: "0.95rem", color: "var(--purple-text)", fontStyle: "italic" }}
+        >
+          <span aria-hidden="true">💭 </span>
+          {t.note.prompts[promptIndex]}
         </p>
         <textarea
           value={draft}
@@ -70,7 +74,9 @@ export function DailyNote() {
           style={{ lineHeight: 1.7, transition: "border-color 0.15s" }}
         />
         <div className="flex items-center justify-between mt-3">
-          <span className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>{draft.length} {t.note.characters}</span>
+          <span className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>
+            {draft.length} {t.note.characters}
+          </span>
           <button
             onClick={save}
             className="flex items-center gap-2 rounded-xl px-4 py-2 bg-primary text-primary-foreground hover:opacity-90"
@@ -91,7 +97,9 @@ export function DailyNote() {
           style={{ transition: "background-color 0.15s" }}
         >
           <div>
-            <p className="text-foreground text-left" style={{ fontWeight: 700 }}>{t.noteHistory.heading}</p>
+            <p className="text-foreground text-left" style={{ fontWeight: 700 }}>
+              {t.noteHistory.heading}
+            </p>
             <p className="text-muted-foreground text-left" style={{ fontSize: "0.85rem" }}>
               {pastEntries.length} {pastEntries.length === 1 ? "entry" : "entries"}
             </p>
@@ -102,7 +110,9 @@ export function DailyNote() {
         {historyOpen && (
           <div className="border-t border-border">
             {pastEntries.length === 0 ? (
-              <p className="text-muted-foreground px-5 py-4" style={{ fontSize: "0.9rem" }}>{t.noteHistory.empty}</p>
+              <p className="text-muted-foreground px-5 py-4" style={{ fontSize: "0.9rem" }}>
+                {t.noteHistory.empty}
+              </p>
             ) : (
               <div className="divide-y" style={{ borderColor: "var(--border)" }}>
                 {pastEntries.map((entry) => (

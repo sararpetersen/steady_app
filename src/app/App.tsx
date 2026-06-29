@@ -15,7 +15,8 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
-import { LayoutDashboard, ClipboardList, Repeat2, Flame, UserCircle2, Timer, NotebookPen, Settings, CalendarDays } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Repeat2, Flame, UserCircle2, Timer, NotebookPen, Settings, CalendarDays, Sun, Moon } from "lucide-react";
+import { WeatherWidget } from "./components/WeatherWidget";
 import { SteadyLogo } from "./components/SteadyLogo";
 
 {
@@ -319,6 +320,11 @@ export default function App() {
             </div>
           </div>
 
+          {/* Weather widget */}
+          <div className="pt-3">
+            <WeatherWidget />
+          </div>
+
           {/* Vertical nav */}
           <nav className="flex-1 overflow-y-auto p-2 py-3 space-y-0.5">
             {TABS.map((tab) => {
@@ -357,18 +363,26 @@ export default function App() {
 
           {/* Bottom: settings + avatar */}
           <div className="p-4 border-t border-border space-y-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setSettingsOpen((o) => !o)}
-                className={`nav-tab flex-1 flex items-center justify-center gap-2 rounded-xl py-2 ${settingsOpen ? "nav-tab-active" : "nav-tab-inactive"}`}
-                style={{ color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
+                className={`nav-tab flex-1 min-w-0 overflow-hidden flex items-center justify-center gap-2 rounded-xl py-2 ${settingsOpen ? "nav-tab-active" : "nav-tab-inactive"}`}
+                style={{ height: 44, border: `2px solid ${settingsOpen ? "var(--primary)" : "var(--border)"}`, color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
                 aria-label="Open settings"
                 aria-pressed={settingsOpen}
               >
-                <Settings size={18} />
-                <span style={{ fontSize: "0.88rem", fontWeight: settingsOpen ? 700 : 500, fontFamily: "var(--app-font-heading, Nunito)" }}>
+                <Settings size={18} style={{ flexShrink: 0 }} />
+                <span className="truncate" style={{ fontSize: "0.88rem", fontWeight: settingsOpen ? 700 : 500, fontFamily: "var(--app-font-heading, Nunito)" }}>
                   {t.settings.title}
                 </span>
+              </button>
+              <button
+                onClick={() => setProfile({ ...profile, a11y: { ...profile.a11y, darkMode: !profile.a11y.darkMode } })}
+                className="nav-tab nav-tab-inactive rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ width: 44, height: 44, border: "2px solid var(--border)", color: "var(--muted-foreground)" }}
+                aria-label={profile.a11y.darkMode ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {profile.a11y.darkMode ? <Sun size={18} /> : <Moon size={18} />}
               </button>
               <AvatarButton />
             </div>

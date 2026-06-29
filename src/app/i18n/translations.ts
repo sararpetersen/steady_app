@@ -89,7 +89,7 @@ const en = {
     clearNo: "Cancel",
     dataCleared: "All data cleared.",
     privacy:
-      "Your data stays on this device only – nothing is sent to any server, and there is no tracking or advertising of any kind. Account creation is optional.",
+      "Your data stays on this device only. Nothing is sent to any server, and there is no tracking or advertising of any kind. Account creation is optional.",
     privacyLink: "Read full privacy policy",
     privacyPolicy: {
       title: "Privacy policy",

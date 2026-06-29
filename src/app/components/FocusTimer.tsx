@@ -88,13 +88,13 @@ export function FocusTimer() {
 
         {/* Presets — hidden while running to reduce distraction */}
         {!running && !done && (
-          <div className="flex gap-2 mb-6 flex-wrap">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
             {PRESET_SECONDS.map((s, i) => (
               <button
                 key={s}
                 onClick={() => reset(s)}
                 aria-pressed={total === s}
-                className="rounded-xl px-4 py-2 border border-border hover:opacity-80"
+                className="w-full rounded-xl px-4 py-2.5 border border-border hover:opacity-80"
                 style={{
                   backgroundColor: total === s ? "var(--primary)" : "var(--surface-1)",
                   color: total === s ? "var(--primary-foreground)" : "var(--foreground)",
@@ -145,7 +145,7 @@ export function FocusTimer() {
               </span>
               {running && (
                 <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--primary)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                  {t.focus.pause.includes("Pause") ? "running" : "kører"}
+                  {t.lang === "en" ? "running" : "kører"}
                 </span>
               )}
             </div>

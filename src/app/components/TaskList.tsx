@@ -53,38 +53,29 @@ export function TaskList({
 
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-between mb-2">
         <h3 className="text-foreground">{t.tasks.heading}</h3>
-        {tasks.length > 0 && remaining === 0 ? (
-          <span
-            className="rounded-full px-3 py-1 flex items-center gap-1.5"
-            style={{
-              backgroundColor: "var(--green-bg)",
-              color: "var(--green-text)",
-              fontSize: "0.85rem",
-              fontWeight: 700,
-            }}
-          >
-            <CheckCircle2 size={14} />
-            All done!
-          </span>
-        ) : (
-          <span
-            className="rounded-full px-3 py-1"
-            style={{
-              backgroundColor: "var(--green-bg)",
-              color: "var(--green-text)",
-              fontSize: "0.85rem",
-              fontWeight: 700,
-            }}
-          >
-            {remaining} {t.tasks.left}
-          </span>
+        {tasks.length > 0 && (
+          remaining === 0 ? (
+            <span
+              className="rounded-full px-3 py-1 flex items-center gap-1.5"
+              style={{ backgroundColor: "var(--green-bg)", color: "var(--green-text)", fontSize: "0.85rem", fontWeight: 700 }}
+            >
+              <CheckCircle2 size={14} />
+              {t.tasks.allDone}
+            </span>
+          ) : (
+            <span
+              className="rounded-full px-3 py-1"
+              style={{ backgroundColor: "var(--green-bg)", color: "var(--green-text)", fontSize: "0.85rem", fontWeight: 700 }}
+            >
+              {remaining} {t.tasks.left}
+            </span>
+          )
         )}
       </div>
       <p
-        className="text-muted-foreground mb-4"
-        style={{ fontSize: "0.95rem" }}
+        className="text-muted-foreground mb-4 text-sm sm:text-base"
       >
         {t.tasks.description}
       </p>
@@ -186,7 +177,7 @@ export function TaskList({
               fontSize: "0.95rem",
             }}
           >
-            Everything on your list is done — great work! 🎉
+            {t.tasks.allDoneMessage}
           </p>
         </div>
       )}

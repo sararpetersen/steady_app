@@ -2,7 +2,7 @@ import { useState } from "react";
 import { hashPassword } from "../utils/crypto";
 import { X, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
-import type { A11ySettings } from "./AccessibilityPanel";
+import type { A11ySettings } from "./a11yTypes";
 import type { Lang } from "../i18n/translations";
 import type { AuthState } from "./AuthPage";
 

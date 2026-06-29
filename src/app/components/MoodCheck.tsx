@@ -16,6 +16,7 @@ const MOOD_COLOR_VARS = [
   "var(--mood-color-2)",
   "var(--mood-color-3)",
   "var(--mood-color-4)",
+  "var(--mood-color-5)",
 ];
 
 export function MoodCheck() {
@@ -37,17 +38,17 @@ export function MoodCheck() {
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <h3 className="mb-1 text-foreground">{t.mood.heading}</h3>
-      <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>{t.mood.description}</p>
-      <div style={{ display: "flex", gap: "6px" }}>
+      <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>
+        {t.mood.description}
+      </p>
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
         {moods.map((mood, i) => (
           <button
             key={mood.key}
             onClick={() => select(i)}
             className="flex flex-col items-center gap-1 rounded-xl border-2 cursor-pointer hover:opacity-85"
             style={{
-              flex: 1,
-              minWidth: 0,
-              padding: "8px 2px",
+              padding: "10px 4px",
               borderColor: selected === i ? "var(--primary)" : "transparent",
               backgroundColor: selected === i ? MOOD_COLOR_VARS[i] : "var(--surface-1)",
               transform: selected === i ? "scale(1.06)" : "scale(1)",
@@ -56,14 +57,21 @@ export function MoodCheck() {
             aria-label={mood.label}
             aria-pressed={selected === i}
           >
-            <span aria-hidden="true" style={{ fontSize: "1.4rem" }}>{mood.emoji}</span>
-            <span className="mood-label text-foreground" style={{ fontSize: "11px", fontWeight: 600, lineHeight: 1.2, overflow: "hidden", maxWidth: "100%" }}>{mood.label}</span>
+            <span aria-hidden="true" style={{ fontSize: "1.5rem" }}>
+              {mood.emoji}
+            </span>
+            <span
+              className="mood-label text-foreground"
+              style={{ fontSize: "11px", fontWeight: 600, lineHeight: 1.2, textAlign: "center", wordBreak: "break-word" }}
+            >
+              {mood.label}
+            </span>
           </button>
         ))}
       </div>
       {selected !== null && (
         <p className="mt-4" style={{ fontWeight: 600, color: "var(--primary)" }}>
-          {t.mood.result(moods[selected].label, moods[selected].emoji)}
+          {moods[selected].result}
         </p>
       )}
     </div>

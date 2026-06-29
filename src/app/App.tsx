@@ -5,7 +5,8 @@ import { Routines } from "./components/Routines";
 import { HabitTracker, type Habit } from "./components/HabitTracker";
 import { FocusTimer } from "./components/FocusTimer";
 import { DailyNote } from "./components/DailyNote";
-import { Profile, DEFAULT_PROFILE, type ProfileData } from "./components/Profile";
+import { Profile } from "./components/Profile";
+import { DEFAULT_PROFILE, type ProfileData } from "./components/profileTypes";
 import { PersonalizedTip } from "./components/PersonalizedTip";
 import { Onboarding } from "./components/Onboarding";
 import { SettingsPage } from "./components/SettingsPage";
@@ -13,7 +14,7 @@ import { AuthPage, type AuthState } from "./components/AuthPage";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
-import { DEFAULT_A11Y } from "./components/AccessibilityPanel";
+import { DEFAULT_A11Y } from "./components/a11yTypes";
 import { LayoutDashboard, ClipboardList, Repeat2, Flame, UserCircle2, Timer, NotebookPen, Settings, CalendarDays } from "lucide-react";
 import { SteadyLogo } from "./components/SteadyLogo";
 
@@ -23,9 +24,7 @@ import { SteadyLogo } from "./components/SteadyLogo";
 
 export default function App() {
   const [authState, setAuthState] = useLocalStorage<AuthState | null>("steady-auth-state", null);
-  const [forceAuth, setForceAuth] = useState(() =>
-    new URLSearchParams(window.location.search).has("start")
-  );
+  const [forceAuth, setForceAuth] = useState(() => new URLSearchParams(window.location.search).has("start"));
   const [onboarded, setOnboarded] = useLocalStorage("steady-onboarded", false);
   const [activeTab, setActiveTab] = useLocalStorage("steady-active-tab", "overview");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -110,7 +109,7 @@ export default function App() {
     localStorage.setItem("steady-notes", JSON.stringify([]));
     localStorage.setItem("steady-notes-nextid", JSON.stringify(1));
     localStorage.setItem("steady-routines-done", JSON.stringify([]));
-    localStorage.setItem("steady-routines-custom", JSON.stringify({ morning: [], afternoon: [], evening: [] }));
+    localStorage.setItem("steady-routines-custom", JSON.stringify({ morning: [], noon: [], afternoon: [], evening: [], late: [] }));
     localStorage.setItem("steady-routines-nextid", JSON.stringify(100));
   };
 
@@ -121,13 +120,17 @@ export default function App() {
   };
 
   if (!authState || forceAuth) {
-    return <AuthPage onAuth={(s) => {
-      setAuthState(s);
-      if (forceAuth) {
-        setForceAuth(false);
-        window.history.replaceState({}, "", window.location.pathname);
-      }
-    }} />;
+    return (
+      <AuthPage
+        onAuth={(s) => {
+          setAuthState(s);
+          if (forceAuth) {
+            setForceAuth(false);
+            window.history.replaceState({}, "", window.location.pathname);
+          }
+        }}
+      />
+    );
   }
 
   if (!onboarded) {
@@ -422,7 +425,11 @@ export default function App() {
           </header>
 
           {/* Mobile / tablet tab navigation — hidden on lg */}
-          <nav aria-label="Tab navigation" className="sticky top-[61px] z-10 border-b border-border lg:hidden" style={{ backgroundColor: "var(--card)" }}>
+          <nav
+            aria-label="Tab navigation"
+            className="sticky top-[61px] z-10 border-b border-border lg:hidden"
+            style={{ backgroundColor: "var(--card)" }}
+          >
             <div className="nav-scroll overflow-x-auto">
               <div className="nav-tabs-row flex px-3 py-2 gap-1 max-w-xl mx-auto">
                 {TABS.map((tab) => {
@@ -483,17 +490,52 @@ export default function App() {
                   <>
                     <div className="grid grid-cols-3 gap-3">
                       {[
-                        { label: t.overview.tasksLeft, value: String(tasksLeft), ariaLabel: undefined, bg: "var(--green-bg)", fg: "var(--green-text)" },
-                        { label: t.overview.habitsDone, value: habitsTotal > 0 ? `${habitsDone} / ${habitsTotal}` : "–", ariaLabel: undefined, bg: "var(--purple-bg)", fg: "var(--purple-text)" },
-                        { label: t.overview.streakDays, value: streakDays > 0 ? `${streakDays} 🔥` : "–", ariaLabel: streakDays > 0 ? `${streakDays} day streak` : "No streak yet", bg: "var(--yellow-bg)", fg: "var(--yellow-text)" },
+                        {
+                          label: t.overview.tasksLeft,
+                          value: String(tasksLeft),
+                          ariaLabel: undefined,
+                          bg: "var(--green-bg)",
+                          fg: "var(--green-text)",
+                        },
+                        {
+                          label: t.overview.habitsDone,
+                          value: habitsTotal > 0 ? `${habitsDone} / ${habitsTotal}` : "–",
+                          ariaLabel: undefined,
+                          bg: "var(--purple-bg)",
+                          fg: "var(--purple-text)",
+                        },
+                        {
+                          label: t.overview.streakDays,
+                          value: streakDays > 0 ? `${streakDays} 🔥` : "–",
+                          ariaLabel: streakDays > 0 ? `${streakDays} day streak` : "No streak yet",
+                          bg: "var(--yellow-bg)",
+                          fg: "var(--yellow-text)",
+                        },
                       ].map((stat) => (
                         <div
                           key={stat.label}
                           className="stat-card steady-card rounded-2xl p-3 sm:p-4 flex flex-col items-center text-center border border-border"
                           style={{ backgroundColor: stat.bg }}
                         >
-                          <span aria-label={stat.ariaLabel} style={{ fontWeight: 800, fontSize: "clamp(16px, 1.4rem, 20px)", color: stat.fg, lineHeight: 1.2 }}>{stat.value}</span>
-                          <span style={{ fontSize: "11px", color: stat.fg, fontWeight: 600, marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", maxWidth: "100%" }}>{stat.label}</span>
+                          <span
+                            aria-label={stat.ariaLabel}
+                            style={{ fontWeight: 800, fontSize: "clamp(16px, 1.4rem, 20px)", color: stat.fg, lineHeight: 1.2 }}
+                          >
+                            {stat.value}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: "11px",
+                              color: stat.fg,
+                              fontWeight: 600,
+                              marginTop: 4,
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              maxWidth: "100%",
+                            }}
+                          >
+                            {stat.label}
+                          </span>
                         </div>
                       ))}
                     </div>

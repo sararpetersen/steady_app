@@ -2,9 +2,8 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { SteadyLogo } from "./SteadyLogo";
 import { translations, type Lang } from "../i18n/translations";
-import type { ProfileData } from "./Profile";
-import { DEFAULT_PROFILE } from "./Profile";
-import { DEFAULT_A11Y } from "./AccessibilityPanel";
+import { type ProfileData, DEFAULT_PROFILE } from "./profileTypes";
+import { DEFAULT_A11Y } from "./a11yTypes";
 import { hashPassword } from "../utils/crypto";
 
 const AVATARS = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨", "🍵", "🐾"];
@@ -157,7 +156,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
         <>
           {/* Progress bar */}
           <div className="px-6 pt-6 pb-2 flex items-center gap-3 max-w-lg mx-auto w-full">
-            <button onClick={() => setStep((s) => Math.max(1, s - 1))} className="text-muted-foreground hover:text-foreground p-1" style={{ transition: "color 0.15s" }}>
+            <button onClick={() => setStep((s) => Math.max(1, s - 1))} aria-label={t.lang === "en" ? "Go back" : "Gå tilbage"} className="text-muted-foreground hover:text-foreground p-3" style={{ transition: "color 0.15s" }}>
               <ArrowLeft size={20} />
             </button>
             <div className="flex-1 flex gap-1.5">
@@ -284,6 +283,9 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
                     </button>
                   ))}
                 </div>
+                <p className="text-muted-foreground text-center" style={{ fontSize: "0.8rem" }}>
+                  {t.onboarding.language.moreComing}
+                </p>
               </div>
             )}
 

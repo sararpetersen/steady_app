@@ -1,25 +1,5 @@
 import { useLang } from "../i18n/LangContext";
-import type { Lang } from "../i18n/translations";
-
-export interface A11ySettings {
-  fontSize: "normal" | "large" | "xlarge";
-  font: "standard" | "readable";
-  lineSpacing: "normal" | "spacious";
-  reduceMotion: boolean;
-  highContrast: boolean;
-  darkMode: boolean;
-  language: Lang;
-}
-
-export const DEFAULT_A11Y: A11ySettings = {
-  fontSize: "normal",
-  font: "standard",
-  lineSpacing: "normal",
-  reduceMotion: false,
-  highContrast: false,
-  darkMode: false,
-  language: "en",
-};
+import { type A11ySettings } from "./a11yTypes";
 
 function ToggleRow({ label, description, value, onChange }: {
   label: string; description: string; value: boolean; onChange: (v: boolean) => void;

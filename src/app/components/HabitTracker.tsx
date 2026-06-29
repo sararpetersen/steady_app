@@ -34,7 +34,7 @@ function generateId() {
   return `habit-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-export const DEFAULT_HABITS: Habit[] = [
+const DEFAULT_HABITS: Habit[] = [
   { id: "water", name: "Drink 8 glasses of water", emoji: "💧", streak: 0, doneToday: false },
   { id: "move", name: "Move my body", emoji: "🚶", streak: 0, doneToday: false },
   { id: "screens", name: "No screens 1 hr before bed", emoji: "📵", streak: 0, doneToday: false },

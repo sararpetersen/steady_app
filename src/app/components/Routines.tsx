@@ -1,21 +1,25 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, Moon, Plus, X, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Coffee, Sunset, Moon, MoonStar, Plus, X, CheckCircle2 } from "lucide-react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useLang } from "../i18n/LangContext";
 
-const SECTION_KEYS = ["morning", "afternoon", "evening"] as const;
+const SECTION_KEYS = ["morning", "noon", "afternoon", "evening", "late"] as const;
 type SectionKey = typeof SECTION_KEYS[number];
 
 const SECTION_ICONS: Record<SectionKey, React.ReactNode> = {
   morning: <Sun size={20} />,
+  noon: <Coffee size={20} />,
   afternoon: <Sunset size={20} />,
   evening: <Moon size={20} />,
+  late: <MoonStar size={20} />,
 };
 
 const SECTION_COLOR_VARS: Record<SectionKey, string> = {
   morning: "var(--morning-bg)",
+  noon: "var(--noon-bg)",
   afternoon: "var(--afternoon-bg)",
   evening: "var(--evening-bg)",
+  late: "var(--late-bg)",
 };
 
 interface CustomItem {
@@ -65,6 +69,7 @@ function SectionPanel({
       <div key={id} className="flex items-center gap-2 group">
         <button
           onClick={() => onToggle(id)}
+          aria-pressed={done}
           className="flex-1 flex items-center gap-3 rounded-xl p-3 text-left hover:bg-muted"
           style={{ backgroundColor: done ? "var(--surface-2)" : "transparent", transition: "background-color 0.15s" }}
         >
@@ -104,13 +109,13 @@ function SectionPanel({
     <div className="rounded-2xl border border-border overflow-hidden">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 p-4 text-left hover:opacity-90"
+        className="w-full flex items-center gap-2 sm:gap-3 p-3 sm:p-4 text-left hover:opacity-90"
         style={{ backgroundColor: SECTION_COLOR_VARS[sectionKey], transition: "opacity 0.15s" }}
       >
-        <span className="text-foreground">{SECTION_ICONS[sectionKey]}</span>
-        <div className="flex-1">
-          <p style={{ fontWeight: 700, fontSize: "1.05rem" }} className="text-foreground">{section.label}</p>
-          <p style={{ fontSize: "0.85rem" }} className="text-muted-foreground">{section.time}</p>
+        <span className="text-foreground flex-shrink-0">{SECTION_ICONS[sectionKey]}</span>
+        <div className="flex-1 min-w-0">
+          <p style={{ fontWeight: 700, fontSize: "1rem" }} className="text-foreground truncate">{section.label}</p>
+          <p style={{ fontSize: "0.8rem" }} className="text-muted-foreground truncate">{section.time}</p>
         </div>
         {allIds.length > 0 && doneCount === allIds.length ? (
           <CheckCircle2
@@ -188,7 +193,7 @@ export function Routines() {
   const t = useLang();
   const [doneIds, setDoneIds] = useLocalStorage<number[]>("steady-routines-done", []);
   const [custom, setCustom] = useLocalStorage<CustomMap>("steady-routines-custom", {
-    morning: [], afternoon: [], evening: [],
+    morning: [], noon: [], afternoon: [], evening: [], late: [],
   });
   const [nextId, setNextId] = useLocalStorage<number>("steady-routines-nextid", CUSTOM_NEXT_ID_START);
 

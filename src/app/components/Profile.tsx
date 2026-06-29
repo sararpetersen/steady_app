@@ -1,31 +1,9 @@
 import { useState, useRef } from "react";
 import { Save, Camera, X } from "lucide-react";
-import { type A11ySettings, DEFAULT_A11Y } from "./AccessibilityPanel";
 import { useLang } from "../i18n/LangContext";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import type { MoodEntry } from "./MoodCheck";
-
-export interface ProfileData {
-  name: string;
-  pronoun: string;
-  avatar: string;
-  about: string;
-  sensory: string[];
-  support: string[];
-  strengths: string[];
-  a11y: A11ySettings;
-}
-
-export const DEFAULT_PROFILE: ProfileData = {
-  name: "",
-  pronoun: "",
-  avatar: "🌱",
-  about: "",
-  sensory: [],
-  support: [],
-  strengths: [],
-  a11y: DEFAULT_A11Y,
-};
+import { type ProfileData } from "./profileTypes";
 
 const avatarEmojis = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨", "🍵", "🐾"];
 
@@ -103,7 +81,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
         <h3 className="mb-1 text-foreground">{p.heading}</h3>
         <p className="text-muted-foreground mb-5" style={{ fontSize: "0.95rem" }}>{p.description}</p>
 
-        <div className="flex gap-4 items-start mb-5">
+        <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start mb-5">
           <div className="flex flex-col items-center gap-2">
             <div className="rounded-full flex items-center justify-center overflow-hidden" style={{ width: 80, height: 80, backgroundColor: "var(--surface-2)", flexShrink: 0 }}>
               {photo
@@ -124,13 +102,13 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
             </div>
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 w-full sm:w-auto">
             <p style={{ fontWeight: 700, fontSize: "0.88rem", marginBottom: 8 }} className="text-foreground">
               {p.emojiAvatar}{photo && <span className="text-muted-foreground" style={{ fontWeight: 500 }}> ({p.shownWhenNoPhoto})</span>}
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div role="group" aria-label={p.emojiAvatar} className="flex flex-wrap gap-2">
               {avatarEmojis.map((e) => (
-                <button key={e} onClick={() => update({ avatar: e })} className="rounded-xl flex items-center justify-center hover:scale-110 hover:opacity-85" style={{ width: 40, height: 40, fontSize: "1.4rem", backgroundColor: profile.avatar === e ? "var(--green-bg)" : "var(--surface-1)", border: profile.avatar === e ? "2px solid var(--primary)" : "2px solid transparent", transition: "all 0.15s" }} aria-pressed={profile.avatar === e}>{e}</button>
+                <button key={e} onClick={() => update({ avatar: e })} aria-label={e} aria-pressed={profile.avatar === e} className="rounded-xl flex items-center justify-center hover:scale-110 hover:opacity-85" style={{ width: 40, height: 40, fontSize: "1.4rem", backgroundColor: profile.avatar === e ? "var(--green-bg)" : "var(--surface-1)", border: profile.avatar === e ? "2px solid var(--primary)" : "2px solid transparent", transition: "all 0.15s" }}>{e}</button>
               ))}
             </div>
           </div>

@@ -2,61 +2,64 @@
 
 :root {
   --font-size: 17px;
-  --background: #F5F2ED;
-  --foreground: #2D2A26;
-  --card: #FEFCF8;
-  --card-foreground: #2D2A26;
-  --popover: #FEFCF8;
-  --popover-foreground: #2D2A26;
-  --primary: #4E7C6A;
-  --primary-foreground: #FFFFFF;
-  --secondary: #EAE4F7;
-  --secondary-foreground: #3A2F5E;
-  --muted: #EBE8E2;
-  --muted-foreground: #6B6560;
-  --accent: #C8B8E8;
-  --accent-foreground: #3A2F5E;
-  --destructive: #C0392B;
+  --background: #f5f2ed;
+  --foreground: #2d2a26;
+  --card: #fefcf8;
+  --card-foreground: #2d2a26;
+  --popover: #fefcf8;
+  --popover-foreground: #2d2a26;
+  --primary: #4e7c6a;
+  --primary-foreground: #ffffff;
+  --secondary: #eae4f7;
+  --secondary-foreground: #3a2f5e;
+  --muted: #ebe8e2;
+  --muted-foreground: #6b6560;
+  --accent: #c8b8e8;
+  --accent-foreground: #3a2f5e;
+  --destructive: #c0392b;
   --destructive-foreground: #ffffff;
   --border: rgba(78, 124, 106, 0.18);
   --input: transparent;
-  --input-background: #F0EDE7;
-  --switch-background: #B8D4CC;
+  --input-background: #f0ede7;
+  --switch-background: #b8d4cc;
   --font-weight-medium: 600;
   --font-weight-normal: 400;
-  --ring: #4E7C6A;
+  --ring: #4e7c6a;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 1rem;
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(78,124,106,0.07);
-  --shadow-nav: 0 -1px 0 rgba(0,0,0,0.06), 0 -4px 24px rgba(0,0,0,0.06);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 16px rgba(78, 124, 106, 0.07);
+  --shadow-nav: 0 -1px 0 rgba(0, 0, 0, 0.06), 0 -4px 24px rgba(0, 0, 0, 0.06);
 
   /* App-specific semantic color tokens */
-  --surface-1: #F0EDE7;
-  --surface-2: #EBE8E2;
-  --green-bg: #D4EBE3;
-  --green-text: #2D6B56;
-  --purple-bg: #EAE4F7;
-  --purple-text: #3A2F5E;
-  --purple-vivid: #7B65C0;
-  --yellow-bg: #FFF0C8;
-  --yellow-text: #7A5A00;
-  --orange-bg: #FFE4CC;
-  --morning-bg: #FFF0C8;
-  --afternoon-bg: #FFE4CC;
-  --evening-bg: #E4DAFA;
-  --habit-water: #C8E8F5;
-  --habit-move: #C8E0B8;
-  --habit-screens: #E4DAFA;
-  --habit-journal: #FFF0C8;
-  --mood-color-0: #B8C9E0;
-  --mood-color-1: #E8B8B8;
-  --mood-color-2: #D4CDB8;
-  --mood-color-3: #B8D4C8;
-  --mood-color-4: #C8E0B8;
+  --surface-1: #f0ede7;
+  --surface-2: #ebe8e2;
+  --green-bg: #d4ebe3;
+  --green-text: #2d6b56;
+  --purple-bg: #eae4f7;
+  --purple-text: #3a2f5e;
+  --purple-vivid: #7b65c0;
+  --yellow-bg: #fff0c8;
+  --yellow-text: #7a5a00;
+  --orange-bg: #ffe4cc;
+  --morning-bg: #fff0c8;
+  --noon-bg: #fff8d6;
+  --afternoon-bg: #ffe4cc;
+  --evening-bg: #e4dafa;
+  --late-bg: #cec8f0;
+  --habit-water: #c8e8f5;
+  --habit-move: #c8e0b8;
+  --habit-screens: #e4dafa;
+  --habit-journal: #fff0c8;
+  --mood-color-0: #b8c9e0;
+  --mood-color-1: #e8b8b8;
+  --mood-color-2: #d4cdb8;
+  --mood-color-3: #b8d4c8;
+  --mood-color-4: #c8e0b8;
+  --mood-color-5: #b8d4cc;
 
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -69,52 +72,55 @@
 }
 
 .dark {
-  --background: #1A1917;
-  --foreground: #F0EDE7;
+  --background: #1a1917;
+  --foreground: #f0ede7;
   --card: #232120;
-  --card-foreground: #F0EDE7;
+  --card-foreground: #f0ede7;
   --popover: #232120;
-  --popover-foreground: #F0EDE7;
-  --primary: #8CCAAD;
-  --primary-foreground: #0F1F1A;
-  --secondary: #2A2240;
-  --secondary-foreground: #C0A8E8;
-  --muted: #2E2C2A;
-  --muted-foreground: #A8A4A0;
-  --accent: #2A2240;
-  --accent-foreground: #C0A8E8;
-  --destructive: #E05545;
-  --destructive-foreground: #FFF0EE;
+  --popover-foreground: #f0ede7;
+  --primary: #8ccaad;
+  --primary-foreground: #0f1f1a;
+  --secondary: #2a2240;
+  --secondary-foreground: #c0a8e8;
+  --muted: #2e2c2a;
+  --muted-foreground: #a8a4a0;
+  --accent: #2a2240;
+  --accent-foreground: #c0a8e8;
+  --destructive: #e05545;
+  --destructive-foreground: #fff0ee;
   --border: rgba(255, 255, 255, 0.1);
   --input: transparent;
-  --input-background: #2E2C2A;
-  --ring: #6BA890;
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.15);
-  --shadow-nav: 0 -1px 0 rgba(255,255,255,0.06), 0 -4px 24px rgba(0,0,0,0.3);
+  --input-background: #2e2c2a;
+  --ring: #6ba890;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-nav: 0 -1px 0 rgba(255, 255, 255, 0.06), 0 -4px 24px rgba(0, 0, 0, 0.3);
 
   /* App-specific semantic tokens — dark overrides */
-  --surface-1: #3A3734;
-  --surface-2: #47443F;
-  --green-bg: #1C3D2E;
-  --green-text: #82CCA8;
-  --purple-bg: #2A2245;
-  --purple-text: #C8B0F0;
-  --purple-vivid: #B09AE8;
-  --yellow-bg: #3A3018;
-  --yellow-text: #D4B050;
+  --surface-1: #3a3734;
+  --surface-2: #47443f;
+  --green-bg: #1c3d2e;
+  --green-text: #82cca8;
+  --purple-bg: #2a2245;
+  --purple-text: #c8b0f0;
+  --purple-vivid: #b09ae8;
+  --yellow-bg: #3a3018;
+  --yellow-text: #d4b050;
   --orange-bg: #382518;
-  --morning-bg: #3A3018;
+  --morning-bg: #3a3018;
+  --noon-bg: #3a3420;
   --afternoon-bg: #382518;
-  --evening-bg: #2A2048;
-  --habit-water: #0F2F45;
+  --evening-bg: #2a2048;
+  --late-bg: #1e1838;
+  --habit-water: #0f2f45;
   --habit-move: #183018;
-  --habit-screens: #2A2048;
-  --habit-journal: #3A3018;
-  --mood-color-0: #1A2F45;
-  --mood-color-1: #451A1A;
+  --habit-screens: #2a2048;
+  --habit-journal: #3a3018;
+  --mood-color-0: #1a2f45;
+  --mood-color-1: #451a1a;
   --mood-color-2: #353028;
   --mood-color-3: #183228;
-  --mood-color-4: #1E3018;
+  --mood-color-4: #1e3018;
+  --mood-color-5: #3a3018;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --chart-1: oklch(0.488 0.243 264.376);
@@ -182,7 +188,10 @@
     @apply bg-background text-foreground;
   }
 
-  button, [role="button"], label[for], summary {
+  button,
+  [role="button"],
+  label[for],
+  summary {
     cursor: pointer;
   }
 
@@ -196,11 +205,16 @@
   }
 
   body {
-    font-family: var(--app-font-body, 'Nunito Sans', 'Nunito', sans-serif);
+    font-family: var(--app-font-body, "Nunito Sans", "Nunito", sans-serif);
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--app-font-heading, 'Nunito', sans-serif);
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--app-font-heading, "Nunito", sans-serif);
   }
 
   h1 {
@@ -237,13 +251,14 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
-    font-family: 'Nunito', sans-serif;
+    font-family: "Nunito", sans-serif;
   }
 
-  input, textarea {
+  input,
+  textarea {
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
-    font-family: 'Nunito Sans', sans-serif;
+    font-family: "Nunito Sans", sans-serif;
   }
 }

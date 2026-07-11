@@ -362,20 +362,20 @@ export default function App() {
           </nav>
 
           {/* Bottom: settings + avatar */}
-          <div className="p-4 border-t border-border space-y-3">
+          <div className="p-4 border-t border-border space-y-2">
+            <button
+              onClick={() => setSettingsOpen((o) => !o)}
+              className={`nav-tab w-full min-w-0 overflow-hidden flex items-center justify-center gap-2 rounded-xl px-3 py-2 ${settingsOpen ? "nav-tab-active" : "nav-tab-inactive"}`}
+              style={{ height: 44, border: `2px solid ${settingsOpen ? "var(--primary)" : "var(--border)"}`, color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
+              aria-label="Open settings"
+              aria-pressed={settingsOpen}
+            >
+              <Settings size={18} style={{ flexShrink: 0 }} />
+              <span className="truncate" style={{ fontSize: "0.88rem", fontWeight: settingsOpen ? 700 : 500, fontFamily: "var(--app-font-heading, Nunito)" }}>
+                {t.settings.title}
+              </span>
+            </button>
             <div className="flex items-center justify-end gap-2">
-              <button
-                onClick={() => setSettingsOpen((o) => !o)}
-                className={`nav-tab flex-1 min-w-0 overflow-hidden flex items-center justify-center gap-2 rounded-xl py-2 ${settingsOpen ? "nav-tab-active" : "nav-tab-inactive"}`}
-                style={{ height: 44, border: `2px solid ${settingsOpen ? "var(--primary)" : "var(--border)"}`, color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
-                aria-label="Open settings"
-                aria-pressed={settingsOpen}
-              >
-                <Settings size={18} style={{ flexShrink: 0 }} />
-                <span className="truncate" style={{ fontSize: "0.88rem", fontWeight: settingsOpen ? 700 : 500, fontFamily: "var(--app-font-heading, Nunito)" }}>
-                  {t.settings.title}
-                </span>
-              </button>
               <button
                 onClick={() => setProfile({ ...profile, a11y: { ...profile.a11y, darkMode: !profile.a11y.darkMode } })}
                 className="nav-tab nav-tab-inactive rounded-xl flex items-center justify-center flex-shrink-0"
@@ -499,7 +499,7 @@ export default function App() {
                 onAuthUpdate={handleAuthUpdate}
               />
             ) : (
-              <div key={activeTab} className="tab-content space-y-4">
+              <div className="space-y-4">
                 {activeTab === "overview" && (
                   <>
                     <div className="grid grid-cols-3 gap-3">

@@ -101,7 +101,13 @@ export function WeatherWidget() {
     );
   }
 
-  if (!weather) return null;
+  if (!weather) {
+    return (
+      <div role="status" aria-live="polite" style={boxStyle} className="text-muted-foreground">
+        Loading weather…
+      </div>
+    );
+  }
 
   return (
     <div role="status" aria-live="polite" aria-label={`Current weather: ${weather.temp} degrees Celsius, ${weather.city}`} style={boxStyle} className="text-muted-foreground">

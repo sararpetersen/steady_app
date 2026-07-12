@@ -10,8 +10,32 @@
       <meta name="description" content="Provides neurodivergent individuals with a simple, clear daily overview to help organize tasks and manage their daily lives effectively." />
       <meta name="robots" content="noindex, nofollow" />
       <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
-      
-      <script type="module" crossorigin src="/assets/index-BNcEb6f7.js"></script>
+      <script>
+        (function () {
+          try {
+            var stored = localStorage.getItem("steady-profile");
+            var a11y = stored ? JSON.parse(stored).a11y : null;
+            if (!a11y) return;
+            var root = document.documentElement;
+            var fontSizes = { normal: "17px", large: "20px", xlarge: "24px" };
+            if (a11y.fontSize) root.style.setProperty("--font-size", fontSizes[a11y.fontSize]);
+            var readable = a11y.font === "readable";
+            root.style.setProperty("--app-font-body", readable ? "'Atkinson Hyperlegible', sans-serif" : "'Nunito Sans', 'Nunito', sans-serif");
+            root.style.setProperty("--app-font-heading", readable ? "'Atkinson Hyperlegible', sans-serif" : "'Nunito', sans-serif");
+            root.style.setProperty("--app-line-height", a11y.lineSpacing === "spacious" ? "1.9" : "1.5");
+            if (a11y.language) root.lang = a11y.language;
+            root.classList.toggle("reduce-motion", !!a11y.reduceMotion);
+            root.classList.toggle("dark", !!a11y.darkMode);
+            if (a11y.highContrast) {
+              root.style.setProperty("--foreground", a11y.darkMode ? "#FFFFFF" : "#111111");
+              root.style.setProperty("--muted-foreground", a11y.darkMode ? "#CCCCCC" : "#444444");
+              root.style.setProperty("--border", a11y.darkMode ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)");
+            }
+          } catch (e) {}
+        })();
+      </script>
+
+      <script type="module" crossorigin src="/assets/index-BxchrX2-.js"></script>
       <link rel="stylesheet" crossorigin href="/assets/index-BhSeBbCh.css">
     </head>
 

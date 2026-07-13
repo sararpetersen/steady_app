@@ -16,7 +16,6 @@ import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
 import { LayoutDashboard, ClipboardList, Repeat2, Flame, UserCircle2, Timer, NotebookPen, Settings, CalendarDays, Sun, Moon } from "lucide-react";
-import { WeatherWidget } from "./components/WeatherWidget";
 import { SteadyLogo } from "./components/SteadyLogo";
 
 {
@@ -206,46 +205,6 @@ export default function App() {
         .nav-scroll { scrollbar-width: none; -ms-overflow-style: none; }
         .nav-scroll::-webkit-scrollbar { display: none; }
 
-        /* ── Tab content entrance ── */
-        @keyframes fade-slide-up {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .tab-content { animation: fade-slide-up 0.22s ease-out both; }
-
-        /* ── Stat card stagger ── */
-        @keyframes pop-in {
-          0%   { opacity: 0; transform: scale(0.93); }
-          60%  { transform: scale(1.03); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-        .stat-card { animation: pop-in 0.28s cubic-bezier(0.34,1.56,0.64,1) both; }
-        .stat-card:nth-child(1) { animation-delay: 0.04s; }
-        .stat-card:nth-child(2) { animation-delay: 0.09s; }
-        .stat-card:nth-child(3) { animation-delay: 0.14s; }
-
-        /* ── Task checkbox pop ── */
-        @keyframes check-pop {
-          0%   { transform: scale(1); }
-          35%  { transform: scale(0.75); }
-          70%  { transform: scale(1.25); }
-          100% { transform: scale(1); }
-        }
-        .task-checked { animation: check-pop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-
-        /* ── Habit row bounce ── */
-        @keyframes habit-bounce {
-          0%   { transform: scale(1); }
-          30%  { transform: scale(0.96); }
-          65%  { transform: scale(1.03); }
-          100% { transform: scale(1); }
-        }
-
-        .reduce-motion .tab-content,
-        .reduce-motion .stat-card,
-        .reduce-motion .task-checked,
-        .reduce-motion .habit-bounce { animation: none !important; }
-
         @media (max-width: 360px) {
           .mood-label { display: none; }
         }
@@ -318,11 +277,6 @@ export default function App() {
                 </p>
               </div>
             </div>
-          </div>
-
-          {/* Weather widget */}
-          <div className="pt-3">
-            <WeatherWidget />
           </div>
 
           {/* Vertical nav */}
@@ -528,7 +482,7 @@ export default function App() {
                       ].map((stat) => (
                         <div
                           key={stat.label}
-                          className="stat-card steady-card rounded-2xl p-3 sm:p-4 flex flex-col items-center text-center border border-border"
+                          className="steady-card rounded-2xl p-3 sm:p-4 flex flex-col items-center text-center border border-border"
                           style={{ backgroundColor: stat.bg }}
                         >
                           <span

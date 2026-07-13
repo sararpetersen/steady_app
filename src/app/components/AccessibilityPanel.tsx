@@ -1,4 +1,5 @@
 import { useLang } from "../i18n/LangContext";
+import { type Lang } from "../i18n/translations";
 import { type A11ySettings } from "./a11yTypes";
 
 function ToggleRow({ label, description, value, onChange }: {

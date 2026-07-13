@@ -49,19 +49,6 @@ export function FocusTimer() {
 
   return (
     <>
-      <style>{`
-        @keyframes ring-pulse {
-          0%, 100% { filter: drop-shadow(0 0 4px var(--primary)); }
-          50%       { filter: drop-shadow(0 0 12px var(--primary)); }
-        }
-        .timer-ring-running { animation: ring-pulse 2s ease-in-out infinite; }
-        @keyframes dot-blink {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.3; }
-        }
-        .focus-dot { animation: dot-blink 1.4s ease-in-out infinite; }
-      `}</style>
-
       <div
         className="steady-card rounded-2xl p-5 border-2"
         style={{
@@ -77,7 +64,7 @@ export function FocusTimer() {
               className="flex items-center gap-1.5 rounded-full px-3 py-1"
               style={{ backgroundColor: "var(--green-bg)", color: "var(--green-text)", fontSize: "0.78rem", fontWeight: 700 }}
             >
-              <span className="focus-dot" style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: "var(--primary)", display: "inline-block" }} />
+              <span style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: "var(--primary)", display: "inline-block" }} />
               Focusing
             </span>
           )}
@@ -115,7 +102,6 @@ export function FocusTimer() {
               height="148"
               viewBox="0 0 148 148"
               aria-hidden="true"
-              className={running ? "timer-ring-running" : ""}
             >
               <circle cx="74" cy="74" r="60" fill="none" stroke="var(--surface-2)" strokeWidth="11" />
               <circle

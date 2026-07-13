@@ -100,7 +100,7 @@ export function TaskList({
           >
             <button
               onClick={() => toggle(task.id)}
-              className={`flex-shrink-0 rounded-full border-2 flex items-center justify-center${task.done ? " task-checked" : ""}`}
+              className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
               style={{
                 width: 28,
                 height: 28,

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useLang } from "../i18n/LangContext";
-import { Flame, Plus, X, Check } from "lucide-react";
+import { Flame, Plus, X, Check, Pencil, ChevronUp, ChevronDown } from "lucide-react";
 
 export interface Habit {
   id: string;
@@ -47,6 +47,9 @@ export function HabitTracker() {
   const [showForm, setShowForm] = useState(false);
   const [newEmoji, setNewEmoji] = useState("🎯");
   const [newName, setNewName] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmoji, setEditEmoji] = useState("");
 
   const toggle = (id: string) => {
     setHabits((prev) =>
@@ -64,6 +67,29 @@ export function HabitTracker() {
 
   const deleteHabit = (id: string) => {
     setHabits((prev) => prev.filter((h) => h.id !== id));
+  };
+
+  const moveHabit = (index: number, offset: -1 | 1) => {
+    setHabits((prev) => {
+      const nextIndex = index + offset;
+      if (nextIndex < 0 || nextIndex >= prev.length) return prev;
+      const next = [...prev];
+      [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+      return next;
+    });
+  };
+
+  const startEditing = (habit: Habit) => {
+    setEditingId(habit.id);
+    setEditName(habit.name);
+    setEditEmoji(habit.emoji);
+  };
+
+  const saveEdit = (id: string) => {
+    const name = editName.trim();
+    if (!name) return;
+    setHabits((prev) => prev.map((habit) => habit.id === id ? { ...habit, name, emoji: editEmoji || "🎯" } : habit));
+    setEditingId(null);
   };
 
   const addHabit = () => {
@@ -94,8 +120,19 @@ export function HabitTracker() {
 
       <div className="space-y-2 mb-3">
         {habits.map((habit, index) => (
-          <div key={habit.id} className="relative group">
+          <div key={habit.id} className="flex items-center gap-1 group">
+            <div className="flex flex-col flex-shrink-0">
+              <button onClick={() => moveHabit(index, -1)} disabled={index === 0} className="p-0.5 text-muted-foreground disabled:opacity-25" aria-label={`${t.habits.moveUp}: ${habit.name}`}><ChevronUp size={16} /></button>
+              <button onClick={() => moveHabit(index, 1)} disabled={index === habits.length - 1} className="p-0.5 text-muted-foreground disabled:opacity-25" aria-label={`${t.habits.moveDown}: ${habit.name}`}><ChevronDown size={16} /></button>
+            </div>
+            <div className="relative flex-1 min-w-0">
             {/* Main tap area — full width */}
+            {editingId === habit.id ? (
+              <div className="flex items-center gap-2 p-3 pr-20 rounded-xl border-2 border-primary bg-input-background">
+                <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
+                <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(habit.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
+              </div>
+            ) : (
             <button
               onClick={() => toggle(habit.id)}
               className="w-full flex items-center gap-3 p-3 pr-10 rounded-xl hover:opacity-90 text-left"
@@ -133,16 +170,13 @@ export function HabitTracker() {
                 )}
               </div>
             </button>
+            )}
 
-            {/* Delete — absolutely positioned so it doesn't affect button width */}
-            <button
-              onClick={() => deleteHabit(habit.id)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted sm:opacity-0 sm:group-hover:opacity-100"
-              style={{ transition: "all 0.15s" }}
-              aria-label={`${t.habits.deleteHabit}: ${habit.name}`}
-            >
-              <X size={15} />
-            </button>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+              <button onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted" aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : <Pencil size={14} />}</button>
+              <button onClick={() => deleteHabit(habit.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted" aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></button>
+            </div>
+            </div>
           </div>
         ))}
       </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../i18n/LangContext";
-import { Plus, X, CheckCircle2 } from "lucide-react";
+import { Plus, X, CheckCircle2, Pencil, Check, ChevronUp, ChevronDown } from "lucide-react";
 
 export interface Task {
   id: number;
@@ -27,6 +27,8 @@ export function TaskList({
 }: Props) {
   const t = useLang();
   const [newText, setNewText] = useState("");
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editText, setEditText] = useState("");
 
   const toggle = (id: number) =>
     setTasks((prev) =>
@@ -37,6 +39,28 @@ export function TaskList({
 
   const remove = (id: number) =>
     setTasks((prev) => prev.filter((task) => task.id !== id));
+
+  const move = (index: number, offset: -1 | 1) => {
+    setTasks((prev) => {
+      const nextIndex = index + offset;
+      if (nextIndex < 0 || nextIndex >= prev.length) return prev;
+      const next = [...prev];
+      [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+      return next;
+    });
+  };
+
+  const startEditing = (task: Task) => {
+    setEditingId(task.id);
+    setEditText(task.text);
+  };
+
+  const saveEdit = (id: number) => {
+    const text = editText.trim();
+    if (!text) return;
+    setTasks((prev) => prev.map((task) => task.id === id ? { ...task, text } : task));
+    setEditingId(null);
+  };
 
   const add = () => {
     const trimmed = newText.trim();
@@ -88,7 +112,7 @@ export function TaskList({
       )}
 
       <div className="space-y-2 mb-4">
-        {tasks.map((task) => (
+        {tasks.map((task, index) => (
           <div
             key={task.id}
             className="flex items-center gap-3 rounded-xl p-3 hover:brightness-95"
@@ -135,17 +159,15 @@ export function TaskList({
                 </svg>
               )}
             </button>
-            <span
-              className="flex-1 text-foreground"
-              style={{
-                textDecoration: task.done
-                  ? "line-through"
-                  : "none",
-                opacity: task.done ? 0.5 : 1,
-              }}
-            >
-              {task.text}
-            </span>
+            {editingId === task.id ? (
+              <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
+            ) : (
+              <span className="flex-1 text-foreground" style={{ textDecoration: task.done ? "line-through" : "none", opacity: task.done ? 0.5 : 1 }}>{task.text}</span>
+            )}
+            <div className="flex items-center gap-0.5 flex-shrink-0">
+              <button onClick={() => move(index, -1)} disabled={index === 0} className="text-muted-foreground p-1 rounded-lg disabled:opacity-25" aria-label={`${t.tasks.moveUp}: ${task.text}`}><ChevronUp size={16} /></button>
+              <button onClick={() => move(index, 1)} disabled={index === tasks.length - 1} className="text-muted-foreground p-1 rounded-lg disabled:opacity-25" aria-label={`${t.tasks.moveDown}: ${task.text}`}><ChevronDown size={16} /></button>
+              <button onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} className="text-muted-foreground hover:text-primary p-1 rounded-lg" aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>{editingId === task.id ? <Check size={16} /> : <Pencil size={15} />}</button>
             <button
               onClick={() => remove(task.id)}
               className="text-muted-foreground hover:text-destructive p-1 rounded-lg"
@@ -154,6 +176,7 @@ export function TaskList({
             >
               <X size={16} />
             </button>
+            </div>
           </div>
         ))}
       </div>

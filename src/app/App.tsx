@@ -38,18 +38,12 @@ export default function App() {
   const [tasks, setTasks] = useLocalStorage<Task[]>("steady-tasks", []);
   const [nextId, setNextId] = useLocalStorage<number>("steady-task-nextid", 1);
 
-  // Reset completed tasks when the day rolls over, so the checklist starts fresh each day.
+  // Tasks are one-off items, not recurring like habits — clear completed ones at rollover
+  // instead of reopening them, so yesterday's finished to-dos don't reappear unchecked.
   useEffect(() => {
     setTasks((prev) => {
-      let changed = false;
-      const next = prev.map((task) => {
-        if (task.done && task.lastCompletedDate !== today) {
-          changed = true;
-          return { ...task, done: false };
-        }
-        return task;
-      });
-      return changed ? next : prev;
+      const next = prev.filter((task) => !(task.done && task.lastCompletedDate !== today));
+      return next.length !== prev.length ? next : prev;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [today]);

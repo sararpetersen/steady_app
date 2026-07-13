@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useLang } from "../i18n/LangContext";
-import { Sprout, Leaf, Flower2, TreeDeciduous, Plus, X, Check, Pencil, ChevronUp, ChevronDown } from "lucide-react";
+import { Sprout, Leaf, Flower2, TreeDeciduous, Plus, X, Check, ChevronUp, ChevronDown } from "lucide-react";
 
 export interface Habit {
   id: string;
@@ -163,7 +163,7 @@ export function HabitTracker() {
             ) : (
             <button
               onClick={() => toggle(habit.id)}
-              className="w-full flex items-center gap-3 p-3 pr-10 rounded-xl hover:opacity-90 text-left"
+              className="w-full flex items-center gap-3 p-3 pr-24 rounded-xl hover:opacity-90 text-left"
               style={{
                 backgroundColor: habit.doneToday ? getDoneColor(index) : "var(--surface-1)",
                 border: habit.doneToday ? "2px solid var(--primary)" : "2px solid transparent",
@@ -202,7 +202,7 @@ export function HabitTracker() {
             )}
 
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-              <button onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted" aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : <Pencil size={16} fill="currentColor" stroke="none" />}</button>
+              <button onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} className="px-2.5 py-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted flex items-center justify-center" style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : t.habits.editLabel}</button>
               <button onClick={() => deleteHabit(habit.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted" aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></button>
             </div>
             </div>

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Sun, Coffee, Sunset, Moon, MoonStar, Plus, X, CheckCircle2 } from "lucide-react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 
 const SECTION_KEYS = ["morning", "noon", "afternoon", "evening", "late"] as const;
@@ -192,10 +193,21 @@ function SectionPanel({
 export function Routines() {
   const t = useLang();
   const [doneIds, setDoneIds] = useLocalStorage<number[]>("steady-routines-done", []);
+  const [doneDate, setDoneDate] = useLocalStorage<string | null>("steady-routines-done-date", null);
   const [custom, setCustom] = useLocalStorage<CustomMap>("steady-routines-custom", {
     morning: [], noon: [], afternoon: [], evening: [], late: [],
   });
   const [nextId, setNextId] = useLocalStorage<number>("steady-routines-nextid", CUSTOM_NEXT_ID_START);
+  const today = useToday();
+
+  // Reset checked-off steps when the day rolls over, so routines start fresh each day.
+  useEffect(() => {
+    if (doneDate !== today) {
+      setDoneIds([]);
+      setDoneDate(today);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [today]);
 
   const toggleDone = (id: number) => {
     setDoneIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));

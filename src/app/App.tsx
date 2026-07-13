@@ -32,11 +32,65 @@ export default function App() {
   const [rawProfile, setProfile] = useLocalStorage<ProfileData>("steady-profile", DEFAULT_PROFILE);
   const [profilePhoto, setProfilePhoto] = useLocalStorage<string | null>("steady-profile-photo", null);
 
+  const today = useToday();
+
   // Task state lifted here so Overview stats stay in sync with the TaskList
   const [tasks, setTasks] = useLocalStorage<Task[]>("steady-tasks", []);
   const [nextId, setNextId] = useLocalStorage<number>("steady-task-nextid", 1);
 
-  // Habit stats — re-read from localStorage when tab changes (habits live in HabitTracker)
+  // Reset completed tasks when the day rolls over, so the checklist starts fresh each day.
+  useEffect(() => {
+    setTasks((prev) => {
+      let changed = false;
+      const next = prev.map((task) => {
+        if (task.done && task.lastCompletedDate !== today) {
+          changed = true;
+          return { ...task, done: false };
+        }
+        return task;
+      });
+      return changed ? next : prev;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [today]);
+
+  // Reset habits' doneToday when the day rolls over. Done here (always mounted) rather than
+  // inside HabitTracker, since HabitTracker only mounts when its tab is active and would
+  // otherwise leave stale doneToday flags until the user happens to visit that tab.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("steady-habits-v2");
+      if (!raw) return;
+      const data = JSON.parse(raw) as Habit[];
+      if (!Array.isArray(data)) return;
+      let changed = false;
+      const next = data.map((h) => {
+        if (h.doneToday && h.lastCompletedDate !== today) {
+          changed = true;
+          return { ...h, doneToday: false };
+        }
+        return h;
+      });
+      if (changed) localStorage.setItem("steady-habits-v2", JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+  }, [today]);
+
+  // Same rollover reset for routine steps checked off for the day.
+  useEffect(() => {
+    try {
+      const doneDate = localStorage.getItem("steady-routines-done-date");
+      if (doneDate !== today) {
+        localStorage.setItem("steady-routines-done", JSON.stringify([]));
+        localStorage.setItem("steady-routines-done-date", today);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [today]);
+
+  // Habit stats — re-read from localStorage when tab or day changes (habits live in HabitTracker)
   const [habitsDone, setHabitsDone] = useState(0);
   const [habitsTotal, setHabitsTotal] = useState(0);
   const [habitGrowth, setHabitGrowth] = useState(0);
@@ -52,7 +106,7 @@ export default function App() {
     } catch {
       /* ignore */
     }
-  }, [activeTab]);
+  }, [activeTab, today]);
 
   const profile: ProfileData = {
     ...DEFAULT_PROFILE,
@@ -189,8 +243,6 @@ export default function App() {
       )}
     </button>
   );
-
-  const today = useToday();
 
   const greeting = (() => {
     const h = new Date().getHours();
@@ -490,10 +542,10 @@ export default function App() {
                     </div>
                     <MoodCheck />
                     <PersonalizedTip support={profile.support} sensory={profile.sensory} />
-                    <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
+                    <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} today={today} />
                   </>
                 )}
-                {activeTab === "tasks" && <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />}
+                {activeTab === "tasks" && <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} today={today} />}
                 {activeTab === "routines" && <Routines />}
                 {activeTab === "habits" && <HabitTracker />}
                 {activeTab === "focus" && <FocusTimer />}

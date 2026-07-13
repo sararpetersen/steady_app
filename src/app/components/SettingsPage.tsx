@@ -5,6 +5,7 @@ import { useLang } from "../i18n/LangContext";
 import type { A11ySettings } from "./a11yTypes";
 import type { Lang } from "../i18n/translations";
 import type { AuthState } from "./AuthPage";
+import { APP_NAME, APP_VERSION } from "../version";
 
 interface Props {
   settings: A11ySettings;
@@ -499,6 +500,10 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
         {cleared && (
           <p className="text-primary text-center" style={{ fontWeight: 600 }}>{s.dataCleared}</p>
         )}
+
+        <p className="text-center text-muted-foreground" style={{ fontSize: "0.78rem", paddingTop: 8 }}>
+          {APP_NAME} v{APP_VERSION}
+        </p>
       </div>
 
       {/* Privacy policy modal */}

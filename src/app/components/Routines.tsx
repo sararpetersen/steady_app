@@ -48,7 +48,7 @@ function SectionPanel({
 }) {
   const t = useLang();
   const section = t.routines.sections[sectionKey];
-  const [open, setOpen] = useState(sectionKey === "morning");
+  const [open, setOpen] = useState(false);
   const [addingStep, setAddingStep] = useState(false);
   const [stepDraft, setStepDraft] = useState("");
 

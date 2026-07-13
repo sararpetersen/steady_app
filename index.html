@@ -9,7 +9,11 @@
       <title>Steady - Daily Life Tracker App for Neurodivergents</title>
       <meta name="description" content="Provides neurodivergent individuals with a simple, clear daily overview to help organize tasks and manage their daily lives effectively." />
       <meta name="robots" content="noindex, nofollow" />
-      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
+      <style>
+        html, body { height: 100%; margin: 0; background: #f5f2ed; color: #2d2a26; }
+        html.dark, html.dark body { background: #1a1917; color: #f0ede7; color-scheme: dark; }
+        #root { height: 100%; }
+      </style>
       <script>
         (function () {
           try {
@@ -26,6 +30,7 @@
             if (a11y.language) root.lang = a11y.language;
             root.classList.toggle("reduce-motion", !!a11y.reduceMotion);
             root.classList.toggle("dark", !!a11y.darkMode);
+            root.style.colorScheme = a11y.darkMode ? "dark" : "light";
             if (a11y.highContrast) {
               root.style.setProperty("--foreground", a11y.darkMode ? "#FFFFFF" : "#111111");
               root.style.setProperty("--muted-foreground", a11y.darkMode ? "#CCCCCC" : "#444444");
@@ -44,4 +49,3 @@
       
     </body>
   </html>
-  

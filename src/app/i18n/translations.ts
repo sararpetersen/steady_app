@@ -157,7 +157,7 @@ const en = {
       { key: "detail", label: "Attention to detail", emoji: "🔬" },
       { key: "outofbox", label: "Out-of-the-box ideas", emoji: "💡" },
       { key: "passionate", label: "Strong special interests", emoji: "⭐" },
-      { key: "honest", label: "Honest & direct", emoji: "💬" },
+      { key: "honest", label: "Honest and direct", emoji: "💬" },
       { key: "solver", label: "Creative problem solver", emoji: "🧩" },
       { key: "intuition", label: "Strong intuition", emoji: "🌊" },
     ],

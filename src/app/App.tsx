@@ -82,6 +82,7 @@ export default function App() {
     document.documentElement.lang = a11y.language ?? "en";
     root.classList.toggle("reduce-motion", a11y.reduceMotion);
     root.classList.toggle("dark", a11y.darkMode);
+    root.style.colorScheme = a11y.darkMode ? "dark" : "light";
     if (a11y.highContrast) {
       root.style.setProperty("--foreground", a11y.darkMode ? "#FFFFFF" : "#111111");
       root.style.setProperty("--muted-foreground", a11y.darkMode ? "#CCCCCC" : "#444444");
@@ -94,6 +95,8 @@ export default function App() {
   }, [profile.a11y]);
 
   const handleSignOut = () => {
+    setSettingsOpen(false);
+    setActiveTab("overview");
     setAuthState(null);
   };
 
@@ -123,6 +126,7 @@ export default function App() {
     return (
       <AuthPage
         onAuth={(s) => {
+          setSettingsOpen(false);
           setAuthState(s);
           if (forceAuth) {
             setForceAuth(false);
@@ -315,20 +319,8 @@ export default function App() {
             })}
           </nav>
 
-          {/* Bottom: settings + avatar */}
-          <div className="p-4 border-t border-border space-y-2">
-            <button
-              onClick={() => setSettingsOpen((o) => !o)}
-              className={`nav-tab w-full min-w-0 overflow-hidden flex items-center justify-center gap-2 rounded-xl px-3 py-2 ${settingsOpen ? "nav-tab-active" : "nav-tab-inactive"}`}
-              style={{ height: 44, border: `2px solid ${settingsOpen ? "var(--primary)" : "var(--border)"}`, color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
-              aria-label="Open settings"
-              aria-pressed={settingsOpen}
-            >
-              <Settings size={18} style={{ flexShrink: 0 }} />
-              <span className="truncate" style={{ fontSize: "0.88rem", fontWeight: settingsOpen ? 700 : 500, fontFamily: "var(--app-font-heading, Nunito)" }}>
-                {t.settings.title}
-              </span>
-            </button>
+          {/* Bottom controls */}
+          <div className="p-4 border-t border-border">
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setProfile({ ...profile, a11y: { ...profile.a11y, darkMode: !profile.a11y.darkMode } })}
@@ -337,6 +329,20 @@ export default function App() {
                 aria-label={profile.a11y.darkMode ? "Switch to light mode" : "Switch to dark mode"}
               >
                 {profile.a11y.darkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+              <button
+                onClick={() => setSettingsOpen((open) => !open)}
+                className={`nav-tab rounded-xl flex items-center justify-center flex-shrink-0 ${settingsOpen ? "nav-tab-active" : "nav-tab-inactive"}`}
+                style={{
+                  width: 44,
+                  height: 44,
+                  border: `2px solid ${settingsOpen ? "var(--primary)" : "var(--border)"}`,
+                  color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)",
+                }}
+                aria-label="Open settings"
+                aria-pressed={settingsOpen}
+              >
+                <Settings size={18} />
               </button>
               <AvatarButton />
             </div>

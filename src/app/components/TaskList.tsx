@@ -172,7 +172,7 @@ export function TaskList({
             <div className="flex items-center gap-1 flex-shrink-0">
               <button onClick={() => move(index, -1)} disabled={index === 0} className="text-muted-foreground p-2 rounded-lg disabled:opacity-25 hover:bg-muted" aria-label={`${t.tasks.moveUp}: ${task.text}`}><ChevronUp size={16} /></button>
               <button onClick={() => move(index, 1)} disabled={index === tasks.length - 1} className="text-muted-foreground p-2 rounded-lg disabled:opacity-25 hover:bg-muted" aria-label={`${t.tasks.moveDown}: ${task.text}`}><ChevronDown size={16} /></button>
-              <button onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} className="text-muted-foreground hover:text-primary p-2 rounded-lg hover:bg-muted" aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>{editingId === task.id ? <Check size={16} /> : <Pencil size={15} />}</button>
+              <button onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} className="text-muted-foreground hover:text-primary p-2 rounded-lg hover:bg-muted" aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>{editingId === task.id ? <Check size={16} /> : <Pencil size={16} fill="currentColor" stroke="none" />}</button>
             <button
               onClick={() => remove(task.id)}
               className="text-muted-foreground hover:text-destructive p-2 rounded-lg hover:bg-muted"

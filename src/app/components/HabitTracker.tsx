@@ -202,7 +202,7 @@ export function HabitTracker() {
             )}
 
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-              <button onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted" aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : <Pencil size={14} />}</button>
+              <button onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted" aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : <Pencil size={16} fill="currentColor" stroke="none" />}</button>
               <button onClick={() => deleteHabit(habit.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted" aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></button>
             </div>
             </div>

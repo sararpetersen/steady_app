@@ -124,53 +124,58 @@ export function TaskList({
           >
             <button
               onClick={() => toggle(task.id)}
-              className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
-              style={{
-                width: 28,
-                height: 28,
-                borderColor: task.done
-                  ? "var(--primary)"
-                  : "var(--muted-foreground)",
-                backgroundColor: task.done
-                  ? "var(--primary)"
-                  : "transparent",
-                transition: "background-color 0.2s, border-color 0.2s",
-              }}
+              className="flex-shrink-0 rounded-full flex items-center justify-center"
+              style={{ width: 44, height: 44 }}
               aria-label={
                 task.done
                   ? t.tasks.markIncomplete
                   : t.tasks.markComplete
               }
             >
-              {task.done && (
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                >
-                  <path
-                    d="M2.5 7L5.5 10L11.5 4"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              )}
+              <span
+                className="rounded-full border-2 flex items-center justify-center"
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderColor: task.done
+                    ? "var(--primary)"
+                    : "var(--muted-foreground)",
+                  backgroundColor: task.done
+                    ? "var(--primary)"
+                    : "transparent",
+                  transition: "background-color 0.2s, border-color 0.2s",
+                }}
+              >
+                {task.done && (
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                  >
+                    <path
+                      d="M2.5 7L5.5 10L11.5 4"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </span>
             </button>
             {editingId === task.id ? (
               <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
             ) : (
               <span className="flex-1 text-foreground" style={{ textDecoration: task.done ? "line-through" : "none", opacity: task.done ? 0.5 : 1 }}>{task.text}</span>
             )}
-            <div className="flex items-center gap-0.5 flex-shrink-0">
-              <button onClick={() => move(index, -1)} disabled={index === 0} className="text-muted-foreground p-1 rounded-lg disabled:opacity-25" aria-label={`${t.tasks.moveUp}: ${task.text}`}><ChevronUp size={16} /></button>
-              <button onClick={() => move(index, 1)} disabled={index === tasks.length - 1} className="text-muted-foreground p-1 rounded-lg disabled:opacity-25" aria-label={`${t.tasks.moveDown}: ${task.text}`}><ChevronDown size={16} /></button>
-              <button onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} className="text-muted-foreground hover:text-primary p-1 rounded-lg" aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>{editingId === task.id ? <Check size={16} /> : <Pencil size={15} />}</button>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button onClick={() => move(index, -1)} disabled={index === 0} className="text-muted-foreground p-2 rounded-lg disabled:opacity-25 hover:bg-muted" aria-label={`${t.tasks.moveUp}: ${task.text}`}><ChevronUp size={16} /></button>
+              <button onClick={() => move(index, 1)} disabled={index === tasks.length - 1} className="text-muted-foreground p-2 rounded-lg disabled:opacity-25 hover:bg-muted" aria-label={`${t.tasks.moveDown}: ${task.text}`}><ChevronDown size={16} /></button>
+              <button onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} className="text-muted-foreground hover:text-primary p-2 rounded-lg hover:bg-muted" aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>{editingId === task.id ? <Check size={16} /> : <Pencil size={15} />}</button>
             <button
               onClick={() => remove(task.id)}
-              className="text-muted-foreground hover:text-destructive p-1 rounded-lg"
+              className="text-muted-foreground hover:text-destructive p-2 rounded-lg hover:bg-muted"
               style={{ transition: "color 0.15s" }}
               aria-label={`${t.tasks.remove}: ${task.text}`}
             >

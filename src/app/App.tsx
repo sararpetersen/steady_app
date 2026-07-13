@@ -15,8 +15,8 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
-import { LayoutDashboard, ClipboardList, Repeat2, Flame, UserCircle2, Timer, NotebookPen, Settings, CalendarDays, Sun, Moon } from "lucide-react";
-import { SteadyLogo } from "./components/SteadyLogo";
+import { LayoutDashboard, ClipboardList, Repeat2, Sprout, UserCircle2, Timer, NotebookPen, Settings, CalendarDays, Sun, Moon } from "lucide-react";
+import { SteadyWordmark } from "./components/SteadyWordmark";
 
 {
   /* MARKER-MAKE-KIT-INVOKED */
@@ -38,7 +38,7 @@ export default function App() {
   // Habit stats — re-read from localStorage when tab changes (habits live in HabitTracker)
   const [habitsDone, setHabitsDone] = useState(0);
   const [habitsTotal, setHabitsTotal] = useState(0);
-  const [streakDays, setStreakDays] = useState(0);
+  const [habitGrowth, setHabitGrowth] = useState(0);
   useEffect(() => {
     try {
       const raw = localStorage.getItem("steady-habits-v2");
@@ -47,7 +47,7 @@ export default function App() {
       if (!Array.isArray(data)) return;
       setHabitsDone(data.filter((h) => h.doneToday).length);
       setHabitsTotal(data.length);
-      setStreakDays(data.length > 0 ? Math.max(...data.map((h) => h.streak)) : 0);
+      setHabitGrowth(data.reduce((sum, h) => sum + (h.totalCompletions ?? 0), 0));
     } catch {
       /* ignore */
     }
@@ -157,7 +157,7 @@ export default function App() {
     { key: "overview", label: t.nav.overview, icon: LayoutDashboard },
     { key: "tasks", label: t.nav.tasks, icon: ClipboardList },
     { key: "routines", label: t.nav.routines, icon: Repeat2 },
-    { key: "habits", label: t.nav.habits, icon: Flame },
+    { key: "habits", label: t.nav.habits, icon: Sprout },
     { key: "focus", label: t.nav.focus, icon: Timer },
     { key: "note", label: t.nav.note, icon: NotebookPen },
     { key: "profile", label: t.nav.profile, icon: UserCircle2 },
@@ -232,28 +232,14 @@ export default function App() {
                 setActiveTab("overview");
                 setSettingsOpen(false);
               }}
-              className="flex items-center gap-2.5 hover:opacity-80 rounded-xl w-full"
-              style={{ transition: "opacity 0.15s" }}
+              className="group flex flex-col items-start gap-1.5 rounded-xl w-full p-2 hover:bg-muted"
+              style={{ transition: "background-color 0.15s" }}
               aria-label="Go to Overview"
             >
-              <SteadyLogo size={30} />
-              <div className="text-left min-w-0">
-                <span
-                  style={{
-                    fontFamily: "var(--app-font-heading, Nunito)",
-                    fontWeight: 800,
-                    fontSize: "1.2rem",
-                    color: "var(--primary)",
-                    letterSpacing: "-0.02em",
-                    display: "block",
-                  }}
-                >
-                  Steady
-                </span>
-                <p className="text-muted-foreground truncate" style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>
-                  {greeting}
-                </p>
-              </div>
+              <SteadyWordmark height={26} className="transition-transform group-hover:scale-[1.04]" />
+              <p className="text-muted-foreground truncate" style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>
+                {greeting}
+              </p>
             </button>
 
             {/* Prominent date chip */}
@@ -360,34 +346,20 @@ export default function App() {
                   setActiveTab("overview");
                   setSettingsOpen(false);
                 }}
-                className="flex items-center gap-2.5 hover:opacity-80 rounded-xl min-w-0"
-                style={{ transition: "opacity 0.15s" }}
+                className="group flex flex-col items-start gap-1 rounded-xl min-w-0 p-2 hover:bg-muted"
+                style={{ transition: "background-color 0.15s" }}
                 aria-label="Go to Overview"
               >
-                <SteadyLogo size={30} className="flex-shrink-0" />
-                <div className="text-left min-w-0">
-                  <span
-                    style={{
-                      fontFamily: "var(--app-font-heading, Nunito)",
-                      fontWeight: 800,
-                      fontSize: "1.25rem",
-                      color: "var(--primary)",
-                      letterSpacing: "-0.02em",
-                      display: "block",
-                    }}
-                  >
-                    Steady
-                  </span>
-                  <p className="text-muted-foreground truncate" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
-                    {greeting}
-                  </p>
-                </div>
+                <SteadyWordmark height={24} className="flex-shrink-0 transition-transform group-hover:scale-[1.04]" />
+                <p className="text-muted-foreground truncate" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
+                  {greeting}
+                </p>
               </button>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setSettingsOpen((o) => !o)}
-                  className="rounded-xl p-2 hover:bg-muted"
-                  style={{ transition: "background-color 0.15s", color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
+                  className="rounded-xl flex items-center justify-center flex-shrink-0 hover:bg-muted"
+                  style={{ width: 44, height: 44, transition: "background-color 0.15s", color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
                   aria-label="Open settings"
                   aria-pressed={settingsOpen}
                 >
@@ -479,9 +451,9 @@ export default function App() {
                           fg: "var(--purple-text)",
                         },
                         {
-                          label: t.overview.streakDays,
-                          value: streakDays > 0 ? `${streakDays} 🔥` : "–",
-                          ariaLabel: streakDays > 0 ? `${streakDays} day streak` : "No streak yet",
+                          label: t.overview.habitGrowth,
+                          value: habitGrowth > 0 ? `${habitGrowth} 🌱` : "–",
+                          ariaLabel: habitGrowth > 0 ? `${habitGrowth} total habit check-ins` : "No habit check-ins yet",
                           bg: "var(--yellow-bg)",
                           fg: "var(--yellow-text)",
                         },

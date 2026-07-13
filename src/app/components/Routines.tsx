@@ -94,7 +94,7 @@ function SectionPanel({
         {isCustom && (
           <button
             onClick={() => onDeleteCustom(id)}
-            className="flex-shrink-0 p-1.5 rounded-lg text-muted-foreground hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100"
+            className="flex-shrink-0 p-2.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
             style={{ transition: "all 0.15s" }}
             aria-label={t.routines.deleteStep}
           >

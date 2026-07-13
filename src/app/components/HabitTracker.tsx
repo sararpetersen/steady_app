@@ -1,20 +1,44 @@
 import { useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useLang } from "../i18n/LangContext";
-import { Flame, Plus, X, Check, Pencil, ChevronUp, ChevronDown } from "lucide-react";
+import { Sprout, Leaf, Flower2, TreeDeciduous, Plus, X, Check, Pencil, ChevronUp, ChevronDown } from "lucide-react";
 
 export interface Habit {
   id: string;
   name: string;
   emoji: string;
-  streak: number;
+  totalCompletions: number;
   doneToday: boolean;
+}
+
+// Growth never regresses — a missed day just doesn't add to the count, nothing is lost.
+const GROWTH_STAGES = [
+  { min: 0, icon: Sprout, label: "Seed" },
+  { min: 3, icon: Leaf, label: "Sprouting" },
+  { min: 10, icon: Flower2, label: "Blooming" },
+  { min: 25, icon: TreeDeciduous, label: "Flourishing" },
+] as const;
+
+function getGrowthStage(totalCompletions: number): (typeof GROWTH_STAGES)[number] {
+  let stage: (typeof GROWTH_STAGES)[number] = GROWTH_STAGES[0];
+  for (const s of GROWTH_STAGES) {
+    if (totalCompletions >= s.min) stage = s;
+  }
+  return stage;
 }
 
 const EMOJI_SUGGESTIONS = [
   "💧","🚶","📵","📝","🏃","😴","🥗","🧘","📚","💊",
   "🎵","🌳","☀️","🍎","💪","🧹","🎯","✍️","🫧","🌿",
 ];
+
+const EMOJI_LABELS: Record<string, string> = {
+  "💧": "Water drop", "🚶": "Walking", "📵": "No phone", "📝": "Notepad",
+  "🏃": "Running", "😴": "Sleeping", "🥗": "Salad", "🧘": "Meditating",
+  "📚": "Books", "💊": "Medication", "🎵": "Music", "🌳": "Tree",
+  "☀️": "Sun", "🍎": "Apple", "💪": "Strength", "🧹": "Cleaning",
+  "🎯": "Target", "✍️": "Writing", "🫧": "Bubbles", "🌿": "Herb",
+};
 
 const DONE_COLORS = [
   "var(--habit-water)",
@@ -35,10 +59,10 @@ function generateId() {
 }
 
 const DEFAULT_HABITS: Habit[] = [
-  { id: "water", name: "Drink 8 glasses of water", emoji: "💧", streak: 0, doneToday: false },
-  { id: "move", name: "Move my body", emoji: "🚶", streak: 0, doneToday: false },
-  { id: "screens", name: "No screens 1 hr before bed", emoji: "📵", streak: 0, doneToday: false },
-  { id: "journal", name: "Journal or gratitude note", emoji: "📝", streak: 0, doneToday: false },
+  { id: "water", name: "Drink 8 glasses of water", emoji: "💧", totalCompletions: 0, doneToday: false },
+  { id: "move", name: "Move my body", emoji: "🚶", totalCompletions: 0, doneToday: false },
+  { id: "screens", name: "No screens 1 hr before bed", emoji: "📵", totalCompletions: 0, doneToday: false },
+  { id: "journal", name: "Journal or gratitude note", emoji: "📝", totalCompletions: 0, doneToday: false },
 ];
 
 export function HabitTracker() {
@@ -53,15 +77,15 @@ export function HabitTracker() {
 
   const toggle = (id: string) => {
     setHabits((prev) =>
-      prev.map((h) =>
-        h.id === id
-          ? {
-              ...h,
-              doneToday: !h.doneToday,
-              streak: !h.doneToday ? h.streak + 1 : Math.max(0, h.streak - 1),
-            }
-          : h
-      )
+      prev.map((h) => {
+        if (h.id !== id) return h;
+        const current = h.totalCompletions ?? 0; // legacy entries may predate this field
+        return {
+          ...h,
+          doneToday: !h.doneToday,
+          totalCompletions: !h.doneToday ? current + 1 : Math.max(0, current - 1),
+        };
+      })
     );
   };
 
@@ -97,7 +121,7 @@ export function HabitTracker() {
     if (!name) return;
     setHabits((prev) => [
       ...prev,
-      { id: generateId(), name, emoji: newEmoji, streak: 0, doneToday: false },
+      { id: generateId(), name, emoji: newEmoji, totalCompletions: 0, doneToday: false },
     ]);
     setNewName("");
     setNewEmoji("🎯");
@@ -119,11 +143,15 @@ export function HabitTracker() {
       )}
 
       <div className="space-y-2 mb-3">
-        {habits.map((habit, index) => (
+        {habits.map((habit, index) => {
+          const totalCompletions = habit.totalCompletions ?? 0; // legacy entries may predate this field
+          const stage = getGrowthStage(totalCompletions);
+          const StageIcon = stage.icon;
+          return (
           <div key={habit.id} className="flex items-center gap-1 group">
-            <div className="flex flex-col flex-shrink-0">
-              <button onClick={() => moveHabit(index, -1)} disabled={index === 0} className="p-0.5 text-muted-foreground disabled:opacity-25" aria-label={`${t.habits.moveUp}: ${habit.name}`}><ChevronUp size={16} /></button>
-              <button onClick={() => moveHabit(index, 1)} disabled={index === habits.length - 1} className="p-0.5 text-muted-foreground disabled:opacity-25" aria-label={`${t.habits.moveDown}: ${habit.name}`}><ChevronDown size={16} /></button>
+            <div className="flex flex-col flex-shrink-0 gap-0.5">
+              <button onClick={() => moveHabit(index, -1)} disabled={index === 0} className="p-1.5 rounded-lg text-muted-foreground disabled:opacity-25 hover:bg-muted" aria-label={`${t.habits.moveUp}: ${habit.name}`}><ChevronUp size={16} /></button>
+              <button onClick={() => moveHabit(index, 1)} disabled={index === habits.length - 1} className="p-1.5 rounded-lg text-muted-foreground disabled:opacity-25 hover:bg-muted" aria-label={`${t.habits.moveDown}: ${habit.name}`}><ChevronDown size={16} /></button>
             </div>
             <div className="relative flex-1 min-w-0">
             {/* Main tap area — full width */}
@@ -148,10 +176,11 @@ export function HabitTracker() {
                 {habit.name}
               </span>
               <div className="flex items-center gap-1">
-                <Flame size={15} style={{ color: habit.streak > 0 ? "#E8834A" : "var(--muted-foreground)" }} />
-                <span style={{ fontWeight: 700, fontSize: "0.9rem", color: habit.streak > 0 ? "#E8834A" : "var(--muted-foreground)" }}>
-                  {habit.streak}
+                <StageIcon size={15} style={{ color: "var(--primary)" }} aria-hidden="true" />
+                <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--primary)" }}>
+                  {totalCompletions}
                 </span>
+                <span className="sr-only">{stage.label} stage, {totalCompletions} total completions</span>
               </div>
               <div
                 className="rounded-full border-2 flex items-center justify-center flex-shrink-0"
@@ -178,7 +207,8 @@ export function HabitTracker() {
             </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Add habit form */}
@@ -199,13 +229,15 @@ export function HabitTracker() {
                   onClick={() => setNewEmoji(e)}
                   className="rounded-lg hover:scale-110"
                   style={{
-                    width: 36,
-                    height: 36,
+                    width: 44,
+                    height: 44,
                     fontSize: "1.3rem",
                     backgroundColor: newEmoji === e ? "var(--green-bg)" : "transparent",
                     border: newEmoji === e ? "2px solid var(--primary)" : "2px solid transparent",
                     transition: "all 0.15s",
                   }}
+                  aria-label={EMOJI_LABELS[e] ?? e}
+                  aria-pressed={newEmoji === e}
                 >
                   {e}
                 </button>

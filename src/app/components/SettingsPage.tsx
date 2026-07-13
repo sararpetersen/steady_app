@@ -62,7 +62,7 @@ function OptionRow<V extends string>({ label, options, value, onChange, stacked 
     <button
       key={opt.value}
       onClick={() => onChange(opt.value)}
-      className={`rounded-lg border-2 hover:opacity-85${stacked ? " w-full px-4 py-2.5 text-left" : " px-3 py-1.5"}`}
+      className={`rounded-lg border-2 hover:opacity-85${stacked ? " w-full px-4 py-2.5 text-left" : " px-4 py-2.5"}`}
       style={{
         borderColor: value === opt.value ? "var(--primary)" : "transparent",
         backgroundColor: value === opt.value ? "var(--green-bg)" : "var(--surface-1)",
@@ -224,7 +224,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
             <button
               type="button"
               onClick={() => setSignUpShowPw((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
               aria-label={signUpShowPw ? "Hide password" : "Show password"}
             >
               {signUpShowPw ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -373,7 +373,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-foreground" style={{ fontFamily: "var(--app-font-heading, Nunito)" }}>{s.title}</h2>
-        <button onClick={onClose} className="rounded-xl p-2 hover:bg-muted" style={{ transition: "background-color 0.15s" }} aria-label="Close settings">
+        <button onClick={onClose} className="rounded-xl p-3 hover:bg-muted" style={{ transition: "background-color 0.15s" }} aria-label="Close settings">
           <X size={20} className="text-foreground" />
         </button>
       </div>
@@ -527,7 +527,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
               </div>
               <button
                 onClick={() => setPrivacyOpen(false)}
-                className="rounded-xl p-2 hover:bg-muted"
+                className="rounded-xl p-3 hover:bg-muted"
                 style={{ transition: "background-color 0.15s" }}
                 aria-label="Close privacy policy"
               >

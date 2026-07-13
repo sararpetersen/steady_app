@@ -81,11 +81,12 @@ export function FocusTimer() {
                 key={s}
                 onClick={() => reset(s)}
                 aria-pressed={total === s}
-                className="w-full rounded-xl px-4 py-2.5 border border-border hover:opacity-80"
+                className="w-full rounded-xl px-4 py-2.5 border-2 hover:opacity-80"
                 style={{
                   backgroundColor: total === s ? "var(--primary)" : "var(--surface-1)",
+                  borderColor: total === s ? "var(--primary)" : "var(--border)",
                   color: total === s ? "var(--primary-foreground)" : "var(--foreground)",
-                  fontWeight: 700,
+                  fontWeight: total === s ? 800 : 600,
                   transition: "all 0.15s",
                 }}
               >

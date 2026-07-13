@@ -223,7 +223,7 @@ const en = {
   overview: {
     tasksLeft: "Tasks left",
     habitsDone: "Habits done",
-    streakDays: "Streak days",
+    habitGrowth: "Habit growth",
     reminderTitle: "💡 Reminder",
     reminderText: "You don't have to do everything perfectly. Just do the next small step. That's enough.",
     tipForYou: "✨ A tip for you",
@@ -740,7 +740,7 @@ const da: typeof en = {
   overview: {
     tasksLeft: "Opgaver tilbage",
     habitsDone: "Vaner klaret",
-    streakDays: "Dages streak",
+    habitGrowth: "Vanevækst",
     reminderTitle: "💡 Påmindelse",
     reminderText: "Du behøver ikke gøre alting perfekt. Tag bare det næste lille skridt. Det er nok.",
     tipForYou: "✨ Et tip til dig",

@@ -6,7 +6,6 @@ export interface Task {
   id: number;
   text: string;
   done: boolean;
-  lastCompletedDate?: string; // "YYYY-MM-DD" — legacy entries may predate this field
 }
 
 interface Props {
@@ -18,7 +17,6 @@ interface Props {
   setNextId: (
     updater: number | ((prev: number) => number),
   ) => void;
-  today: string;
 }
 
 export function TaskList({
@@ -26,7 +24,6 @@ export function TaskList({
   setTasks,
   nextId,
   setNextId,
-  today,
 }: Props) {
   const t = useLang();
   const [newText, setNewText] = useState("");
@@ -35,15 +32,9 @@ export function TaskList({
 
   const toggle = (id: number) =>
     setTasks((prev) =>
-      prev.map((task) => {
-        if (task.id !== id) return task;
-        const nowDone = !task.done;
-        return {
-          ...task,
-          done: nowDone,
-          lastCompletedDate: nowDone ? today : task.lastCompletedDate,
-        };
-      }),
+      prev.map((task) =>
+        task.id === id ? { ...task, done: !task.done } : task,
+      ),
     );
 
   const remove = (id: number) =>

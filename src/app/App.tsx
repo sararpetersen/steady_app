@@ -37,14 +37,15 @@ export default function App() {
   // Task state lifted here so Overview stats stay in sync with the TaskList
   const [tasks, setTasks] = useLocalStorage<Task[]>("steady-tasks", []);
   const [nextId, setNextId] = useLocalStorage<number>("steady-task-nextid", 1);
+  const [tasksDate, setTasksDate] = useLocalStorage<string | null>("steady-tasks-date", null);
 
-  // Tasks are one-off items, not recurring like habits — clear completed ones at rollover
-  // instead of reopening them, so yesterday's finished to-dos don't reappear unchecked.
+  // Tasks are a daily list, not a persistent backlog — the whole list clears at rollover,
+  // done or not, so nothing from a previous day lingers.
   useEffect(() => {
-    setTasks((prev) => {
-      const next = prev.filter((task) => !(task.done && task.lastCompletedDate !== today));
-      return next.length !== prev.length ? next : prev;
-    });
+    if (tasksDate !== today) {
+      setTasks([]);
+      setTasksDate(today);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [today]);
 
@@ -536,10 +537,10 @@ export default function App() {
                     </div>
                     <MoodCheck />
                     <PersonalizedTip support={profile.support} sensory={profile.sensory} />
-                    <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} today={today} />
+                    <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
                   </>
                 )}
-                {activeTab === "tasks" && <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} today={today} />}
+                {activeTab === "tasks" && <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />}
                 {activeTab === "routines" && <Routines />}
                 {activeTab === "habits" && <HabitTracker />}
                 {activeTab === "focus" && <FocusTimer />}

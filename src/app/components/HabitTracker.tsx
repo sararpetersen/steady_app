@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { Sprout, Leaf, Flower2, TreeDeciduous, Plus, X, Check, ChevronUp, ChevronDown } from "lucide-react";
 
@@ -9,6 +10,7 @@ export interface Habit {
   emoji: string;
   totalCompletions: number;
   doneToday: boolean;
+  lastCompletedDate?: string; // "YYYY-MM-DD" — legacy entries may predate this field
 }
 
 // Growth never regresses — a missed day just doesn't add to the count, nothing is lost.
@@ -74,16 +76,35 @@ export function HabitTracker() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editEmoji, setEditEmoji] = useState("");
+  const today = useToday();
+
+  // Reset doneToday when the day rolls over, so habits start fresh each day.
+  useEffect(() => {
+    setHabits((prev) => {
+      let changed = false;
+      const next = prev.map((h) => {
+        if (h.doneToday && h.lastCompletedDate !== today) {
+          changed = true;
+          return { ...h, doneToday: false };
+        }
+        return h;
+      });
+      return changed ? next : prev;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [today]);
 
   const toggle = (id: string) => {
     setHabits((prev) =>
       prev.map((h) => {
         if (h.id !== id) return h;
         const current = h.totalCompletions ?? 0; // legacy entries may predate this field
+        const nowDone = !h.doneToday;
         return {
           ...h,
-          doneToday: !h.doneToday,
-          totalCompletions: !h.doneToday ? current + 1 : Math.max(0, current - 1),
+          doneToday: nowDone,
+          lastCompletedDate: nowDone ? today : h.lastCompletedDate,
+          totalCompletions: nowDone ? current + 1 : Math.max(0, current - 1),
         };
       })
     );

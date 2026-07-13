@@ -1,13 +1,10 @@
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 
 export interface MoodEntry {
   date: string; // "YYYY-MM-DD"
   moodIndex: number;
-}
-
-function todayKey() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 const MOOD_COLOR_VARS = [
@@ -24,7 +21,7 @@ export function MoodCheck() {
   const [history, setHistory] = useLocalStorage<MoodEntry[]>("steady-mood-history", []);
   const moods = t.mood.options;
 
-  const today = todayKey();
+  const today = useToday();
   const todayEntry = history.find((e) => e.date === today);
   const selected = todayEntry?.moodIndex ?? null;
 

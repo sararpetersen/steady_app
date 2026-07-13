@@ -12,6 +12,7 @@ import { Onboarding } from "./components/Onboarding";
 import { SettingsPage } from "./components/SettingsPage";
 import { AuthPage, type AuthState } from "./components/AuthPage";
 import { useLocalStorage } from "./hooks/useLocalStorage";
+import { useToday } from "./hooks/useToday";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
@@ -189,13 +190,15 @@ export default function App() {
     </button>
   );
 
+  const today = useToday();
+
   const greeting = (() => {
     const h = new Date().getHours();
     const base = h < 12 ? t.greeting.morning : h < 17 ? t.greeting.afternoon : t.greeting.evening;
     return profile.name ? `${base}, ${profile.name}` : base;
   })();
 
-  const dateStr = new Date().toLocaleDateString(t.dateLocale, { weekday: "short", day: "numeric", month: "short" });
+  const dateStr = new Date(`${today}T00:00:00`).toLocaleDateString(t.dateLocale, { weekday: "short", day: "numeric", month: "short" });
 
   return (
     <LangContext.Provider value={t}>

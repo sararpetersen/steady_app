@@ -1,4 +1,5 @@
 import { useLang } from "../i18n/LangContext";
+import { useToday } from "../hooks/useToday";
 
 interface Props {
   support: string[];
@@ -7,6 +8,7 @@ interface Props {
 
 export function PersonalizedTip({ support, sensory }: Props) {
   const t = useLang();
+  const today = useToday();
 
   // Pick one sensory tip if any active sensory sensitivity applies
   const sensoryTip = sensory.find((s) => t.sensoryTips[s]);
@@ -15,7 +17,7 @@ export function PersonalizedTip({ support, sensory }: Props) {
   const matchedSupport = support.filter((s) => t.supportTips[s]);
   const supportTip =
     matchedSupport.length > 0
-      ? t.supportTips[matchedSupport[new Date().getDate() % matchedSupport.length]]
+      ? t.supportTips[matchedSupport[new Date(`${today}T00:00:00`).getDate() % matchedSupport.length]]
       : t.supportTips["default"];
 
   return (

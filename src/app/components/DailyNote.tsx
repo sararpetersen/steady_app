@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { Save, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 
@@ -9,12 +10,8 @@ export interface NoteEntry {
   text: string;
 }
 
-function todayKey() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function formatEntryDate(dateStr: string, locale: string, todayLabel: string): string {
-  if (dateStr === todayKey()) return todayLabel;
+function formatEntryDate(dateStr: string, locale: string, todayLabel: string, today: string): string {
+  if (dateStr === today) return todayLabel;
   return new Date(dateStr).toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" });
 }
 
@@ -25,11 +22,16 @@ export function DailyNote() {
   const [saved, setSaved] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
 
-  const today = todayKey();
+  const today = useToday();
   const todayEntry = entries.find((e) => e.date === today);
   const [draft, setDraft] = useState(todayEntry?.text ?? "");
 
-  const promptIndex = new Date().getDate() % t.note.prompts.length;
+  useEffect(() => {
+    setDraft(todayEntry?.text ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [today]);
+
+  const promptIndex = new Date(`${today}T00:00:00`).getDate() % t.note.prompts.length;
 
   const save = () => {
     const trimmed = draft.trim();
@@ -119,13 +121,13 @@ export function DailyNote() {
                   <div key={entry.id} className="px-5 py-4 group">
                     <div className="flex items-center justify-between mb-1">
                       <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--primary)" }}>
-                        {formatEntryDate(entry.date, t.dateLocale, t.noteHistory.today)}
+                        {formatEntryDate(entry.date, t.dateLocale, t.noteHistory.today, today)}
                       </span>
                       <button
                         onClick={() => deleteEntry(entry.id)}
                         className="text-muted-foreground hover:text-destructive hover:bg-muted p-2 rounded-lg sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
                         style={{ transition: "all 0.15s" }}
-                        aria-label={`${t.noteHistory.deleteEntry}: ${formatEntryDate(entry.date, t.dateLocale, t.noteHistory.today)}`}
+                        aria-label={`${t.noteHistory.deleteEntry}: ${formatEntryDate(entry.date, t.dateLocale, t.noteHistory.today, today)}`}
                       >
                         <Trash2 size={14} />
                       </button>

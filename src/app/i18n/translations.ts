@@ -377,8 +377,16 @@ const en = {
     photoSet: "Photo set",
     namePlaceholder: "Your name or nickname",
     pronounsLabel: "Pronouns (optional)",
-    pronounsOptions: ["he/him", "she/her", "they/them", "he/they", "she/they", "any/all"],
+    pronounsOptions: [
+      { value: "he/him", label: "he/him" },
+      { value: "she/her", label: "she/her" },
+      { value: "they/them", label: "they/them" },
+      { value: "he/they", label: "he/they" },
+      { value: "she/they", label: "she/they" },
+      { value: "any/all", label: "any/all" },
+    ],
     aboutLabel: "A note to yourself (optional)",
+    aboutPlaceholder: "A reminder, encouragement, or anything you'd like to remember...",
 
     sensory: {
       heading: "My Sensory Profile",
@@ -873,8 +881,16 @@ const da: typeof en = {
     photoSet: "Foto valgt",
     namePlaceholder: "Dit navn eller kaldenavn",
     pronounsLabel: "Pronomener (valgfrit)",
-    pronounsOptions: ["han/ham", "hun/hende", "de/dem", "han/de", "hun/de", "alle"],
+    pronounsOptions: [
+      { value: "he/him", label: "han/ham" },
+      { value: "she/her", label: "hun/hende" },
+      { value: "they/them", label: "de/dem" },
+      { value: "he/they", label: "han/de" },
+      { value: "she/they", label: "hun/de" },
+      { value: "any/all", label: "alle" },
+    ],
     aboutLabel: "En note til dig selv (valgfrit)",
+    aboutPlaceholder: "En påmindelse, opmuntring eller noget andet, du gerne vil huske...",
 
     sensory: {
       heading: "Mit sensoriske profil",

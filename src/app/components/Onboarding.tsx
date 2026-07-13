@@ -205,7 +205,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
                 >
                   <option value="">{t.onboarding.name.pronounPlaceholder}</option>
                   {t.profile.pronounsOptions.map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
               </div>

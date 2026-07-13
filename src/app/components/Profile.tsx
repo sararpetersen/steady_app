@@ -3,7 +3,7 @@ import { Save, Camera, X } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import type { MoodEntry } from "./MoodCheck";
-import { type ProfileData } from "./profileTypes";
+import { normalizePronoun, type ProfileData } from "./profileTypes";
 
 const avatarEmojis = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨", "🍵", "🐾"];
 
@@ -73,6 +73,8 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
 
   const days = last7Days();
   const moods = t.mood.options;
+  const pronoun = normalizePronoun(profile.pronoun);
+  const pronounLabel = p.pronounsOptions.find((option) => option.value === pronoun)?.label ?? profile.pronoun;
 
   return (
     <div className="space-y-5">
@@ -122,21 +124,21 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           <div>
             <label className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>{p.pronounsLabel}</label>
             <select
-              value={profile.pronoun}
+              value={pronoun}
               onChange={(e) => update({ pronoun: e.target.value })}
               className="w-full rounded-xl px-4 py-3 border border-border bg-input-background text-foreground outline-none focus:border-primary appearance-none"
               style={{ transition: "border-color 0.15s", backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6560' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center", paddingRight: "2.5rem" }}
             >
               <option value="">—</option>
               {p.pronounsOptions.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
           </div>
         </div>
         <div>
           <label className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>{p.aboutLabel}</label>
-          <textarea value={profile.about} onChange={(e) => update({ about: e.target.value })} rows={2} className="w-full rounded-xl px-4 py-3 border border-border bg-input-background text-foreground outline-none focus:border-primary resize-none" style={{ lineHeight: 1.6, transition: "border-color 0.15s" }} />
+          <textarea value={profile.about} onChange={(e) => update({ about: e.target.value })} placeholder={p.aboutPlaceholder} rows={2} className="w-full rounded-xl px-4 py-3 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary resize-none" style={{ lineHeight: 1.6, transition: "border-color 0.15s" }} />
         </div>
       </div>
 
@@ -147,7 +149,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
         </div>
         <div>
           <p className="text-foreground" style={{ fontWeight: 800, fontSize: "1.15rem" }}>{profile.name || p.namePlaceholder}</p>
-          {profile.pronoun && <p className="text-muted-foreground" style={{ fontSize: "0.85rem", marginBottom: 2 }}>{profile.pronoun}</p>}
+          {profile.pronoun && <p className="text-muted-foreground" style={{ fontSize: "0.85rem", marginBottom: 2 }}>{pronounLabel}</p>}
           {profile.about && <p style={{ fontSize: "0.88rem", color: "var(--purple-text)", fontStyle: "italic" }}>"{profile.about}"</p>}
         </div>
       </div>

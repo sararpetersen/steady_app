@@ -287,6 +287,11 @@ const en = {
     addStepPlaceholder: "Add a step…",
     addStepButton: "Add",
     deleteStep: "Delete step",
+    editStep: "Edit step",
+    editLabel: "Edit",
+    saveStep: "Save step",
+    moveStepUp: "Move step up",
+    moveStepDown: "Move step down",
     noSteps: "No steps yet – tap below to add your first one.",
     sections: {
       morning: { label: "Morning", time: "7:00 - 9:00 AM" },
@@ -806,6 +811,11 @@ const da: typeof en = {
     addStepPlaceholder: "Tilføj et trin…",
     addStepButton: "Tilføj",
     deleteStep: "Slet trin",
+    editStep: "Rediger trin",
+    editLabel: "Rediger",
+    saveStep: "Gem trin",
+    moveStepUp: "Flyt trin op",
+    moveStepDown: "Flyt trin ned",
     noSteps: "Ingen trin endnu – tryk nedenfor for at tilføje det første.",
     sections: {
       morning: { label: "Morgen", time: "7:00 - 9:00" },

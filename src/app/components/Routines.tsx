@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Coffee, Sunset, Moon, MoonStar, Plus, X, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Coffee, Sunset, Moon, MoonStar, Plus, X, CheckCircle2, Check } from "lucide-react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
@@ -38,6 +38,8 @@ function SectionPanel({
   onToggle,
   customItems,
   onAddCustom,
+  onEditCustom,
+  onMoveCustom,
   onDeleteCustom,
 }: {
   sectionKey: SectionKey;
@@ -45,6 +47,8 @@ function SectionPanel({
   onToggle: (id: number) => void;
   customItems: CustomItem[];
   onAddCustom: (text: string) => void;
+  onEditCustom: (id: number, text: string) => void;
+  onMoveCustom: (index: number, offset: -1 | 1) => void;
   onDeleteCustom: (id: number) => void;
 }) {
   const t = useLang();
@@ -52,6 +56,8 @@ function SectionPanel({
   const [open, setOpen] = useState(false);
   const [addingStep, setAddingStep] = useState(false);
   const [stepDraft, setStepDraft] = useState("");
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editDraft, setEditDraft] = useState("");
 
   const allIds = customItems.map((c) => c.id);
   const doneCount = allIds.filter((id) => doneIds.includes(id)).length;
@@ -64,44 +70,104 @@ function SectionPanel({
     setAddingStep(false);
   };
 
-  const renderItem = (id: number, text: string, isCustom: boolean) => {
+  const startEditing = (item: CustomItem) => {
+    setEditingId(item.id);
+    setEditDraft(item.text);
+  };
+
+  const saveEdit = (id: number) => {
+    const trimmed = editDraft.trim();
+    if (!trimmed) return;
+    onEditCustom(id, trimmed);
+    setEditingId(null);
+    setEditDraft("");
+  };
+
+  const renderItem = (item: CustomItem, index: number) => {
+    const { id, text } = item;
     const done = doneIds.includes(id);
     return (
       <div key={id} className="flex items-center gap-2 group">
-        <button
-          onClick={() => onToggle(id)}
-          aria-pressed={done}
-          className="flex-1 flex items-center gap-3 rounded-xl p-3 text-left hover:bg-muted"
-          style={{ backgroundColor: done ? "var(--surface-2)" : "transparent", transition: "background-color 0.15s" }}
-        >
-          <span
-            className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
-            style={{
-              width: 24, height: 24,
-              borderColor: done ? "var(--primary)" : "var(--muted-foreground)",
-              backgroundColor: done ? "var(--primary)" : "transparent",
-            }}
+        {editingId === id ? (
+          <div className="flex-1 flex items-center gap-3 rounded-xl p-3 bg-muted">
+            <span
+              className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
+              style={{
+                width: 24, height: 24,
+                borderColor: done ? "var(--primary)" : "var(--muted-foreground)",
+                backgroundColor: done ? "var(--primary)" : "transparent",
+              }}
+              aria-hidden="true"
+            >
+              {done && <Check size={13} color="white" />}
+            </span>
+            <input
+              autoFocus
+              aria-label={`${t.routines.editStep}: ${text}`}
+              value={editDraft}
+              onChange={(event) => setEditDraft(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") saveEdit(id);
+                if (event.key === "Escape") setEditingId(null);
+              }}
+              className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none"
+            />
+          </div>
+        ) : (
+          <button
+            onClick={() => onToggle(id)}
+            aria-pressed={done}
+            className="flex-1 flex items-center gap-3 rounded-xl p-3 text-left hover:bg-muted"
+            style={{ backgroundColor: done ? "var(--surface-2)" : "transparent", transition: "background-color 0.15s" }}
           >
-            {done && (
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                <path d="M2.5 7L5.5 10L11.5 4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
-          </span>
-          <span className="text-foreground" style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1 }}>
-            {text}
-          </span>
-        </button>
-        {isCustom && (
+            <span
+              className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
+              style={{
+                width: 24, height: 24,
+                borderColor: done ? "var(--primary)" : "var(--muted-foreground)",
+                backgroundColor: done ? "var(--primary)" : "transparent",
+              }}
+            >
+              {done && <Check size={13} color="white" />}
+            </span>
+            <span className="text-foreground" style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1 }}>
+              {text}
+            </span>
+          </button>
+        )}
+        <div className="flex items-center gap-0.5 flex-shrink-0">
+          <button
+            onClick={() => onMoveCustom(index, -1)}
+            disabled={index === 0}
+            className="p-2 rounded-lg text-muted-foreground hover:bg-muted disabled:opacity-25"
+            aria-label={`${t.routines.moveStepUp}: ${text}`}
+          >
+            <ChevronUp size={15} />
+          </button>
+          <button
+            onClick={() => onMoveCustom(index, 1)}
+            disabled={index === customItems.length - 1}
+            className="p-2 rounded-lg text-muted-foreground hover:bg-muted disabled:opacity-25"
+            aria-label={`${t.routines.moveStepDown}: ${text}`}
+          >
+            <ChevronDown size={15} />
+          </button>
+          <button
+            onClick={() => editingId === id ? saveEdit(id) : startEditing(item)}
+            className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted"
+            aria-label={`${editingId === id ? t.routines.saveStep : t.routines.editStep}: ${text}`}
+          >
+            {editingId === id ? <Check size={15} /> : <span style={{ fontSize: "0.75rem", fontWeight: 700 }}>{t.routines.editLabel}</span>}
+          </button>
           <button
             onClick={() => onDeleteCustom(id)}
-            className="flex-shrink-0 p-2.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+            className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted"
             style={{ transition: "all 0.15s" }}
-            aria-label={t.routines.deleteStep}
+            aria-label={`${t.routines.deleteStep}: ${text}`}
           >
             <X size={14} />
           </button>
-        )}
+        </div>
       </div>
     );
   };
@@ -143,7 +209,7 @@ function SectionPanel({
               {t.routines.noSteps}
             </p>
           )}
-          {customItems.map((item) => renderItem(item.id, item.text, true))}
+          {customItems.map(renderItem)}
 
           {/* Add step */}
           {addingStep ? (
@@ -230,6 +296,23 @@ export function Routines() {
     setDoneIds((prev) => prev.filter((x) => x !== id));
   };
 
+  const editCustom = (section: SectionKey, id: number, text: string) => {
+    setCustom((prev) => ({
+      ...prev,
+      [section]: (prev[section] ?? []).map((item) => item.id === id ? { ...item, text } : item),
+    }));
+  };
+
+  const moveCustom = (section: SectionKey, index: number, offset: -1 | 1) => {
+    setCustom((prev) => {
+      const items = [...(prev[section] ?? [])];
+      const nextIndex = index + offset;
+      if (nextIndex < 0 || nextIndex >= items.length) return prev;
+      [items[index], items[nextIndex]] = [items[nextIndex], items[index]];
+      return { ...prev, [section]: items };
+    });
+  };
+
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <h3 className="mb-1 text-foreground">{t.routines.heading}</h3>
@@ -243,6 +326,8 @@ export function Routines() {
             onToggle={toggleDone}
             customItems={custom[key] ?? []}
             onAddCustom={(text) => addCustom(key, text)}
+            onEditCustom={(id, text) => editCustom(key, id, text)}
+            onMoveCustom={(index, offset) => moveCustom(key, index, offset)}
             onDeleteCustom={(id) => deleteCustom(key, id)}
           />
         ))}

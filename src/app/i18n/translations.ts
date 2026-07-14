@@ -299,7 +299,7 @@ const en = {
         label: "Afternoon",
         time: "12:00 - 3:00 PM",
       },
-      late: { label: "Late evening", time: "8:00 - 10:00 PM" },
+      late: { label: "Evening", time: "6:00 - 10:00 PM" },
     },
     items: {
       1: "Wake up",
@@ -821,7 +821,7 @@ const da: typeof en = {
         label: "Eftermiddag",
         time: "12:00 - 15:00",
       },
-      late: { label: "Sen aften", time: "20:00 - 22:00" },
+      late: { label: "Aften", time: "18:00 - 22:00" },
     },
     items: {
       1: "Vågn op",

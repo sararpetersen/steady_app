@@ -21,24 +21,13 @@ const AppleIcon = () => (
 export interface AuthState {
   email: string;
   isGuest: boolean;
+  userId?: string;
 }
 
-interface StoredAccount {
-  passwordHash: string;
-}
-
-import { hashPassword } from "../utils/crypto";
-
-function getAccounts(): Record<string, StoredAccount> {
-  try { return JSON.parse(localStorage.getItem("steady-accounts") ?? "{}"); } catch { return {}; }
-}
-
-function saveAccounts(accounts: Record<string, StoredAccount>) {
-  localStorage.setItem("steady-accounts", JSON.stringify(accounts));
-}
+import { supabase } from "../lib/supabaseClient";
 
 interface Props {
-  onAuth: (state: AuthState) => void;
+  onAuth: (state: AuthState, justSignedUp: boolean) => void;
 }
 
 export function AuthPage({ onAuth }: Props) {
@@ -51,6 +40,7 @@ export function AuthPage({ onAuth }: Props) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const switchMode = (m: "signup" | "login") => {
     setMode(m);
@@ -62,19 +52,30 @@ export function AuthPage({ onAuth }: Props) {
     if (!email.trim()) { setError(t.emailRequired); return; }
     if (password.length < 6) { setError(t.passwordTooShort); return; }
 
-    const accounts = getAccounts();
-    const passwordHash = await hashPassword(password);
-
-    if (mode === "signup") {
-      if (confirmPassword !== password) { setError(t.passwordsNoMatch); return; }
-      if (accounts[email.toLowerCase()]) { setError(t.emailInUse); return; }
-      accounts[email.toLowerCase()] = { passwordHash };
-      saveAccounts(accounts);
-      onAuth({ email: email.toLowerCase(), isGuest: false });
-    } else {
-      const stored = accounts[email.toLowerCase()];
-      if (!stored || stored.passwordHash !== passwordHash) { setError(t.invalidCredentials); return; }
-      onAuth({ email: email.toLowerCase(), isGuest: false });
+    setSubmitting(true);
+    try {
+      if (mode === "signup") {
+        if (confirmPassword !== password) { setError(t.passwordsNoMatch); return; }
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email: email.toLowerCase(),
+          password,
+        });
+        if (signUpError) {
+          setError(signUpError.message === "User already registered" ? t.emailInUse : signUpError.message);
+          return;
+        }
+        if (!data.user) { setError(t.invalidCredentials); return; }
+        onAuth({ email: email.toLowerCase(), isGuest: false, userId: data.user.id }, true);
+      } else {
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
+          email: email.toLowerCase(),
+          password,
+        });
+        if (signInError || !data.user) { setError(t.invalidCredentials); return; }
+        onAuth({ email: email.toLowerCase(), isGuest: false, userId: data.user.id }, false);
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -203,7 +204,8 @@ export function AuthPage({ onAuth }: Props) {
         {/* Submit */}
         <button
           onClick={submit}
-          className="w-full rounded-2xl py-3.5 bg-primary text-primary-foreground hover:opacity-90"
+          disabled={submitting}
+          className="w-full rounded-2xl py-3.5 bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-60"
           style={{ fontWeight: 700, fontSize: "1rem", transition: "opacity 0.15s" }}
         >
           {mode === "signup" ? t.createAccount : t.logIn}
@@ -238,7 +240,7 @@ export function AuthPage({ onAuth }: Props) {
 
         {/* Guest */}
         <button
-          onClick={() => onAuth({ email: "", isGuest: true })}
+          onClick={() => onAuth({ email: "", isGuest: true }, false)}
           className="w-full text-center hover:text-foreground"
           style={{ fontSize: "0.88rem", color: "var(--muted-foreground)", transition: "color 0.15s" }}
         >

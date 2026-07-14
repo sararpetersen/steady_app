@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { hashPassword } from "../utils/crypto";
+import { supabase } from "../lib/supabaseClient";
 import { X, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
 import type { A11ySettings } from "./a11yTypes";
@@ -15,7 +15,7 @@ interface Props {
   onClearData: () => void;
   auth: AuthState | null;
   onSignOut: () => void;
-  onAuthUpdate: (newEmail: string) => void;
+  onAuthUpdate: (newEmail: string, userId: string, justSignedUp?: boolean) => void;
 }
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
@@ -97,17 +97,10 @@ function OptionRow<V extends string>({ label, options, value, onChange, stacked 
   );
 }
 
-function getAccounts(): Record<string, { passwordHash: string }> {
-  try { return JSON.parse(localStorage.getItem("steady-accounts") ?? "{}"); } catch { return {}; }
-}
-function saveAccounts(a: Record<string, { passwordHash: string }>) {
-  localStorage.setItem("steady-accounts", JSON.stringify(a));
-}
-
 function AccountSection({ auth, onSignOut, onAuthUpdate }: {
   auth: AuthState | null;
   onSignOut: () => void;
-  onAuthUpdate: (newEmail: string) => void;
+  onAuthUpdate: (newEmail: string, userId: string, justSignedUp?: boolean) => void;
 }) {
   const t = useLang();
   const a = t.account;
@@ -131,16 +124,11 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
   const saveEmail = async () => {
     setEmailError("");
     if (!newEmail.trim()) { setEmailError(a.emailRequired); return; }
-    const accounts = getAccounts();
-    const stored = accounts[auth!.email];
-    if (!stored || stored.passwordHash !== await hashPassword(verifyPw)) { setEmailError(a.wrongPassword); return; }
-    if (accounts[newEmail.toLowerCase()] && newEmail.toLowerCase() !== auth!.email) {
-      setEmailError(a.emailInUse); return;
-    }
-    accounts[newEmail.toLowerCase()] = stored;
-    if (newEmail.toLowerCase() !== auth!.email) delete accounts[auth!.email];
-    saveAccounts(accounts);
-    onAuthUpdate(newEmail.toLowerCase());
+    const { error: verifyError } = await supabase.auth.signInWithPassword({ email: auth!.email, password: verifyPw });
+    if (verifyError) { setEmailError(a.wrongPassword); return; }
+    const { data, error } = await supabase.auth.updateUser({ email: newEmail.toLowerCase() });
+    if (error) { setEmailError(error.message === "User already registered" ? a.emailInUse : error.message); return; }
+    onAuthUpdate(newEmail.toLowerCase(), data.user!.id);
     setEmailOpen(false);
     setNewEmail("");
     setVerifyPw("");
@@ -150,13 +138,12 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
 
   const savePassword = async () => {
     setPwError("");
-    const accounts = getAccounts();
-    const stored = accounts[auth!.email];
-    if (!stored || stored.passwordHash !== await hashPassword(currentPw)) { setPwError(a.wrongPassword); return; }
+    const { error: verifyError } = await supabase.auth.signInWithPassword({ email: auth!.email, password: currentPw });
+    if (verifyError) { setPwError(a.wrongPassword); return; }
     if (newPw.length < 6) { setPwError(a.passwordTooShort); return; }
     if (newPw !== confirmPw) { setPwError(a.passwordsNoMatch); return; }
-    accounts[auth!.email] = { passwordHash: await hashPassword(newPw) };
-    saveAccounts(accounts);
+    const { error } = await supabase.auth.updateUser({ password: newPw });
+    if (error) { setPwError(error.message); return; }
     setPwOpen(false);
     setCurrentPw(""); setNewPw(""); setConfirmPw("");
     setPwSaved(true);
@@ -178,11 +165,10 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
     if (!signUpEmail.trim()) { setSignUpError(a.emailRequired); return; }
     if (signUpPw.length < 6) { setSignUpError(a.passwordTooShort); return; }
     if (signUpPw !== signUpConfirm) { setSignUpError(a.passwordsNoMatch); return; }
-    const accounts = getAccounts();
-    if (accounts[signUpEmail.toLowerCase()]) { setSignUpError(a.emailInUse); return; }
-    accounts[signUpEmail.toLowerCase()] = { passwordHash: await hashPassword(signUpPw) };
-    saveAccounts(accounts);
-    onAuthUpdate(signUpEmail.toLowerCase());
+    const { data, error } = await supabase.auth.signUp({ email: signUpEmail.toLowerCase(), password: signUpPw });
+    if (error) { setSignUpError(error.message === "User already registered" ? a.emailInUse : error.message); return; }
+    if (!data.user) { setSignUpError(a.emailRequired); return; }
+    onAuthUpdate(signUpEmail.toLowerCase(), data.user.id, true);
   };
 
   if (isGuest) {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MoodCheck } from "./components/MoodCheck";
 import { TaskList, type Task } from "./components/TaskList";
 import { Routines } from "./components/Routines";
@@ -13,6 +13,8 @@ import { SettingsPage } from "./components/SettingsPage";
 import { AuthPage, type AuthState } from "./components/AuthPage";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useToday } from "./hooks/useToday";
+import { supabase } from "./lib/supabaseClient";
+import { pushLocalToRemote, pullRemoteToLocal } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
@@ -148,11 +150,80 @@ export default function App() {
     setSettingsOpen(false);
     setActiveTab("overview");
     setAuthState(null);
+    supabase.auth.signOut();
   };
 
-  const handleAuthUpdate = (newEmail: string) => {
-    setAuthState({ email: newEmail, isGuest: false });
+  // When a guest converts to a real account, their local data is the source of
+  // truth and must be pushed up rather than overwritten by a pull.
+  const justConvertedRef = useRef(false);
+
+  const handleAuthUpdate = (newEmail: string, userId: string, justSignedUp?: boolean) => {
+    if (justSignedUp) justConvertedRef.current = true;
+    setAuthState({ email: newEmail, isGuest: false, userId });
   };
+
+  // Sync: when a real (non-guest) session starts, either push the freshly
+  // converted guest's local data up, or pull the account's existing remote data down.
+  // A pull writes straight to localStorage (bypassing React state), so once it lands we
+  // reload — guarded per-session so we don't loop — to make every useLocalStorage-backed
+  // field (tasks, profile, onboarded, ...) pick up the newly synced values.
+  useEffect(() => {
+    if (!authState || authState.isGuest || !authState.userId) return;
+    const userId = authState.userId;
+    let cancelled = false;
+    (async () => {
+      if (justConvertedRef.current) {
+        justConvertedRef.current = false;
+        await pushLocalToRemote(userId);
+        return;
+      }
+      const syncedFlag = `steady-pulled-${userId}`;
+      if (sessionStorage.getItem(syncedFlag)) return;
+      const pulled = await pullRemoteToLocal(userId);
+      if (cancelled) return;
+      sessionStorage.setItem(syncedFlag, "1");
+      if (pulled) {
+        window.location.reload();
+      } else {
+        // No remote row yet for this account — push current local state up.
+        await pushLocalToRemote(userId);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authState?.userId]);
+
+  // Ongoing sync: debounce-push whenever tracked top-level state changes (tasks, profile, etc.).
+  useEffect(() => {
+    if (!authState || authState.isGuest || !authState.userId) return;
+    const userId = authState.userId;
+    const timeout = setTimeout(() => {
+      pushLocalToRemote(userId);
+    }, 1500);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authState?.userId, tasks, nextId, tasksDate, rawProfile, profilePhoto, onboarded, activeTab, today]);
+
+  // Habits/notes/routines are written directly to localStorage by their own tabs rather
+  // than through top-level state, so also push periodically and when the tab loses focus
+  // to make sure those changes eventually reach the account.
+  useEffect(() => {
+    if (!authState || authState.isGuest || !authState.userId) return;
+    const userId = authState.userId;
+    const interval = setInterval(() => pushLocalToRemote(userId), 30000);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") pushLocalToRemote(userId);
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("beforeunload", onVisibilityChange);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("beforeunload", onVisibilityChange);
+    };
+  }, [authState?.userId, authState?.isGuest]);
 
   const clearAllData = () => {
     setTasks([]);
@@ -175,8 +246,9 @@ export default function App() {
   if (!authState || forceAuth) {
     return (
       <AuthPage
-        onAuth={(s) => {
+        onAuth={(s, justSignedUp) => {
           setSettingsOpen(false);
+          if (justSignedUp) justConvertedRef.current = true;
           setAuthState(s);
           if (forceAuth) {
             setForceAuth(false);
@@ -195,7 +267,10 @@ export default function App() {
           onComplete={handleOnboardingComplete}
           onSkip={() => setOnboarded(true)}
           isGuest={authState.isGuest}
-          onRegister={(email) => setAuthState({ email, isGuest: false })}
+          onRegister={(email, userId) => {
+            justConvertedRef.current = true;
+            setAuthState({ email, isGuest: false, userId });
+          }}
         />
       </LangContext.Provider>
     );

@@ -4,7 +4,7 @@ import { SteadyLogo } from "./SteadyLogo";
 import { translations, type Lang } from "../i18n/translations";
 import { type ProfileData, DEFAULT_PROFILE } from "./profileTypes";
 import { DEFAULT_A11Y } from "./a11yTypes";
-import { hashPassword } from "../utils/crypto";
+import { supabase } from "../lib/supabaseClient";
 
 const AVATARS = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨", "🍵", "🐾"];
 
@@ -32,7 +32,7 @@ interface Props {
   onComplete: (profile: ProfileData) => void;
   onSkip: () => void;
   isGuest?: boolean;
-  onRegister?: (email: string) => void;
+  onRegister?: (email: string, userId: string) => void;
 }
 
 export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
@@ -54,18 +54,28 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
   const [signUpPassword, setSignUpPassword] = useState("");
   const [signUpError, setSignUpError] = useState("");
 
+  const [signingUp, setSigningUp] = useState(false);
+
   const registerAndFinish = async () => {
     setSignUpError("");
     if (!signUpEmail.trim()) { setSignUpError("Please enter your email."); return; }
     if (signUpPassword.length < 6) { setSignUpError("Password must be at least 6 characters."); return; }
-    const accounts: Record<string, { passwordHash: string }> = (() => {
-      try { return JSON.parse(localStorage.getItem("steady-accounts") ?? "{}"); } catch { return {}; }
-    })();
-    if (accounts[signUpEmail.toLowerCase()]) { setSignUpError("That email is already in use."); return; }
-    accounts[signUpEmail.toLowerCase()] = { passwordHash: await hashPassword(signUpPassword) };
-    localStorage.setItem("steady-accounts", JSON.stringify(accounts));
-    onRegister?.(signUpEmail.toLowerCase());
-    finish();
+    setSigningUp(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: signUpEmail.toLowerCase(),
+        password: signUpPassword,
+      });
+      if (error) {
+        setSignUpError(error.message === "User already registered" ? "That email is already in use." : error.message);
+        return;
+      }
+      if (!data.user) { setSignUpError("Something went wrong. Please try again."); return; }
+      onRegister?.(signUpEmail.toLowerCase(), data.user.id);
+      finish();
+    } finally {
+      setSigningUp(false);
+    }
   };
 
   const toggleSensory = (key: string) => {
@@ -500,7 +510,8 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
                           )}
                           <button
                             onClick={registerAndFinish}
-                            className="w-full rounded-xl py-3 bg-primary text-primary-foreground hover:opacity-90"
+                            disabled={signingUp}
+                            className="w-full rounded-xl py-3 bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-60"
                             style={{ fontWeight: 700, fontSize: "0.95rem", transition: "opacity 0.15s" }}
                           >
                             Create account &amp; enter Steady

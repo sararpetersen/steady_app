@@ -1,5 +1,10 @@
 @custom-variant dark (&:is(.dark *));
 
+.avatar-option[aria-pressed="false"]:hover {
+  background-color: var(--surface-2) !important;
+  border-color: var(--primary) !important;
+}
+
 :root {
   --font-size: 17px;
   --background: #f5f2ed;
@@ -37,6 +42,7 @@
   /* App-specific semantic color tokens */
   --surface-1: #f0ede7;
   --surface-2: #ebe8e2;
+  --avatar-option-bg: #f0ede7;
   --green-bg: #d4ebe3;
   --green-text: #2d6b56;
   --purple-bg: #eae4f7;
@@ -98,6 +104,7 @@
   /* App-specific semantic tokens — dark overrides */
   --surface-1: #3a3734;
   --surface-2: #47443f;
+  --avatar-option-bg: #514c47;
   --green-bg: #1c3d2e;
   --green-text: #82cca8;
   --purple-bg: #2a2245;

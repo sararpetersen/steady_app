@@ -526,6 +526,21 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
                 <div key={section.heading}>
                   <p className="text-foreground mb-1" style={{ fontWeight: 700, fontSize: "0.9rem" }}>{section.heading}</p>
                   <p className="text-muted-foreground" style={{ fontSize: "0.875rem", lineHeight: 1.7 }}>{section.body}</p>
+                  {"website" in section && "email" in section && (
+                    <div className="mt-2 flex flex-col items-start gap-1" style={{ fontSize: "0.875rem" }}>
+                      <a
+                        href={section.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary hover:underline break-all"
+                      >
+                        {section.website}
+                      </a>
+                      <a href={`mailto:${section.email}`} className="text-primary hover:underline break-all">
+                        {section.email}
+                      </a>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

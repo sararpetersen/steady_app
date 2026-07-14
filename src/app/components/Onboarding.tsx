@@ -6,7 +6,7 @@ import { type ProfileData, DEFAULT_PROFILE } from "./profileTypes";
 import { DEFAULT_A11Y } from "./a11yTypes";
 import { supabase } from "../lib/supabaseClient";
 
-const AVATARS = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨", "🍵", "🐾"];
+const AVATARS = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨"];
 
 const SENSORY_OPTIONS = [
   { key: "Noise-sensitive", emoji: "🔇" },
@@ -241,13 +241,14 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
                     <button
                       key={e}
                       onClick={() => setAvatar(e)}
-                      className="rounded-2xl flex items-center justify-center hover:scale-110"
+                      aria-pressed={avatar === e}
+                      className="avatar-option rounded-2xl flex items-center justify-center"
                       style={{
                         aspectRatio: "1",
                         fontSize: "1.8rem",
-                        backgroundColor: avatar === e ? "var(--green-bg)" : "var(--surface-1)",
-                        border: avatar === e ? "2px solid var(--primary)" : "2px solid transparent",
-                        transition: "all 0.15s",
+                        backgroundColor: avatar === e ? "var(--green-bg)" : "var(--avatar-option-bg)",
+                        border: avatar === e ? "2px solid var(--primary)" : "1px solid var(--border)",
+                        transition: "background-color 0.15s, border-color 0.15s",
                       }}
                     >
                       {e}

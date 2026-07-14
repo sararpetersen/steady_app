@@ -93,7 +93,7 @@ const en = {
     privacyLink: "Read full privacy policy",
     privacyPolicy: {
       title: "Privacy policy",
-      lastUpdated: "Last updated: June 2026",
+      lastUpdated: "Last updated: July 2026",
       sections: [
         {
           heading: "Who am I?",
@@ -133,7 +133,9 @@ const en = {
         },
         {
           heading: "Questions",
-          body: "If you have any questions about how Steady handles your data, you're welcome to reach out. Contact details will be available once the official Steady website launches.",
+          body: "If you have any questions about how Steady handles your data, you're welcome to get in touch:",
+          website: "https://web-steady.netlify.app/",
+          email: "sara.ringkow@gmail.com",
         },
       ],
     },
@@ -290,8 +292,6 @@ const en = {
     editStep: "Edit step",
     editLabel: "Edit",
     saveStep: "Save step",
-    moveStepUp: "Move step up",
-    moveStepDown: "Move step down",
     noSteps: "No steps yet – tap below to add your first one.",
     sections: {
       morning: { label: "Morning", time: "7:00 - 9:00 AM" },
@@ -326,8 +326,6 @@ const en = {
     edit: "Edit habit",
     editLabel: "Edit",
     saveEdit: "Save habit",
-    moveUp: "Move habit up",
-    moveDown: "Move habit down",
     emojiLabel: "Habit emoji",
     noHabits: "No habits yet. Add one below.",
     emptyTitle: "No habits yet",
@@ -615,7 +613,7 @@ const da: typeof en = {
     privacyLink: "Læs fuld privatlivspolitik",
     privacyPolicy: {
       title: "Privatlivspolitik",
-      lastUpdated: "Sidst opdateret: juni 2026",
+      lastUpdated: "Sidst opdateret: juli 2026",
       sections: [
         {
           heading: "Hvem er jeg?",
@@ -655,7 +653,9 @@ const da: typeof en = {
         },
         {
           heading: "Spørgsmål",
-          body: "Hvis du har spørgsmål om, hvordan Steady håndterer dine data, er du velkommen til at kontakte mig. Kontaktoplysninger vil være tilgængelige, når Steadys officielle hjemmeside lanceres.",
+          body: "Hvis du har spørgsmål om, hvordan Steady håndterer dine data, er du velkommen til at kontakte mig:",
+          website: "https://web-steady.netlify.app/",
+          email: "sara.ringkow@gmail.com",
         },
       ],
     },
@@ -812,8 +812,6 @@ const da: typeof en = {
     editStep: "Rediger trin",
     editLabel: "Rediger",
     saveStep: "Gem trin",
-    moveStepUp: "Flyt trin op",
-    moveStepDown: "Flyt trin ned",
     noSteps: "Ingen trin endnu – tryk nedenfor for at tilføje det første.",
     sections: {
       morning: { label: "Morgen", time: "7:00 - 9:00" },
@@ -848,8 +846,6 @@ const da: typeof en = {
     edit: "Rediger vane",
     editLabel: "Rediger",
     saveEdit: "Gem vane",
-    moveUp: "Flyt vane op",
-    moveDown: "Flyt vane ned",
     emojiLabel: "Vane-emoji",
     noHabits: "Ingen vaner endnu. Tilføj én nedenfor.",
     emptyTitle: "Ingen vaner endnu",

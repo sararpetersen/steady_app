@@ -5,7 +5,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import type { MoodEntry } from "./MoodCheck";
 import { normalizePronoun, type ProfileData } from "./profileTypes";
 
-const avatarEmojis = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨", "🍵", "🐾"];
+const avatarEmojis = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨"];
 
 async function resizeImageToBase64(file: File, maxPx = 240): Promise<string> {
   return new Promise((resolve) => {
@@ -110,7 +110,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
             </p>
             <div role="group" aria-label={p.emojiAvatar} className="flex flex-wrap gap-2">
               {avatarEmojis.map((e) => (
-                <button key={e} onClick={() => update({ avatar: e })} aria-label={e} aria-pressed={profile.avatar === e} className="rounded-xl flex items-center justify-center hover:scale-110 hover:opacity-85" style={{ width: 40, height: 40, fontSize: "1.4rem", backgroundColor: profile.avatar === e ? "var(--green-bg)" : "var(--surface-1)", border: profile.avatar === e ? "2px solid var(--primary)" : "2px solid transparent", transition: "all 0.15s" }}>{e}</button>
+                <button key={e} onClick={() => update({ avatar: e })} aria-label={e} aria-pressed={profile.avatar === e} className="avatar-option rounded-xl flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2" style={{ width: 40, height: 40, fontSize: "1.4rem", backgroundColor: profile.avatar === e ? "var(--green-bg)" : "var(--avatar-option-bg)", border: profile.avatar === e ? "2px solid var(--primary)" : "1px solid var(--border)", transition: "background-color 0.15s, border-color 0.15s" }}>{e}</button>
               ))}
             </div>
           </div>

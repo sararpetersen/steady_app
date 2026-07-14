@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, GripVertical } from "lucide-react";
+import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
@@ -35,7 +36,7 @@ function SectionPanel({
   customItems,
   onAddCustom,
   onEditCustom,
-  onMoveCustom,
+  onReorderCustom,
   onDeleteCustom,
 }: {
   sectionKey: SectionKey;
@@ -44,7 +45,7 @@ function SectionPanel({
   customItems: CustomItem[];
   onAddCustom: (text: string) => void;
   onEditCustom: (id: number, text: string) => void;
-  onMoveCustom: (index: number, offset: -1 | 1) => void;
+  onReorderCustom: (items: CustomItem[]) => void;
   onDeleteCustom: (id: number) => void;
 }) {
   const t = useLang();
@@ -79,11 +80,14 @@ function SectionPanel({
     setEditDraft("");
   };
 
-  const renderItem = (item: CustomItem, index: number) => {
+  const renderItem = (item: CustomItem) => {
     const { id, text } = item;
     const done = doneIds.includes(id);
     return (
-      <div key={id} className="flex items-center gap-2 group">
+      <Reorder.Item key={id} value={item} dragListener={editingId !== id} className="flex items-center gap-2 group relative" whileDrag={{ scale: 1.02, zIndex: 10 }}>
+        <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
+          <GripVertical size={18} />
+        </span>
         {editingId === id ? (
           <div className="flex-1 flex items-center gap-3 rounded-xl p-3 bg-muted">
             <span
@@ -133,22 +137,6 @@ function SectionPanel({
         )}
         <div className="flex items-center gap-0.5 flex-shrink-0">
           <button
-            onClick={() => onMoveCustom(index, -1)}
-            disabled={index === 0}
-            className="p-2 rounded-lg text-muted-foreground hover:bg-muted disabled:opacity-25"
-            aria-label={`${t.routines.moveStepUp}: ${text}`}
-          >
-            <ChevronUp size={15} />
-          </button>
-          <button
-            onClick={() => onMoveCustom(index, 1)}
-            disabled={index === customItems.length - 1}
-            className="p-2 rounded-lg text-muted-foreground hover:bg-muted disabled:opacity-25"
-            aria-label={`${t.routines.moveStepDown}: ${text}`}
-          >
-            <ChevronDown size={15} />
-          </button>
-          <button
             onClick={() => editingId === id ? saveEdit(id) : startEditing(item)}
             className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted"
             aria-label={`${editingId === id ? t.routines.saveStep : t.routines.editStep}: ${text}`}
@@ -164,7 +152,7 @@ function SectionPanel({
             <X size={14} />
           </button>
         </div>
-      </div>
+      </Reorder.Item>
     );
   };
 
@@ -205,7 +193,9 @@ function SectionPanel({
               {t.routines.noSteps}
             </p>
           )}
-          {customItems.map(renderItem)}
+          <Reorder.Group axis="y" values={customItems} onReorder={onReorderCustom} className="space-y-1">
+            {customItems.map(renderItem)}
+          </Reorder.Group>
 
           {/* Add step */}
           {addingStep ? (
@@ -299,14 +289,8 @@ export function Routines() {
     }));
   };
 
-  const moveCustom = (section: SectionKey, index: number, offset: -1 | 1) => {
-    setCustom((prev) => {
-      const items = [...(prev[section] ?? [])];
-      const nextIndex = index + offset;
-      if (nextIndex < 0 || nextIndex >= items.length) return prev;
-      [items[index], items[nextIndex]] = [items[nextIndex], items[index]];
-      return { ...prev, [section]: items };
-    });
+  const reorderCustom = (section: SectionKey, items: CustomItem[]) => {
+    setCustom((prev) => ({ ...prev, [section]: items }));
   };
 
   return (
@@ -323,7 +307,7 @@ export function Routines() {
             customItems={custom[key] ?? []}
             onAddCustom={(text) => addCustom(key, text)}
             onEditCustom={(id, text) => editCustom(key, id, text)}
-            onMoveCustom={(index, offset) => moveCustom(key, index, offset)}
+            onReorderCustom={(items) => reorderCustom(key, items)}
             onDeleteCustom={(id) => deleteCustom(key, id)}
           />
         ))}

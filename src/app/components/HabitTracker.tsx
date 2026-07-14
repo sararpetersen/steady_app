@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
-import { Sprout, Leaf, Flower2, TreeDeciduous, Plus, X, Check, ChevronUp, ChevronDown } from "lucide-react";
+import { Reorder } from "motion/react";
+import { Sprout, Leaf, Flower2, TreeDeciduous, Plus, X, Check, GripVertical } from "lucide-react";
 
 export interface Habit {
   id: string;
@@ -114,16 +115,6 @@ export function HabitTracker() {
     setHabits((prev) => prev.filter((h) => h.id !== id));
   };
 
-  const moveHabit = (index: number, offset: -1 | 1) => {
-    setHabits((prev) => {
-      const nextIndex = index + offset;
-      if (nextIndex < 0 || nextIndex >= prev.length) return prev;
-      const next = [...prev];
-      [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
-      return next;
-    });
-  };
-
   const startEditing = (habit: Habit) => {
     setEditingId(habit.id);
     setEditName(habit.name);
@@ -163,17 +154,16 @@ export function HabitTracker() {
         </div>
       )}
 
-      <div className="space-y-2 mb-3">
+      <Reorder.Group axis="y" values={habits} onReorder={setHabits} className="space-y-2 mb-3">
         {habits.map((habit, index) => {
           const totalCompletions = habit.totalCompletions ?? 0; // legacy entries may predate this field
           const stage = getGrowthStage(totalCompletions);
           const StageIcon = stage.icon;
           return (
-          <div key={habit.id} className="flex items-center gap-1 group">
-            <div className="flex flex-col flex-shrink-0 gap-0.5">
-              <button onClick={() => moveHabit(index, -1)} disabled={index === 0} className="p-1.5 rounded-lg text-muted-foreground disabled:opacity-25 hover:bg-muted" aria-label={`${t.habits.moveUp}: ${habit.name}`}><ChevronUp size={16} /></button>
-              <button onClick={() => moveHabit(index, 1)} disabled={index === habits.length - 1} className="p-1.5 rounded-lg text-muted-foreground disabled:opacity-25 hover:bg-muted" aria-label={`${t.habits.moveDown}: ${habit.name}`}><ChevronDown size={16} /></button>
-            </div>
+          <Reorder.Item key={habit.id} value={habit} dragListener={editingId !== habit.id} className="flex items-center gap-1 group relative" whileDrag={{ scale: 1.02, zIndex: 10 }}>
+            <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
+              <GripVertical size={19} />
+            </span>
             <div className="relative flex-1 min-w-0">
             {/* Main tap area — full width */}
             {editingId === habit.id ? (
@@ -227,10 +217,10 @@ export function HabitTracker() {
               <button onClick={() => deleteHabit(habit.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted" aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></button>
             </div>
             </div>
-          </div>
+          </Reorder.Item>
           );
         })}
-      </div>
+      </Reorder.Group>
 
       {/* Add habit form */}
       {showForm ? (

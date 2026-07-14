@@ -77,10 +77,11 @@ export default function App() {
   // Same rollover reset for routine steps checked off for the day.
   useEffect(() => {
     try {
-      const doneDate = localStorage.getItem("steady-routines-done-date");
+      const raw = localStorage.getItem("steady-routines-done-date");
+      const doneDate = raw !== null ? (JSON.parse(raw) as string) : null;
       if (doneDate !== today) {
         localStorage.setItem("steady-routines-done", JSON.stringify([]));
-        localStorage.setItem("steady-routines-done-date", today);
+        localStorage.setItem("steady-routines-done-date", JSON.stringify(today));
       }
     } catch {
       /* ignore */

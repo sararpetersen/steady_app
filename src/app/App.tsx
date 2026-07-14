@@ -234,7 +234,7 @@ export default function App() {
     localStorage.setItem("steady-notes", JSON.stringify([]));
     localStorage.setItem("steady-notes-nextid", JSON.stringify(1));
     localStorage.setItem("steady-routines-done", JSON.stringify([]));
-    localStorage.setItem("steady-routines-custom", JSON.stringify({ morning: [], noon: [], afternoon: [], evening: [], late: [] }));
+    localStorage.setItem("steady-routines-custom", JSON.stringify({ morning: [], afternoon: [], late: [] }));
     localStorage.setItem("steady-routines-nextid", JSON.stringify(100));
   };
 

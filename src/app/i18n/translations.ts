@@ -295,12 +295,10 @@ const en = {
     noSteps: "No steps yet – tap below to add your first one.",
     sections: {
       morning: { label: "Morning", time: "7:00 - 9:00 AM" },
-      noon: { label: "Mid-morning", time: "9:00 - 11:00 AM" },
       afternoon: {
         label: "Afternoon",
-        time: "12:00 - 2:00 PM",
+        time: "12:00 - 3:00 PM",
       },
-      evening: { label: "Early evening", time: "6:00 - 8:00 PM" },
       late: { label: "Late evening", time: "8:00 - 10:00 PM" },
     },
     items: {
@@ -819,12 +817,10 @@ const da: typeof en = {
     noSteps: "Ingen trin endnu – tryk nedenfor for at tilføje det første.",
     sections: {
       morning: { label: "Morgen", time: "7:00 - 9:00" },
-      noon: { label: "Formiddag", time: "9:00 - 11:00" },
       afternoon: {
         label: "Eftermiddag",
         time: "12:00 - 15:00",
       },
-      evening: { label: "Tidlig aften", time: "18:00 - 20:00" },
       late: { label: "Sen aften", time: "20:00 - 22:00" },
     },
     items: {

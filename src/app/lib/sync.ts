@@ -43,7 +43,7 @@ function collectLocalRow(): SteadyUserDataRow {
     notes_next_id: readJSON("steady-notes-nextid", 1),
     routines_done: readJSON("steady-routines-done", []),
     routines_done_date: readJSON<string | null>("steady-routines-done-date", null),
-    routines_custom: readJSON("steady-routines-custom", { morning: [], noon: [], afternoon: [], evening: [], late: [] }),
+    routines_custom: readJSON("steady-routines-custom", { morning: [], afternoon: [], late: [] }),
     routines_next_id: readJSON("steady-routines-nextid", 100),
     onboarded: readJSON("steady-onboarded", false),
   };

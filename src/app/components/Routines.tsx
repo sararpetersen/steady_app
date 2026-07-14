@@ -1,25 +1,21 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Coffee, Sunset, Moon, MoonStar, Plus, X, CheckCircle2, Check } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check } from "lucide-react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 
-const SECTION_KEYS = ["morning", "noon", "afternoon", "evening", "late"] as const;
+const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
 type SectionKey = typeof SECTION_KEYS[number];
 
 const SECTION_ICONS: Record<SectionKey, React.ReactNode> = {
   morning: <Sun size={20} />,
-  noon: <Coffee size={20} />,
   afternoon: <Sunset size={20} />,
-  evening: <Moon size={20} />,
   late: <MoonStar size={20} />,
 };
 
 const SECTION_COLOR_VARS: Record<SectionKey, string> = {
   morning: "var(--morning-bg)",
-  noon: "var(--noon-bg)",
   afternoon: "var(--afternoon-bg)",
-  evening: "var(--evening-bg)",
   late: "var(--late-bg)",
 };
 
@@ -261,7 +257,7 @@ export function Routines() {
   const [doneIds, setDoneIds] = useLocalStorage<number[]>("steady-routines-done", []);
   const [doneDate, setDoneDate] = useLocalStorage<string | null>("steady-routines-done-date", null);
   const [custom, setCustom] = useLocalStorage<CustomMap>("steady-routines-custom", {
-    morning: [], noon: [], afternoon: [], evening: [], late: [],
+    morning: [], afternoon: [], late: [],
   });
   const [nextId, setNextId] = useLocalStorage<number>("steady-routines-nextid", CUSTOM_NEXT_ID_START);
   const today = useToday();

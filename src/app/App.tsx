@@ -644,12 +644,12 @@ export default function App() {
                     </div>
                     <div
                       className="steady-card rounded-2xl p-4 border border-border flex items-center gap-4"
-                      style={{ backgroundColor: "var(--green-bg)" }}
+                      style={{ backgroundColor: "var(--orange-bg)" }}
                     >
-                      <GrowthIcon size={40} style={{ color: "var(--primary)", flexShrink: 0 }} aria-hidden="true" />
+                      <GrowthIcon size={40} style={{ color: "var(--orange-text)", flexShrink: 0 }} aria-hidden="true" />
                       <div className="min-w-0">
-                        <p className="text-foreground" style={{ fontWeight: 700 }}>{t.overview.todaysGrowthHeading}</p>
-                        <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{growthMessage}</p>
+                        <p style={{ fontWeight: 700, color: "var(--orange-text)" }}>{t.overview.todaysGrowthHeading}</p>
+                        <p style={{ fontSize: "0.88rem", color: "var(--orange-text)", opacity: 0.85 }}>{growthMessage}</p>
                       </div>
                     </div>
                     <MoodCheck />

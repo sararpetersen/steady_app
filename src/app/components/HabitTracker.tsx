@@ -3,7 +3,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { Reorder } from "motion/react";
-import { Sprout, Leaf, Flower2, TreeDeciduous, Plus, X, Check, GripVertical } from "lucide-react";
+import { Sprout, Plus, X, Check, GripVertical } from "lucide-react";
 
 export interface Habit {
   id: string;
@@ -14,21 +14,7 @@ export interface Habit {
   lastCompletedDate?: string; // "YYYY-MM-DD" — legacy entries may predate this field
 }
 
-// Growth never regresses — a missed day just doesn't add to the count, nothing is lost.
-const GROWTH_STAGES = [
-  { min: 0, icon: Sprout, label: "Seed" },
-  { min: 3, icon: Leaf, label: "Sprouting" },
-  { min: 10, icon: Flower2, label: "Blooming" },
-  { min: 25, icon: TreeDeciduous, label: "Flourishing" },
-] as const;
-
-function getGrowthStage(totalCompletions: number): (typeof GROWTH_STAGES)[number] {
-  let stage: (typeof GROWTH_STAGES)[number] = GROWTH_STAGES[0];
-  for (const s of GROWTH_STAGES) {
-    if (totalCompletions >= s.min) stage = s;
-  }
-  return stage;
-}
+// Each habit is just a seed — the growth payoff lives in the Overview's daily tree, not here.
 
 const EMOJI_SUGGESTIONS = [
   "💧","🚶","📵","📝","🏃","😴","🥗","🧘","📚","💊",
@@ -157,8 +143,6 @@ export function HabitTracker() {
       <Reorder.Group axis="y" values={habits} onReorder={setHabits} className="space-y-2 mb-3">
         {habits.map((habit, index) => {
           const totalCompletions = habit.totalCompletions ?? 0; // legacy entries may predate this field
-          const stage = getGrowthStage(totalCompletions);
-          const StageIcon = stage.icon;
           return (
           <Reorder.Item key={habit.id} value={habit} dragListener={editingId !== habit.id} className="flex items-center gap-1 group relative" whileDrag={{ scale: 1.02, zIndex: 10 }}>
             <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
@@ -187,11 +171,11 @@ export function HabitTracker() {
                 {habit.name}
               </span>
               <div className="flex items-center gap-1">
-                <StageIcon size={15} style={{ color: "var(--primary)" }} aria-hidden="true" />
+                <Sprout size={15} style={{ color: "var(--primary)" }} aria-hidden="true" />
                 <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--primary)" }}>
                   {totalCompletions}
                 </span>
-                <span className="sr-only">{stage.label} stage, {totalCompletions} total completions</span>
+                <span className="sr-only">{totalCompletions} total completions</span>
               </div>
               <div
                 className="rounded-full border-2 flex items-center justify-center flex-shrink-0"

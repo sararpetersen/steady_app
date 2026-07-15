@@ -18,12 +18,31 @@ import { pushLocalToRemote, pullRemoteToLocal } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
-import { LayoutDashboard, ClipboardList, Repeat2, Sprout, UserCircle2, Timer, NotebookPen, Settings, CalendarDays, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Repeat2, Sprout, Leaf, Flower2, TreeDeciduous, UserCircle2, Timer, NotebookPen, Settings, CalendarDays, Sun, Moon } from "lucide-react";
 import { SteadyWordmark } from "./components/SteadyWordmark";
 
 {
   /* MARKER-MAKE-KIT-INVOKED */
 }
+
+// Today's growth is relative to how many habits *this* person tracks, not a fixed count —
+// so it scales whether someone has 2 habits or 8, and resets fresh each day (no streak logic).
+type GrowthStageKey = "seed" | "sprouting" | "blooming" | "fullBloom";
+
+function getTodaysGrowthStageKey(done: number, total: number): GrowthStageKey {
+  if (total === 0 || done === 0) return "seed";
+  const ratio = done / total;
+  if (ratio >= 1) return "fullBloom";
+  if (ratio >= 0.5) return "blooming";
+  return "sprouting";
+}
+
+const GROWTH_STAGE_ICONS = {
+  seed: Sprout,
+  sprouting: Leaf,
+  blooming: Flower2,
+  fullBloom: TreeDeciduous,
+} as const;
 
 export default function App() {
   const [authState, setAuthState] = useLocalStorage<AuthState | null>("steady-auth-state", null);
@@ -278,6 +297,18 @@ export default function App() {
   }
 
   const tasksLeft = tasks.filter((t) => !t.done).length;
+
+  const growthStageKey = getTodaysGrowthStageKey(habitsDone, habitsTotal);
+  const GrowthIcon = GROWTH_STAGE_ICONS[growthStageKey];
+  const growthMessage =
+    habitsTotal === 0
+      ? t.overview.growthNoHabits
+      : {
+          seed: t.overview.growthSeed,
+          sprouting: t.overview.growthSprouting,
+          blooming: t.overview.growthBlooming,
+          fullBloom: t.overview.growthFullBloom,
+        }[growthStageKey];
 
   const TABS = [
     { key: "overview", label: t.nav.overview, icon: LayoutDashboard },
@@ -610,6 +641,16 @@ export default function App() {
                           </span>
                         </div>
                       ))}
+                    </div>
+                    <div
+                      className="steady-card rounded-2xl p-4 border border-border flex items-center gap-4"
+                      style={{ backgroundColor: "var(--green-bg)" }}
+                    >
+                      <GrowthIcon size={40} style={{ color: "var(--primary)", flexShrink: 0 }} aria-hidden="true" />
+                      <div className="min-w-0">
+                        <p className="text-foreground" style={{ fontWeight: 700 }}>{t.overview.todaysGrowthHeading}</p>
+                        <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{growthMessage}</p>
+                      </div>
                     </div>
                     <MoodCheck />
                     <PersonalizedTip support={profile.support} sensory={profile.sensory} />

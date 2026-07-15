@@ -33,7 +33,7 @@ const en = {
     continueWithGoogle: "Continue with Google",
     continueWithApple: "Continue with Apple",
     continueAsGuest: "Continue as guest (no account)",
-    socialComingSoon: "Social login coming soon – use email to get started.",
+    socialComingSoon: "Social login coming soon - use email to get started.",
     passwordsNoMatch: "Passwords don't match.",
     emailRequired: "Please enter your email address.",
     passwordTooShort: "Password must be at least 6 characters.",
@@ -83,11 +83,11 @@ const en = {
     reduceMotion: { label: "Reduce motion", description: "Turn off animations across the app" },
     highContrast: { label: "High contrast", description: "Stronger text and border contrast" },
     resetOnboarding: "Restart onboarding",
-    clearData: "Clear all my data",
-    clearConfirm: "Are you sure? This will delete all tasks, notes, habits and mood history.",
-    clearYes: "Yes, clear everything",
+    clearData: "Delete all my data",
+    clearConfirm: "Are you sure? This will remove all tasks, notes, habits and mood history.",
+    clearYes: "Yes, delete everything",
     clearNo: "Cancel",
-    dataCleared: "All data cleared.",
+    dataCleared: "All data deleted.",
     privacy:
       "Your data stays on this device only. Nothing is sent to any server, and there is no tracking or advertising of any kind. Account creation is optional.",
     privacyLink: "Read full privacy policy",
@@ -105,7 +105,7 @@ const en = {
         },
         {
           heading: "Where is data stored?",
-          body: "Everything is stored in your browser's local storage – on this device only. Nothing is ever sent to a server. Steady has no backend, no database, and no cloud storage.",
+          body: "Everything is stored in your browser's local storage - on this device only. Nothing is ever sent to a server. Steady has no backend, no database, and no cloud storage.",
         },
         {
           heading: "Account creation",
@@ -174,14 +174,14 @@ const en = {
 
   onboarding: {
     welcome: {
-      title: "Welcome to Steady",
+      title: "Welcome to Steady!",
       subtitle: "Your calm daily companion for neurodivergent minds.",
       start: "Get started",
       returning: "I've been here before",
     },
     name: {
       title: "What should we call you?",
-      subtitle: "A name or nickname – whatever feels right.",
+      subtitle: "A name or nickname - whatever feels right.",
       namePlaceholder: "Your name…",
       pronounPlaceholder: "Pronouns (optional)",
     },
@@ -196,7 +196,7 @@ const en = {
     },
     sensory: {
       title: "What's sometimes tricky for you?",
-      subtitle: "Select anything that feels true – or skip. This is just for you.",
+      subtitle: "Select anything that feels true - or skip. This is just for you.",
       skip: "Skip this step",
     },
     support: {
@@ -227,13 +227,13 @@ const en = {
     habitsDone: "Habits done",
     habitGrowth: "Habit growth",
     reminderTitle: "💡 Reminder",
-    reminderText: "You don't have to do everything perfectly. Just do the next small step. That's enough.",
+    reminderText: "Everything doesn't need to be done perfectly. Just do the next small step. That's enough.",
     tipForYou: "✨ A tip for you",
     todaysGrowthHeading: "Today's growth",
     growthNoHabits: "Add a habit to start growing your tree today.",
     growthSeed: "Check off a habit to plant today's seed.",
-    growthSprouting: "Sprouting — keep going.",
-    growthBlooming: "Almost there — your tree is filling in.",
+    growthSprouting: "Sprouting - keep going.",
+    growthBlooming: "Almost there - your tree is filling in.",
     growthFullBloom: "Full bloom! You've completed all your habits today 🎉",
   },
 
@@ -241,7 +241,7 @@ const en = {
     "Gentle reminders": "A gentle nudge: take a moment to check your routine list.",
     Checklists: "Try breaking your biggest task today into 3 small checkable steps.",
     "Quiet focus time": "When you want some quiet, try silencing notifications and using the focus timer.",
-    "Written instructions": "Writing down what you need to do today can make it feel more manageable.",
+    "Written instructions": "Writing down what you need to do today can make things feel more manageable.",
     "Extra time to process": "It's okay to take your time. You don't need to rush.",
     "Visual cues": "Your colour-coded routines are ready when you need a visual guide.",
     default: "You're doing well. Take it one small step at a time.",
@@ -250,20 +250,20 @@ const en = {
   sensoryTips: {
     "Noise-sensitive": "🎧 If it's noisy, try headphones or earplugs to protect your focus.",
     "Light-sensitive": "🌙 Dark mode is on. You can also lower your screen brightness.",
-    "Need lots of movement": "🚶 Short movement breaks can help – take one whenever you feel like it.",
-    "Need stillness": "🧘 Find a calm spot when you can – stillness can make it easier to settle in.",
-    "Texture-sensitive": "🤲 Wear comfortable clothing today – comfort supports focus.",
+    "Need lots of movement": "🚶 Short movement breaks can help - take one whenever you feel like it.",
+    "Need stillness": "🧘 Find a calm spot when you can - stillness can make it easier to settle in.",
+    "Texture-sensitive": "🤲 Wear comfortable clothing today - comfort supports focus.",
     "Smell-sensitive": "🪟 Opening a window for fresh air can help clear your head.",
   } as Record<string, string>,
 
   mood: {
     heading: "How are you feeling right now?",
-    description: "Just pick the one that feels closest – no wrong answer.",
+    description: "Just pick the one that feels closest - no wrong answer.",
     options: [
       { key: "Overwhelmed", label: "Overwhelmed", emoji: "😵", result: "That sounds really hard. Be gentle with yourself today." },
       { key: "Stressed", label: "Stressed", emoji: "😟", result: "Stress is rough. Try to take it one step at a time." },
       { key: "Tired", label: "Tired", emoji: "😴", result: "Rest is valid. Don't push yourself too hard today." },
-      { key: "Okay", label: "Okay", emoji: "😐", result: "Okay is enough. You're here – and that matters." },
+      { key: "Okay", label: "Okay", emoji: "😐", result: "Okay is enough. You're here - and that matters." },
       { key: "Good", label: "Good", emoji: "🙂", result: "Glad to hear it! Keep that energy going." },
       { key: "Great", label: "Great", emoji: "😄", result: "That's wonderful! Hope the rest of your day matches." },
     ],
@@ -284,7 +284,7 @@ const en = {
     moveUp: "Move task up",
     moveDown: "Move task down",
     emptyTitle: "No tasks yet",
-    emptySubtitle: "Add something simple to start with – even one thing is enough.",
+    emptySubtitle: "Add something simple to start with - even one thing is more than enough.",
     allDone: "All done!",
     allDoneMessage: "Everything on your list is done — great work! 🎉",
   },
@@ -298,7 +298,7 @@ const en = {
     editStep: "Edit step",
     editLabel: "Edit",
     saveStep: "Save step",
-    noSteps: "No steps yet – tap below to add your first one.",
+    noSteps: "No steps yet. Tap below to add your first one.",
     sections: {
       morning: { label: "Morning", time: "7:00 - 9:00 AM" },
       afternoon: {
@@ -325,7 +325,7 @@ const en = {
 
   habits: {
     heading: "Habit Tracker",
-    description: "Tap to mark a habit done for today. One is enough.",
+    description: "Tap to mark a habit done for today. One is more than enough.",
     addHabit: "Add a habit",
     namePlaceholder: "Habit name…",
     deleteHabit: "Delete habit",
@@ -335,7 +335,7 @@ const en = {
     emojiLabel: "Habit emoji",
     noHabits: "No habits yet. Add one below.",
     emptyTitle: "No habits yet",
-    emptySubtitle: "Start with something simple – one small habit makes a difference.",
+    emptySubtitle: "Start with something simple - one small habit makes a difference.",
     cancel: "Cancel",
     items: [
       {
@@ -368,7 +368,7 @@ const en = {
 
   note: {
     heading: "Daily Note",
-    description: "No pressure – just a space to write down anything on your mind.",
+    description: "No pressure - just a space to write down anything on your mind.",
     prompts: [
       "What's one thing you're looking forward to today?",
       "What's one small thing you're proud of recently?",
@@ -384,7 +384,7 @@ const en = {
 
   profile: {
     heading: "About Me",
-    description: "This is just for you – it helps Steady feel personal.",
+    description: "This is just for you - it helps Steady feel personal.",
     pickAvatar: "Pick your avatar",
     emojiAvatar: "Emoji avatar",
     shownWhenNoPhoto: "shown when no photo",
@@ -522,7 +522,7 @@ const en = {
       en: "English",
       da: "Dansk",
     },
-    instantNote: "💡 These settings will be applied automatically – no need to save.",
+    instantNote: "💡 These settings will be applied automatically - no need to save.",
   },
 };
 
@@ -531,16 +531,16 @@ const da: typeof en = {
   dateLocale: "da-DK",
 
   greeting: {
-    morning: "God morgen",
-    afternoon: "God eftermiddag",
-    evening: "God aften",
+    morning: "Godmorgen",
+    afternoon: "God-eftermiddag",
+    evening: "Godaften",
   },
 
   nav: {
     overview: "Hjem",
     tasks: "Opgaver",
     routines: "Rutiner",
-    habits: "Vaner",
+    habits: "Habits",
     focus: "Fokus",
     note: "Note",
     profile: "Profil",
@@ -559,7 +559,7 @@ const da: typeof en = {
     continueWithGoogle: "Fortsæt med Google",
     continueWithApple: "Fortsæt med Apple",
     continueAsGuest: "Fortsæt som gæst (uden konto)",
-    socialComingSoon: "Social login kommer snart – brug e-mail i mellemtiden.",
+    socialComingSoon: "Social login kommer snart - brug e-mail i mellemtiden.",
     passwordsNoMatch: "Adgangskoderne stemmer ikke overens.",
     emailRequired: "Indtast venligst din e-mailadresse.",
     passwordTooShort: "Adgangskoden skal være mindst 6 tegn.",
@@ -584,7 +584,7 @@ const da: typeof en = {
     confirmNewPasswordLabel: "Bekræft ny adgangskode",
     save: "Gem ændringer",
     saved: "Gemt!",
-    cancel: "Annuller",
+    cancel: "Annullér",
     signOut: "Log ud",
     wrongPassword: "Den nuværende adgangskode er forkert.",
     passwordTooShort: "Ny adgangskode skal være mindst 6 tegn.",
@@ -609,13 +609,13 @@ const da: typeof en = {
     reduceMotion: { label: "Reducér bevægelse", description: "Slå animationer fra i appen" },
     highContrast: { label: "Høj kontrast", description: "Stærkere tekst- og kantkontrast" },
     resetOnboarding: "Genstart opsætning",
-    clearData: "Ryd alle mine data",
-    clearConfirm: "Er du sikker? Dette sletter alle opgaver, noter, vaner og stemningshistorik.",
-    clearYes: "Ja, ryd alt",
+    clearData: "Slet alle mine data",
+    clearConfirm: "Er du sikker? Dette fjerner alle opgaver, noter, habits og stemningshistorik.",
+    clearYes: "Ja, slet alt",
     clearNo: "Annuller",
-    dataCleared: "Alle data er ryddet.",
+    dataCleared: "Alle data er slettet.",
     privacy:
-      "Dine data forbliver kun på denne enhed – intet sendes til nogen server, og der er ingen sporing eller reklamer af nogen art. Kontooprettelse er valgfrit.",
+      "Dine data forbliver kun på denne enhed - intet af det sendes til nogen server, og der er ingen sporing eller reklamer af nogen art. Kontooprettelse er helt valgfrit.",
     privacyLink: "Læs fuld privatlivspolitik",
     privacyPolicy: {
       title: "Privatlivspolitik",
@@ -623,7 +623,7 @@ const da: typeof en = {
       sections: [
         {
           heading: "Hvem er jeg?",
-          body: "Steady er en rolig daglig følgesvend-app designet til neurodivergente mennesker. Den er bygget til at fungere helt på din enhed, med dit privatliv beskyttet som standard. Jeg er en solo-udvikler og designer, og jeg byggede Steady for at være et sikkert, privat rum for dig til at håndtere din dag.",
+          body: "Steady er en dagligdagsapp designet til neurodivergente mennesker. Den er bygget til at fungere helt på din enhed, med dit privatliv beskyttet som standard. Jeg er en solo-udvikler og designer, og jeg byggede Steady for at være et sikkert, privat rum for dig til at håndtere din dag.",
         },
         {
           heading: "Hvilke data gemmes?",
@@ -631,7 +631,7 @@ const da: typeof en = {
         },
         {
           heading: "Hvor gemmes data?",
-          body: "Alt gemmes i din browsers lokale lager – kun på denne enhed. Intet sendes nogensinde til en server. Steady har ingen backend, ingen database og ingen cloud-lagring.",
+          body: "Alt gemmes i din browsers lokale lager - kun på denne enhed. Intet sendes nogensinde til en server. Steady har ingen backend, ingen database og ingen cloud-lagring.",
         },
         {
           heading: "Oprettelse af konto",
@@ -669,8 +669,8 @@ const da: typeof en = {
 
   moodHistory: {
     heading: "Stemningshistorik",
-    description: "Dine tjek-ind de seneste 7 dage.",
-    noData: "Ingen tjek-ind endnu. Du kan starte fra 'Hjem', når du er klar.",
+    description: "Dine check-ins fra de seneste 7 dage.",
+    noData: "Ingen check-ins endnu. Du kan starte fra 'Hjem', når du er klar.",
     days: ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"],
   },
 
@@ -700,14 +700,14 @@ const da: typeof en = {
 
   onboarding: {
     welcome: {
-      title: "Velkommen til Steady",
-      subtitle: "Din rolige daglige følgesvend for neurodivergente sind.",
+      title: "Velkommen til Steady!",
+      subtitle: "Din rolige dagligdagsfølgesvend til neurodivergente sind.",
       start: "Kom i gang",
       returning: "Jeg har været her før",
     },
     name: {
       title: "Hvad skal vi kalde dig?",
-      subtitle: "Et navn eller kaldenavn – hvad end der føles rigtigt.",
+      subtitle: "Et navn eller kaldenavn - hvad end der føles rigtigt.",
       namePlaceholder: "Dit navn…",
       pronounPlaceholder: "Pronomener (valgfrit)",
     },
@@ -722,7 +722,7 @@ const da: typeof en = {
     },
     sensory: {
       title: "Hvad kan nogle gange være svært?",
-      subtitle: "Vælg hvad der føles sandt – eller spring over. Det er kun for dig.",
+      subtitle: "Vælg hvad der føles mest sandt - eller spring over. Det her er kun for dig.",
       skip: "Spring dette trin over",
     },
     support: {
@@ -750,24 +750,24 @@ const da: typeof en = {
 
   overview: {
     tasksLeft: "Opgaver tilbage",
-    habitsDone: "Vaner klaret",
+    habitsDone: "Habits gennemført",
     habitGrowth: "Vanevækst",
     reminderTitle: "💡 Påmindelse",
-    reminderText: "Du behøver ikke gøre alting perfekt. Tag bare det næste lille skridt. Det er nok.",
+    reminderText: "Alting behøver ikke at blive gjort perfekt. Bare tag det næste lille skridt. Det er nok.",
     tipForYou: "✨ Et tip til dig",
     todaysGrowthHeading: "Dagens vækst",
-    growthNoHabits: "Tilføj en vane for at begynde at dyrke dit træ i dag.",
-    growthSeed: "Marker en vane som gjort for at plante dagens frø.",
-    growthSprouting: "Spirer — bliv ved.",
-    growthBlooming: "Næsten der — dit træ fylder sig ud.",
-    growthFullBloom: "Fuldt udsprunget! Du har klaret alle dine vaner i dag 🎉",
+    growthNoHabits: "Tilføj en habit for at begynde at dyrke dit træ i dag.",
+    growthSeed: "Markér en habit som som gennemført for at plante dagens frø.",
+    growthSprouting: "Spirer - bare bliv ved.",
+    growthBlooming: "Du er der næsten - dit træ er ved at blive større.",
+    growthFullBloom: "Fuldt udsprunget! Du har gennemført alle dine habits i dag 🎉",
   },
 
   supportTips: {
     "Gentle reminders": "En rolig påmindelse: tag et øjeblik til at tjekke din rutine-oversigt.",
     Checklists: "Prøv at dele din største opgave i dag op i 3 små trin.",
     "Quiet focus time": "Når du vil have lidt ro, kan du slå notifikationer fra og prøve fokus-timeren.",
-    "Written instructions": "At skrive ned, hvad du skal i dag, kan gøre det nemmere at overskue.",
+    "Written instructions": "At skrive ned, hvad du skal i dag, kan gøre tingene nemmere at overskue.",
     "Extra time to process": "Det er okay at tage din tid. Du behøver ikke skynde dig.",
     "Visual cues": "Dine farvekodede rutiner er klar, når du har brug for et visuelt overblik.",
     default: "Du klarer dig godt. Tag det ét lille skridt ad gangen.",
@@ -776,20 +776,20 @@ const da: typeof en = {
   sensoryTips: {
     "Noise-sensitive": "🎧 Hvis det er støjende, prøv høretelefoner eller ørepropper for at beskytte dit fokus.",
     "Light-sensitive": "🌙 Mørk tilstand er slået til. Du kan også sænke skærmens lysstyrke.",
-    "Need lots of movement": "🚶 Korte bevægelsespauser kan hjælpe – tag én, når du har lyst.",
-    "Need stillness": "🧘 Find et roligt sted, når du kan – ro kan gøre det lettere at falde til ro.",
-    "Texture-sensitive": "🤲 Hav behageligt tøj på i dag – komfort støtter fokus.",
+    "Need lots of movement": "🚶 Korte bevægelsespauser kan hjælpe - tag én, når du har lyst.",
+    "Need stillness": "🧘 Find et roligt sted, når du kan - stilhed kan gøre det lettere at falde til ro.",
+    "Texture-sensitive": "🤲 Hav behageligt tøj på i dag - komfort støtter fokus.",
     "Smell-sensitive": "🪟 At åbne et vindue for frisk luft kan hjælpe med at rydde hovedet.",
   } as Record<string, string>,
 
   mood: {
     heading: "Hvordan har du det lige nu?",
-    description: "Vælg bare den, der føles tættest på – der er intet forkert svar.",
+    description: "Vælg bare den, der føles tættest på - der er intet rigtigt eller forkert svar.",
     options: [
       { key: "Overwhelmed", label: "Overvældet", emoji: "😵", result: "Det lyder virkelig hårdt. Vær blid mod dig selv i dag." },
       { key: "Stressed", label: "Stresset", emoji: "😟", result: "Det er hårdt at være stresset. Tag det ét skridt ad gangen." },
       { key: "Tired", label: "Træt", emoji: "😴", result: "Hvile er okay. Pres ikke dig selv for hårdt i dag." },
-      { key: "Okay", label: "Okay", emoji: "😐", result: "Okay er nok. Du er her – og det tæller." },
+      { key: "Okay", label: "Okay", emoji: "😐", result: "Okay er nok. Du er her - og det tæller." },
       { key: "Good", label: "Godt", emoji: "🙂", result: "Godt at høre! Bevar den energi." },
       { key: "Great", label: "Fantastisk", emoji: "😄", result: "Dejligt! Håber resten af dagen følger med." },
     ],
@@ -802,7 +802,7 @@ const da: typeof en = {
     placeholder: "Tilføj en ny opgave...",
     add: "Tilføj",
     markComplete: "Markér som færdig",
-    markIncomplete: "Markér som ufærdig",
+    markIncomplete: "Markér som ikke færdig",
     remove: "Fjern opgave",
     edit: "Rediger opgave",
     editLabel: "Rediger",
@@ -810,9 +810,9 @@ const da: typeof en = {
     moveUp: "Flyt opgave op",
     moveDown: "Flyt opgave ned",
     emptyTitle: "Ingen opgaver endnu",
-    emptySubtitle: "Tilføj noget enkelt at starte med – selv én ting er nok.",
+    emptySubtitle: "Tilføj noget enkelt at starte med. Selv én ting er mere end nok.",
     allDone: "Klaret!",
-    allDoneMessage: "Alt på din liste er klaret — godt gået! 🎉",
+    allDoneMessage: "Alt på din liste er klaret - godt gået! 🎉",
   },
 
   routines: {
@@ -824,7 +824,7 @@ const da: typeof en = {
     editStep: "Rediger trin",
     editLabel: "Rediger",
     saveStep: "Gem trin",
-    noSteps: "Ingen trin endnu – tryk nedenfor for at tilføje det første.",
+    noSteps: "Ingen trin endnu. Tryk nedenfor for at tilføje det første.",
     sections: {
       morning: { label: "Morgen", time: "7:00 - 9:00" },
       afternoon: {
@@ -850,19 +850,19 @@ const da: typeof en = {
   },
 
   habits: {
-    heading: "Vane-tracker",
-    description: "Tryk for at markere en vane som gjort i dag. Én er nok.",
-    addHabit: "Tilføj en vane",
-    namePlaceholder: "Vanenavn…",
-    deleteHabit: "Slet vane",
-    edit: "Rediger vane",
+    heading: "Habit-tracker",
+    description: "Tryk for at markere en habit som gennemført i dag. Én er mere end nok.",
+    addHabit: "Tilføj en habit",
+    namePlaceholder: "Habit-navn…",
+    deleteHabit: "Slet habit",
+    edit: "Rediger habit",
     editLabel: "Rediger",
-    saveEdit: "Gem vane",
-    emojiLabel: "Vane-emoji",
-    noHabits: "Ingen vaner endnu. Tilføj én nedenfor.",
-    emptyTitle: "Ingen vaner endnu",
-    emptySubtitle: "Start med noget enkelt – én lille vane gør en forskel.",
-    cancel: "Annuller",
+    saveEdit: "Gem habit",
+    emojiLabel: "Habit-emoji",
+    noHabits: "Ingen habits endnu. Tilføj én nedenfor.",
+    emptyTitle: "Ingen habits endnu",
+    emptySubtitle: "Start med noget enkelt - én lille habit gør en forskel.",
+    cancel: "Annullér",
     items: [
       { key: "water", name: "Drik 8 glas vand", emoji: "💧" },
       { key: "move", name: "Bevæg kroppen", emoji: "🚶" },
@@ -890,7 +890,7 @@ const da: typeof en = {
 
   note: {
     heading: "Daglig note",
-    description: "Intet pres – bare et sted til at skrive alt, hvad du har på hjertet.",
+    description: "Intet pres - bare et sted til at skrive alt, hvad du har på hjertet.",
     prompts: [
       "Hvad er én ting, du glæder dig til i dag?",
       "Hvad for en lille ting, er du stolt af for nylig?",
@@ -906,7 +906,7 @@ const da: typeof en = {
 
   profile: {
     heading: "Om mig",
-    description: "Det her er bare for dig – det hjælper Steady med at føles mere personlig.",
+    description: "Det her er bare for dig - det hjælper Steady med at føles mere personlig.",
     pickAvatar: "Vælg din avatar",
     emojiAvatar: "Emoji-avatar",
     shownWhenNoPhoto: "vises når der ikke er foto",
@@ -1017,7 +1017,7 @@ const da: typeof en = {
     font: {
       label: "Skriftstil",
       standard: "Standard",
-      standardHint: "Nunito - rundet og læsevenlig",
+      standardHint: "Nunito - afrundet og læsevenlig",
       readable: "Dysleksivenlig",
       readableHint: "Atkinson Hyperlegible",
     },
@@ -1044,7 +1044,7 @@ const da: typeof en = {
       en: "English",
       da: "Dansk",
     },
-    instantNote: "💡 Disse indstillinger træder i kraft automatisk – du behøver ikke gemme.",
+    instantNote: "💡 Disse indstillinger træder i kraft automatisk - du behøver ikke gemme.",
   },
 };
 

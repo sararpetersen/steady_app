@@ -128,7 +128,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
             className="rounded-3xl flex items-center justify-center"
             style={{ width: 96, height: 96, backgroundColor: "var(--green-bg)", border: "2px solid var(--border)" }}
           >
-            <img src="/sprout1.webp" alt="Sprout, Steady's mascot" style={{ width: 72, height: 72, objectFit: "contain" }} />
+            <img src="/sprout1.webp" alt="Sprout, Steady's mascot" style={{ width: 80, height: 80, objectFit: "contain" }} />
           </div>
           <div>
             <h1 className="text-foreground" style={{ fontFamily: "var(--app-font-heading, Nunito)", fontSize: "2rem", fontWeight: 800, marginBottom: 12 }}>

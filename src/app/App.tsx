@@ -617,7 +617,7 @@ export default function App() {
                           value: habitsTotal > 0 ? (
                             <span className="inline-flex items-center justify-center gap-1.5">
                               {habitsDone} / {habitsTotal}
-                              <img src={GROWTH_STAGE_MASCOT[growthStageKey].src} alt={GROWTH_STAGE_MASCOT[growthStageKey].alt} style={{ width: 22, height: 22, objectFit: "contain" }} />
+                              <img src={GROWTH_STAGE_MASCOT[growthStageKey].src} alt={GROWTH_STAGE_MASCOT[growthStageKey].alt} style={{ width: 26, height: 26, objectFit: "contain" }} />
                             </span>
                           ) : "–",
                           ariaLabel: habitsTotal > 0 ? `${habitsDone} of ${habitsTotal} habits done today` : undefined,
@@ -629,7 +629,7 @@ export default function App() {
                           value: habitGrowth > 0 ? (
                             <span className="inline-flex items-center justify-center gap-1.5">
                               {habitGrowth}
-                              <img src={GROWTH_STAGE_MASCOT[getHabitGrowthStageKey(habitGrowth)].src} alt={GROWTH_STAGE_MASCOT[getHabitGrowthStageKey(habitGrowth)].alt} style={{ width: 22, height: 22, objectFit: "contain" }} />
+                              <img src={GROWTH_STAGE_MASCOT[getHabitGrowthStageKey(habitGrowth)].src} alt={GROWTH_STAGE_MASCOT[getHabitGrowthStageKey(habitGrowth)].alt} style={{ width: 26, height: 26, objectFit: "contain" }} />
                             </span>
                           ) : "–",
                           ariaLabel: habitGrowth > 0 ? `${habitGrowth} total habit check-ins` : "No habit check-ins yet",
@@ -687,7 +687,7 @@ export default function App() {
               className="steady-card animate-in fade-in slide-in-from-bottom-4 duration-300 flex items-center gap-3 rounded-2xl px-5 py-3 border border-border"
               style={{ backgroundColor: "var(--orange-bg)" }}
             >
-              <img src={GROWTH_STAGE_MASCOT.fullBloom.src} alt="" style={{ width: 32, height: 32, objectFit: "contain", flexShrink: 0 }} />
+              <img src={GROWTH_STAGE_MASCOT.fullBloom.src} alt="" style={{ width: 36, height: 36, objectFit: "contain", flexShrink: 0 }} />
               <p style={{ color: "var(--orange-text)", fontWeight: 700, fontSize: "0.9rem" }}>{t.overview.growthFullBloom}</p>
             </div>
           </div>

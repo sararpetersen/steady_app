@@ -134,9 +134,12 @@ export function HabitTracker() {
       </p>
 
       {habits.length === 0 && !showForm && (
-        <div className="text-center py-6 space-y-1">
-          <p className="text-foreground" style={{ fontWeight: 700 }}>{t.habits.emptyTitle}</p>
-          <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{t.habits.emptySubtitle}</p>
+        <div className="text-center py-6">
+          <img src="/sprout9.webp" alt="" aria-hidden="true" className="mx-auto mb-3" style={{ width: 88, height: 88, objectFit: "contain" }} />
+          <div className="space-y-1">
+            <p className="text-foreground" style={{ fontWeight: 700 }}>{t.habits.emptyTitle}</p>
+            <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{t.habits.emptySubtitle}</p>
+          </div>
         </div>
       )}
 

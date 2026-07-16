@@ -105,9 +105,12 @@ export function TaskList({
       </p>
 
       {tasks.length === 0 && (
-        <div className="text-center py-6 space-y-1">
-          <p className="text-foreground" style={{ fontWeight: 700 }}>{t.tasks.emptyTitle}</p>
-          <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{t.tasks.emptySubtitle}</p>
+        <div className="text-center py-6">
+          <img src="/sprout6.webp" alt="" aria-hidden="true" className="mx-auto mb-3" style={{ width: 72, height: 72, objectFit: "contain" }} />
+          <div className="space-y-1">
+            <p className="text-foreground" style={{ fontWeight: 700 }}>{t.tasks.emptyTitle}</p>
+            <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{t.tasks.emptySubtitle}</p>
+          </div>
         </div>
       )}
 

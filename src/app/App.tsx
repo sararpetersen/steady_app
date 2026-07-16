@@ -37,12 +37,11 @@ function getTodaysGrowthStageKey(done: number, total: number): GrowthStageKey {
   return "sprouting";
 }
 
-// Sprout, the app's mascot, illustrated at each growth stage (see /public/sprout1-4.webp).
-const GROWTH_STAGE_MASCOT: Record<GrowthStageKey, { src: string; alt: string }> = {
-  seed: { src: "/sprout1.webp", alt: "Sprout as a seedling" },
-  sprouting: { src: "/sprout2.webp", alt: "Sprout sprouting a little shoot" },
-  blooming: { src: "/sprout3.webp", alt: "Sprout blooming a flower" },
-  fullBloom: { src: "/sprout4.webp", alt: "Sprout in full bloom, covered in flowers" },
+const GROWTH_STAGE_EMOJI: Record<GrowthStageKey, string> = {
+  seed: "🌱",
+  sprouting: "🌿",
+  blooming: "🌸",
+  fullBloom: "🌳",
 };
 
 // The lifetime "Habit growth" counter never resets, so its stage can climb through
@@ -614,24 +613,14 @@ export default function App() {
                         },
                         {
                           label: t.overview.habitsDone,
-                          value: habitsTotal > 0 ? (
-                            <span className="inline-flex items-center justify-center gap-1.5">
-                              {habitsDone} / {habitsTotal}
-                              <img src={GROWTH_STAGE_MASCOT[growthStageKey].src} alt={GROWTH_STAGE_MASCOT[growthStageKey].alt} style={{ width: 26, height: 26, objectFit: "contain" }} />
-                            </span>
-                          ) : "–",
+                          value: habitsTotal > 0 ? `${habitsDone} / ${habitsTotal} ${GROWTH_STAGE_EMOJI[growthStageKey]}` : "–",
                           ariaLabel: habitsTotal > 0 ? `${habitsDone} of ${habitsTotal} habits done today` : undefined,
                           bg: "var(--purple-bg)",
                           fg: "var(--purple-text)",
                         },
                         {
                           label: t.overview.habitGrowth,
-                          value: habitGrowth > 0 ? (
-                            <span className="inline-flex items-center justify-center gap-1.5">
-                              {habitGrowth}
-                              <img src={GROWTH_STAGE_MASCOT[getHabitGrowthStageKey(habitGrowth)].src} alt={GROWTH_STAGE_MASCOT[getHabitGrowthStageKey(habitGrowth)].alt} style={{ width: 26, height: 26, objectFit: "contain" }} />
-                            </span>
-                          ) : "–",
+                          value: habitGrowth > 0 ? `${habitGrowth} ${GROWTH_STAGE_EMOJI[getHabitGrowthStageKey(habitGrowth)]}` : "–",
                           ariaLabel: habitGrowth > 0 ? `${habitGrowth} total habit check-ins` : "No habit check-ins yet",
                           bg: "var(--yellow-bg)",
                           fg: "var(--yellow-text)",
@@ -687,7 +676,7 @@ export default function App() {
               className="steady-card animate-in fade-in slide-in-from-bottom-4 duration-300 flex items-center gap-3 rounded-2xl px-5 py-3 border border-border"
               style={{ backgroundColor: "var(--orange-bg)" }}
             >
-              <img src={GROWTH_STAGE_MASCOT.fullBloom.src} alt="" style={{ width: 36, height: 36, objectFit: "contain", flexShrink: 0 }} />
+              <span style={{ fontSize: "1.5rem", flexShrink: 0 }} aria-hidden="true">{GROWTH_STAGE_EMOJI.fullBloom}</span>
               <p style={{ color: "var(--orange-text)", fontWeight: 700, fontSize: "0.9rem" }}>{t.overview.growthFullBloom}</p>
             </div>
           </div>

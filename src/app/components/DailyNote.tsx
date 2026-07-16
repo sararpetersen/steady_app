@@ -112,9 +112,12 @@ export function DailyNote() {
         {historyOpen && (
           <div className="border-t border-border">
             {pastEntries.length === 0 ? (
-              <p className="text-muted-foreground px-5 py-4" style={{ fontSize: "0.9rem" }}>
-                {t.noteHistory.empty}
-              </p>
+              <div className="flex items-center gap-3 px-5 py-4">
+                <img src="/sprout7.webp" alt="" aria-hidden="true" style={{ width: 48, height: 48, objectFit: "contain", flexShrink: 0 }} />
+                <p className="text-muted-foreground" style={{ fontSize: "0.9rem" }}>
+                  {t.noteHistory.empty}
+                </p>
+              </div>
             ) : (
               <div className="divide-y" style={{ borderColor: "var(--border)" }}>
                 {pastEntries.map((entry) => (

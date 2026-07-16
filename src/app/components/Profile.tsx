@@ -80,7 +80,10 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
     <div className="space-y-5">
       {/* Identity card */}
       <div className="steady-card bg-card rounded-2xl p-5 border border-border">
-        <h3 className="mb-1 text-foreground">{p.heading}</h3>
+        <div className="flex items-start gap-3 mb-1">
+          <img src="/sprout5.webp" alt="" aria-hidden="true" style={{ width: 40, height: 40, objectFit: "contain", flexShrink: 0 }} />
+          <h3 className="text-foreground">{p.heading}</h3>
+        </div>
         <p className="text-muted-foreground mb-5" style={{ fontSize: "0.95rem" }}>{p.description}</p>
 
         <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start mb-5">

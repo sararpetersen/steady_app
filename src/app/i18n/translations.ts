@@ -17,6 +17,7 @@ const en = {
     habits: "Habits",
     focus: "Focus",
     note: "Note",
+    dates: "Dates",
     profile: "Profile",
   },
 
@@ -377,6 +378,28 @@ const en = {
     saved: "Saved ✓",
   },
 
+  dates: {
+    heading: "Important Dates",
+    description: "Keep track of the days that matter to you.",
+    addDate: "Add a date",
+    namePlaceholder: "What's this date for?",
+    dateLabel: "Date",
+    repeatsYearly: "Repeats every year",
+    emojiLabel: "Date emoji",
+    deleteDate: "Delete date",
+    edit: "Edit date",
+    editLabel: "Edit",
+    saveEdit: "Save date",
+    cancel: "Cancel",
+    emptyTitle: "No important dates yet",
+    emptySubtitle: "Add a birthday, anniversary, or anything worth counting toward.",
+    today: "Today! 🎉",
+    inPrefix: "in",
+    agoSuffix: "ago",
+    day: "day",
+    days: "days",
+  },
+
   profile: {
     heading: "About Me",
     description: "This is just for you – it helps Steady feel personal.",
@@ -538,6 +561,7 @@ const da: typeof en = {
     habits: "Habits",
     focus: "Fokus",
     note: "Note",
+    dates: "Datoer",
     profile: "Profil",
   },
 
@@ -892,6 +916,28 @@ const da: typeof en = {
     characters: "tegn",
     save: "Gem",
     saved: "Gemt ✓",
+  },
+
+  dates: {
+    heading: "Vigtige datoer",
+    description: "Hold styr på de dage, der betyder noget for dig.",
+    addDate: "Tilføj en dato",
+    namePlaceholder: "Hvad handler datoen om?",
+    dateLabel: "Dato",
+    repeatsYearly: "Gentages hvert år",
+    emojiLabel: "Dato-emoji",
+    deleteDate: "Slet dato",
+    edit: "Rediger dato",
+    editLabel: "Rediger",
+    saveEdit: "Gem dato",
+    cancel: "Annullér",
+    emptyTitle: "Ingen vigtige datoer endnu",
+    emptySubtitle: "Tilføj en fødselsdag, en mærkedag, eller noget andet, der tæller.",
+    today: "I dag! 🎉",
+    inPrefix: "om",
+    agoSuffix: "siden",
+    day: "dag",
+    days: "dage",
   },
 
   profile: {

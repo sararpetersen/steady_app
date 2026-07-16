@@ -400,11 +400,10 @@ export default function App() {
                 setActiveTab("overview");
                 setSettingsOpen(false);
               }}
-              className="group flex flex-col items-start gap-1.5 rounded-xl w-full p-2 hover:bg-muted"
-              style={{ transition: "background-color 0.15s" }}
+              className="flex flex-col items-start gap-1.5 rounded-xl w-full p-2 cursor-default"
               aria-label="Go to Overview"
             >
-              <SteadyWordmark height={26} className="transition-transform group-hover:scale-[1.04]" />
+              <SteadyWordmark height={26} className="transition-transform hover:scale-[1.04] cursor-pointer" />
               <p className="text-muted-foreground truncate" style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>
                 {greeting}
               </p>
@@ -514,11 +513,10 @@ export default function App() {
                   setActiveTab("overview");
                   setSettingsOpen(false);
                 }}
-                className="group flex flex-col items-start gap-1 rounded-xl min-w-0 p-2 hover:bg-muted"
-                style={{ transition: "background-color 0.15s" }}
+                className="flex flex-col items-start gap-1 rounded-xl min-w-0 p-2 cursor-default"
                 aria-label="Go to Overview"
               >
-                <SteadyWordmark height={24} className="flex-shrink-0 transition-transform group-hover:scale-[1.04]" />
+                <SteadyWordmark height={24} className="flex-shrink-0 transition-transform hover:scale-[1.04] cursor-pointer" />
                 <p className="text-muted-foreground truncate" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
                   {greeting}
                 </p>

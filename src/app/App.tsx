@@ -141,10 +141,14 @@ export default function App() {
     if (habitsTotal > 0 && habitsDone === habitsTotal && celebratedDate !== today) {
       setCelebratedDate(today);
       setShowCelebration(true);
-      const timer = setTimeout(() => setShowCelebration(false), 4000);
-      return () => clearTimeout(timer);
     }
   }, [habitsDone, habitsTotal, today, celebratedDate, setCelebratedDate]);
+
+  useEffect(() => {
+    if (!showCelebration) return;
+    const timer = window.setTimeout(() => setShowCelebration(false), 4000);
+    return () => window.clearTimeout(timer);
+  }, [showCelebration]);
 
   const profile: ProfileData = {
     ...DEFAULT_PROFILE,

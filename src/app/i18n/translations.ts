@@ -229,11 +229,6 @@ const en = {
     reminderTitle: "💡 Reminder",
     reminderText: "Everything doesn't need to be done perfectly. Just do the next small step. That's enough.",
     tipForYou: "✨ A tip for you",
-    todaysGrowthHeading: "Today's growth",
-    growthNoHabits: "Add a habit to start growing your tree today.",
-    growthSeed: "Check off a habit to plant today's seed.",
-    growthSprouting: "Sprouting - keep going.",
-    growthBlooming: "Almost there - your tree is filling in.",
     growthFullBloom: "Full bloom! You've completed all your habits today 🎉",
   },
 
@@ -755,11 +750,6 @@ const da: typeof en = {
     reminderTitle: "💡 Påmindelse",
     reminderText: "Alting behøver ikke at blive gjort perfekt. Bare tag det næste lille skridt. Det er nok.",
     tipForYou: "✨ Et tip til dig",
-    todaysGrowthHeading: "Dagens vækst",
-    growthNoHabits: "Tilføj en habit for at begynde at dyrke dit træ i dag.",
-    growthSeed: "Markér en habit som som gennemført for at plante dagens frø.",
-    growthSprouting: "Spirer - bare bliv ved.",
-    growthBlooming: "Du er der næsten - dit træ er ved at blive større.",
     growthFullBloom: "Fuldt udsprunget! Du har gennemført alle dine habits i dag 🎉",
   },
 

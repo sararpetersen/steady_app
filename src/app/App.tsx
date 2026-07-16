@@ -18,7 +18,7 @@ import { pushLocalToRemote, pullRemoteToLocal } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
-import { LayoutDashboard, ClipboardList, Repeat2, Sprout, Leaf, Flower2, TreeDeciduous, UserCircle2, Timer, NotebookPen, Settings, CalendarDays, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Repeat2, Sprout, UserCircle2, Timer, NotebookPen, Settings, CalendarDays, Sun, Moon } from "lucide-react";
 import { SteadyWordmark } from "./components/SteadyWordmark";
 
 {
@@ -37,12 +37,22 @@ function getTodaysGrowthStageKey(done: number, total: number): GrowthStageKey {
   return "sprouting";
 }
 
-const GROWTH_STAGE_ICONS = {
-  seed: Sprout,
-  sprouting: Leaf,
-  blooming: Flower2,
-  fullBloom: TreeDeciduous,
-} as const;
+// Sprout, the app's mascot, illustrated at each growth stage (see /public/sprout1-4.webp).
+const GROWTH_STAGE_MASCOT: Record<GrowthStageKey, { src: string; alt: string }> = {
+  seed: { src: "/sprout1.webp", alt: "Sprout as a seedling" },
+  sprouting: { src: "/sprout2.webp", alt: "Sprout sprouting a little shoot" },
+  blooming: { src: "/sprout3.webp", alt: "Sprout blooming a flower" },
+  fullBloom: { src: "/sprout4.webp", alt: "Sprout in full bloom, covered in flowers" },
+};
+
+// The lifetime "Habit growth" counter never resets, so its stage can climb through
+// milestones as the all-time total rises — separate from today's ratio above.
+function getHabitGrowthStageKey(total: number): GrowthStageKey {
+  if (total >= 50) return "fullBloom";
+  if (total >= 25) return "blooming";
+  if (total >= 10) return "sprouting";
+  return "seed";
+}
 
 export default function App() {
   const [authState, setAuthState] = useLocalStorage<AuthState | null>("steady-auth-state", null);
@@ -124,6 +134,18 @@ export default function App() {
       /* ignore */
     }
   }, [activeTab, today]);
+
+  // Celebrate hitting 100% once per day — a one-off moment, not a permanent card.
+  const [celebratedDate, setCelebratedDate] = useLocalStorage<string | null>("steady-growth-celebrated-date", null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  useEffect(() => {
+    if (habitsTotal > 0 && habitsDone === habitsTotal && celebratedDate !== today) {
+      setCelebratedDate(today);
+      setShowCelebration(true);
+      const timer = setTimeout(() => setShowCelebration(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [habitsDone, habitsTotal, today, celebratedDate, setCelebratedDate]);
 
   const profile: ProfileData = {
     ...DEFAULT_PROFILE,
@@ -299,16 +321,6 @@ export default function App() {
   const tasksLeft = tasks.filter((t) => !t.done).length;
 
   const growthStageKey = getTodaysGrowthStageKey(habitsDone, habitsTotal);
-  const GrowthIcon = GROWTH_STAGE_ICONS[growthStageKey];
-  const growthMessage =
-    habitsTotal === 0
-      ? t.overview.growthNoHabits
-      : {
-          seed: t.overview.growthSeed,
-          sprouting: t.overview.growthSprouting,
-          blooming: t.overview.growthBlooming,
-          fullBloom: t.overview.growthFullBloom,
-        }[growthStageKey];
 
   const TABS = [
     { key: "overview", label: t.nav.overview, icon: LayoutDashboard },
@@ -602,14 +614,24 @@ export default function App() {
                         },
                         {
                           label: t.overview.habitsDone,
-                          value: habitsTotal > 0 ? `${habitsDone} / ${habitsTotal}` : "–",
-                          ariaLabel: undefined,
+                          value: habitsTotal > 0 ? (
+                            <span className="inline-flex items-center justify-center gap-1.5">
+                              {habitsDone} / {habitsTotal}
+                              <img src={GROWTH_STAGE_MASCOT[growthStageKey].src} alt={GROWTH_STAGE_MASCOT[growthStageKey].alt} style={{ width: 22, height: 22, objectFit: "contain" }} />
+                            </span>
+                          ) : "–",
+                          ariaLabel: habitsTotal > 0 ? `${habitsDone} of ${habitsTotal} habits done today` : undefined,
                           bg: "var(--purple-bg)",
                           fg: "var(--purple-text)",
                         },
                         {
                           label: t.overview.habitGrowth,
-                          value: habitGrowth > 0 ? `${habitGrowth} 🌱` : "–",
+                          value: habitGrowth > 0 ? (
+                            <span className="inline-flex items-center justify-center gap-1.5">
+                              {habitGrowth}
+                              <img src={GROWTH_STAGE_MASCOT[getHabitGrowthStageKey(habitGrowth)].src} alt={GROWTH_STAGE_MASCOT[getHabitGrowthStageKey(habitGrowth)].alt} style={{ width: 22, height: 22, objectFit: "contain" }} />
+                            </span>
+                          ) : "–",
                           ariaLabel: habitGrowth > 0 ? `${habitGrowth} total habit check-ins` : "No habit check-ins yet",
                           bg: "var(--yellow-bg)",
                           fg: "var(--yellow-text)",
@@ -642,16 +664,6 @@ export default function App() {
                         </div>
                       ))}
                     </div>
-                    <div
-                      className="steady-card rounded-2xl p-4 border border-border flex items-center gap-4"
-                      style={{ backgroundColor: "var(--orange-bg)" }}
-                    >
-                      <GrowthIcon size={40} style={{ color: "var(--orange-text)", flexShrink: 0 }} aria-hidden="true" />
-                      <div className="min-w-0">
-                        <p style={{ fontWeight: 700, color: "var(--orange-text)" }}>{t.overview.todaysGrowthHeading}</p>
-                        <p style={{ fontSize: "0.88rem", color: "var(--orange-text)", opacity: 0.85 }}>{growthMessage}</p>
-                      </div>
-                    </div>
                     <MoodCheck />
                     <PersonalizedTip support={profile.support} sensory={profile.sensory} />
                     <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
@@ -667,6 +679,19 @@ export default function App() {
             )}
           </main>
         </div>
+
+        {showCelebration && (
+          <div className="fixed bottom-6 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
+            <div
+              role="status"
+              className="steady-card animate-in fade-in slide-in-from-bottom-4 duration-300 flex items-center gap-3 rounded-2xl px-5 py-3 border border-border"
+              style={{ backgroundColor: "var(--orange-bg)" }}
+            >
+              <img src={GROWTH_STAGE_MASCOT.fullBloom.src} alt="" style={{ width: 32, height: 32, objectFit: "contain", flexShrink: 0 }} />
+              <p style={{ color: "var(--orange-text)", fontWeight: 700, fontSize: "0.9rem" }}>{t.overview.growthFullBloom}</p>
+            </div>
+          </div>
+        )}
       </div>
     </LangContext.Provider>
   );

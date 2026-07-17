@@ -50,7 +50,7 @@ export function DailyNote() {
     setEntries((prev) => prev.filter((e) => e.id !== id));
   };
 
-  const pastEntries = [...entries].filter((e) => e.date !== today).sort((a, b) => b.date.localeCompare(a.date));
+  const historyEntries = [...entries].sort((a, b) => b.date.localeCompare(a.date));
 
   return (
     <div className="space-y-4">
@@ -103,7 +103,7 @@ export function DailyNote() {
               {t.noteHistory.heading}
             </p>
             <p className="text-muted-foreground text-left" style={{ fontSize: "0.85rem" }}>
-              {pastEntries.length} {pastEntries.length === 1 ? "entry" : "entries"}
+              {historyEntries.length} {historyEntries.length === 1 ? "entry" : "entries"}
             </p>
           </div>
           {historyOpen ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />}
@@ -111,7 +111,7 @@ export function DailyNote() {
 
         {historyOpen && (
           <div className="border-t border-border">
-            {pastEntries.length === 0 ? (
+            {historyEntries.length === 0 ? (
               <div className="flex items-center gap-3 px-5 py-4">
                 <img src="/sprout7.webp" alt="" aria-hidden="true" style={{ width: 48, height: 48, objectFit: "contain", flexShrink: 0 }} />
                 <p className="text-muted-foreground" style={{ fontSize: "0.9rem" }}>
@@ -120,7 +120,7 @@ export function DailyNote() {
               </div>
             ) : (
               <div className="divide-y" style={{ borderColor: "var(--border)" }}>
-                {pastEntries.map((entry) => (
+                {historyEntries.map((entry) => (
                   <div key={entry.id} className="px-5 py-4 group">
                     <div className="flex items-center justify-between mb-1">
                       <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--primary)" }}>

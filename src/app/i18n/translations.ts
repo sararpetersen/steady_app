@@ -168,10 +168,13 @@ const en = {
   },
 
   noteHistory: {
-    heading: "Previous Notes",
-    empty: "No previous notes yet.",
+    heading: "Your Notes",
+    empty: "No notes yet.",
     today: "Today",
     deleteEntry: "Delete this entry",
+    editEntry: "Edit this entry",
+    saveEntry: "Save this entry",
+    editLabel: "Edit",
   },
 
   onboarding: {
@@ -724,10 +727,13 @@ const da: typeof en = {
   },
 
   noteHistory: {
-    heading: "Tidligere noter",
-    empty: "Ingen tidligere noter endnu.",
+    heading: "Dine noter",
+    empty: "Ingen noter endnu.",
     today: "I dag",
     deleteEntry: "Slet denne note",
+    editEntry: "Rediger denne note",
+    saveEntry: "Gem denne note",
+    editLabel: "Rediger",
   },
 
   onboarding: {

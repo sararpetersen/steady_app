@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
-import { Reorder } from "motion/react";
+import { Reorder, AnimatePresence, motion } from "motion/react";
 import { Sprout, Plus, X, Check, GripVertical, StickyNote } from "lucide-react";
 
 export interface Habit {
@@ -169,7 +169,8 @@ export function HabitTracker() {
             <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
               <GripVertical size={19} />
             </span>
-            <div className="relative flex-1 min-w-0">
+            <div className="flex-1 min-w-0">
+            <div className="relative">
             {/* Main tap area — full width */}
             {editingId === habit.id ? (
               <div className="flex items-center gap-2 p-3 pr-28 rounded-xl border-2 border-primary bg-input-background">
@@ -225,46 +226,67 @@ export function HabitTracker() {
                 aria-label={`${habit.note ? t.habits.editNote : t.habits.addNote}: ${habit.name}`}
                 aria-pressed={openNoteId === habit.id}
               >
-                <StickyNote size={15} fill={habit.note ? "var(--primary)" : "none"} />
+                <StickyNote size={15} />
               </button>
               <button onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} className="px-2.5 py-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted flex items-center justify-center" style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : t.habits.editLabel}</button>
               <button onClick={() => deleteHabit(habit.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted" aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></button>
             </div>
-            {openNoteId === habit.id ? (
-              <div className="mt-1.5 p-3 rounded-xl border border-dashed" style={{ borderColor: "var(--border)", backgroundColor: "var(--surface-1)" }}>
-                <div className="flex items-center gap-1.5 mb-1.5 text-muted-foreground">
-                  <StickyNote size={12} />
-                  <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.02em" }}>{t.habits.noteLabel}</span>
-                </div>
-                <textarea
-                  autoFocus
-                  value={noteDraft}
-                  onChange={(e) => setNoteDraft(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Escape") setOpenNoteId(null); }}
-                  placeholder={t.habits.notePlaceholder}
-                  rows={2}
-                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none resize-none"
-                  style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
-                />
-                <div className="flex justify-end gap-2 mt-1">
-                  <button onClick={() => setOpenNoteId(null)} className="rounded-lg px-3 py-1.5 text-muted-foreground hover:bg-muted" style={{ fontSize: "0.82rem", fontWeight: 600 }}>
-                    {t.habits.cancel}
+            </div>
+            <AnimatePresence initial={false}>
+              {openNoteId === habit.id ? (
+                <motion.div
+                  key="edit"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <div className="mt-1.5 p-3 rounded-xl border border-dashed" style={{ borderColor: "var(--border)", backgroundColor: "var(--surface-1)" }}>
+                    <div className="flex items-center gap-1.5 mb-1.5 text-muted-foreground">
+                      <StickyNote size={12} />
+                      <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.02em" }}>{t.habits.noteLabel}</span>
+                    </div>
+                    <textarea
+                      autoFocus
+                      value={noteDraft}
+                      onChange={(e) => setNoteDraft(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Escape") setOpenNoteId(null); }}
+                      placeholder={t.habits.notePlaceholder}
+                      rows={2}
+                      className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none resize-none"
+                      style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
+                    />
+                    <div className="flex justify-end gap-2 mt-1">
+                      <button onClick={() => setOpenNoteId(null)} className="rounded-lg px-3 py-1.5 text-muted-foreground hover:bg-muted" style={{ fontSize: "0.82rem", fontWeight: 600 }}>
+                        {t.habits.cancel}
+                      </button>
+                      <button onClick={() => saveNote(habit.id)} className="rounded-lg px-3 py-1.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontSize: "0.82rem", fontWeight: 700 }}>
+                        {t.habits.saveNote}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ) : habit.note && (
+                <motion.div
+                  key="view"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <button
+                    onClick={() => toggleNote(habit)}
+                    className="mt-1 w-full flex items-start gap-1.5 px-3 py-1 text-left text-muted-foreground hover:text-foreground"
+                    aria-label={`${t.habits.editNote}: ${habit.name}`}
+                  >
+                    <StickyNote size={12} className="flex-shrink-0 mt-0.5" style={{ color: "var(--primary)" }} />
+                    <span style={{ fontSize: "0.82rem", lineHeight: 1.4, whiteSpace: "pre-wrap" }}>{habit.note}</span>
                   </button>
-                  <button onClick={() => saveNote(habit.id)} className="rounded-lg px-3 py-1.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontSize: "0.82rem", fontWeight: 700 }}>
-                    {t.habits.saveNote}
-                  </button>
-                </div>
-              </div>
-            ) : habit.note && (
-              <button
-                onClick={() => toggleNote(habit)}
-                className="mt-1 w-full flex items-start gap-1.5 px-3 py-1 text-left text-muted-foreground hover:text-foreground"
-                aria-label={`${t.habits.editNote}: ${habit.name}`}
-              >
-                <StickyNote size={12} className="flex-shrink-0 mt-0.5" style={{ color: "var(--primary)" }} />
-                <span style={{ fontSize: "0.82rem", lineHeight: 1.4, whiteSpace: "pre-wrap" }}>{habit.note}</span>
-              </button>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
             </div>
           </Reorder.Item>
           );

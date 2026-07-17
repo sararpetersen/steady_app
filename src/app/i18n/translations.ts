@@ -337,6 +337,7 @@ const en = {
     addNote: "Add note",
     editNote: "Edit note",
     saveNote: "Save note",
+    noteLabel: "Note",
     notePlaceholder: "Add context – a reason, a reminder, anything worth remembering…",
     items: [
       {
@@ -892,6 +893,7 @@ const da: typeof en = {
     addNote: "Tilføj note",
     editNote: "Rediger note",
     saveNote: "Gem note",
+    noteLabel: "Note",
     notePlaceholder: "Tilføj kontekst – en grund, en påmindelse, alt der er værd at huske…",
     items: [
       { key: "water", name: "Drik 8 glas vand", emoji: "💧" },

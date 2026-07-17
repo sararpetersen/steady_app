@@ -230,8 +230,12 @@ export function HabitTracker() {
               <button onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} className="px-2.5 py-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted flex items-center justify-center" style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : t.habits.editLabel}</button>
               <button onClick={() => deleteHabit(habit.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted" aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></button>
             </div>
-            {openNoteId === habit.id && (
-              <div className="mt-2 p-3 rounded-xl border-2 border-primary bg-input-background space-y-2">
+            {openNoteId === habit.id ? (
+              <div className="mt-1.5 p-3 rounded-xl border border-dashed" style={{ borderColor: "var(--border)", backgroundColor: "var(--surface-1)" }}>
+                <div className="flex items-center gap-1.5 mb-1.5 text-muted-foreground">
+                  <StickyNote size={12} />
+                  <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.02em" }}>{t.habits.noteLabel}</span>
+                </div>
                 <textarea
                   autoFocus
                   value={noteDraft}
@@ -242,7 +246,7 @@ export function HabitTracker() {
                   className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none resize-none"
                   style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
                 />
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-2 mt-1">
                   <button onClick={() => setOpenNoteId(null)} className="rounded-lg px-3 py-1.5 text-muted-foreground hover:bg-muted" style={{ fontSize: "0.82rem", fontWeight: 600 }}>
                     {t.habits.cancel}
                   </button>
@@ -251,6 +255,15 @@ export function HabitTracker() {
                   </button>
                 </div>
               </div>
+            ) : habit.note && (
+              <button
+                onClick={() => toggleNote(habit)}
+                className="mt-1 w-full flex items-start gap-1.5 px-3 py-1 text-left text-muted-foreground hover:text-foreground"
+                aria-label={`${t.habits.editNote}: ${habit.name}`}
+              >
+                <StickyNote size={12} className="flex-shrink-0 mt-0.5" style={{ color: "var(--primary)" }} />
+                <span style={{ fontSize: "0.82rem", lineHeight: 1.4, whiteSpace: "pre-wrap" }}>{habit.note}</span>
+              </button>
             )}
             </div>
           </Reorder.Item>

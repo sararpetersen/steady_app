@@ -19,6 +19,7 @@ const en = {
     note: "Note",
     dates: "Dates",
     profile: "Profile",
+    more: "More",
   },
 
   auth: {
@@ -333,6 +334,10 @@ const en = {
     emptyTitle: "No habits yet",
     emptySubtitle: "Start with something simple – one small habit makes a difference.",
     cancel: "Cancel",
+    addNote: "Add note",
+    editNote: "Edit note",
+    saveNote: "Save note",
+    notePlaceholder: "Add context – a reason, a reminder, anything worth remembering…",
     items: [
       {
         key: "water",
@@ -398,6 +403,12 @@ const en = {
     agoSuffix: "ago",
     day: "day",
     days: "days",
+  },
+
+  more: {
+    heading: "More",
+    description: "A few extra tools for the days you want them.",
+    back: "Back",
   },
 
   profile: {
@@ -563,6 +574,7 @@ const da: typeof en = {
     note: "Note",
     dates: "Datoer",
     profile: "Profil",
+    more: "Mere",
   },
 
   auth: {
@@ -877,6 +889,10 @@ const da: typeof en = {
     emptyTitle: "Ingen habits endnu",
     emptySubtitle: "Start med noget enkelt – én lille habit gør en forskel.",
     cancel: "Annullér",
+    addNote: "Tilføj note",
+    editNote: "Rediger note",
+    saveNote: "Gem note",
+    notePlaceholder: "Tilføj kontekst – en grund, en påmindelse, alt der er værd at huske…",
     items: [
       { key: "water", name: "Drik 8 glas vand", emoji: "💧" },
       { key: "move", name: "Bevæg kroppen", emoji: "🚶" },
@@ -938,6 +954,12 @@ const da: typeof en = {
     agoSuffix: "siden",
     day: "dag",
     days: "dage",
+  },
+
+  more: {
+    heading: "Mere",
+    description: "Et par ekstra værktøjer til de dage, du har brug for dem.",
+    back: "Tilbage",
   },
 
   profile: {

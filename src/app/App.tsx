@@ -3,9 +3,8 @@ import { MoodCheck } from "./components/MoodCheck";
 import { TaskList, type Task } from "./components/TaskList";
 import { Routines } from "./components/Routines";
 import { HabitTracker, type Habit } from "./components/HabitTracker";
-import { FocusTimer } from "./components/FocusTimer";
 import { DailyNote } from "./components/DailyNote";
-import { ImportantDates } from "./components/ImportantDates";
+import { MorePage } from "./components/MorePage";
 import { Profile } from "./components/Profile";
 import { DEFAULT_PROFILE, type ProfileData } from "./components/profileTypes";
 import { PersonalizedTip } from "./components/PersonalizedTip";
@@ -19,7 +18,7 @@ import { pushLocalToRemote, pullRemoteToLocal } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
-import { LayoutDashboard, ClipboardList, Repeat2, Sprout, UserCircle2, Timer, NotebookPen, Settings, CalendarDays, CalendarHeart, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Repeat2, Sprout, UserCircle2, NotebookPen, Settings, CalendarDays, MoreHorizontal, Sun, Moon } from "lucide-react";
 import { SteadyWordmark } from "./components/SteadyWordmark";
 
 {
@@ -331,10 +330,9 @@ export default function App() {
     { key: "tasks", label: t.nav.tasks, icon: ClipboardList },
     { key: "routines", label: t.nav.routines, icon: Repeat2 },
     { key: "habits", label: t.nav.habits, icon: Sprout },
-    { key: "focus", label: t.nav.focus, icon: Timer },
     { key: "note", label: t.nav.note, icon: NotebookPen },
-    { key: "dates", label: t.nav.dates, icon: CalendarHeart },
     { key: "profile", label: t.nav.profile, icon: UserCircle2 },
+    { key: "more", label: t.nav.more, icon: MoreHorizontal },
   ];
 
   // Consistent circular avatar button — photo fills circle, emoji sits on tinted background
@@ -665,9 +663,8 @@ export default function App() {
                 {activeTab === "tasks" && <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />}
                 {activeTab === "routines" && <Routines />}
                 {activeTab === "habits" && <HabitTracker />}
-                {activeTab === "focus" && <FocusTimer />}
                 {activeTab === "note" && <DailyNote />}
-                {activeTab === "dates" && <ImportantDates />}
+                {activeTab === "more" && <MorePage />}
                 {activeTab === "profile" && <Profile profile={profile} onChange={setProfile} photo={profilePhoto} onPhotoChange={setProfilePhoto} />}
               </div>
             )}

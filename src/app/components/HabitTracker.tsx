@@ -3,7 +3,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { Reorder } from "motion/react";
-import { Sprout, Plus, X, Check, GripVertical } from "lucide-react";
+import { Sprout, Plus, X, Check, GripVertical, StickyNote } from "lucide-react";
 
 export interface Habit {
   id: string;
@@ -12,6 +12,7 @@ export interface Habit {
   totalCompletions: number;
   doneToday: boolean;
   lastCompletedDate?: string; // "YYYY-MM-DD" — legacy entries may predate this field
+  note?: string; // optional freeform context, e.g. "doctor said 2L a day" — mirrors Reminders' note field
 }
 
 // Each habit is just a seed — the growth payoff lives in the Overview's daily tree, not here.
@@ -63,6 +64,8 @@ export function HabitTracker() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editEmoji, setEditEmoji] = useState("");
+  const [openNoteId, setOpenNoteId] = useState<string | null>(null);
+  const [noteDraft, setNoteDraft] = useState("");
   const today = useToday();
 
   // Reset doneToday when the day rolls over, so habits start fresh each day.
@@ -114,6 +117,21 @@ export function HabitTracker() {
     setEditingId(null);
   };
 
+  const toggleNote = (habit: Habit) => {
+    if (openNoteId === habit.id) {
+      setOpenNoteId(null);
+      return;
+    }
+    setOpenNoteId(habit.id);
+    setNoteDraft(habit.note ?? "");
+  };
+
+  const saveNote = (id: string) => {
+    const note = noteDraft.trim();
+    setHabits((prev) => prev.map((habit) => habit.id === id ? { ...habit, note: note || undefined } : habit));
+    setOpenNoteId(null);
+  };
+
   const addHabit = () => {
     const name = newName.trim();
     if (!name) return;
@@ -154,14 +172,14 @@ export function HabitTracker() {
             <div className="relative flex-1 min-w-0">
             {/* Main tap area — full width */}
             {editingId === habit.id ? (
-              <div className="flex items-center gap-2 p-3 pr-20 rounded-xl border-2 border-primary bg-input-background">
+              <div className="flex items-center gap-2 p-3 pr-28 rounded-xl border-2 border-primary bg-input-background">
                 <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
                 <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(habit.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
               </div>
             ) : (
             <button
               onClick={() => toggle(habit.id)}
-              className="w-full flex items-center gap-3 p-3 pr-24 rounded-xl hover:opacity-90 text-left"
+              className="w-full flex items-center gap-3 p-3 pr-32 rounded-xl hover:opacity-90 text-left"
               style={{
                 backgroundColor: habit.doneToday ? getDoneColor(index) : "var(--surface-1)",
                 border: habit.doneToday ? "2px solid var(--primary)" : "2px solid transparent",
@@ -200,9 +218,40 @@ export function HabitTracker() {
             )}
 
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+              <button
+                onClick={() => toggleNote(habit)}
+                className="p-1.5 rounded-lg hover:bg-muted flex items-center justify-center"
+                style={{ color: habit.note ? "var(--primary)" : "var(--muted-foreground)" }}
+                aria-label={`${habit.note ? t.habits.editNote : t.habits.addNote}: ${habit.name}`}
+                aria-pressed={openNoteId === habit.id}
+              >
+                <StickyNote size={15} fill={habit.note ? "var(--primary)" : "none"} />
+              </button>
               <button onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} className="px-2.5 py-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted flex items-center justify-center" style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : t.habits.editLabel}</button>
               <button onClick={() => deleteHabit(habit.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted" aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></button>
             </div>
+            {openNoteId === habit.id && (
+              <div className="mt-2 p-3 rounded-xl border-2 border-primary bg-input-background space-y-2">
+                <textarea
+                  autoFocus
+                  value={noteDraft}
+                  onChange={(e) => setNoteDraft(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Escape") setOpenNoteId(null); }}
+                  placeholder={t.habits.notePlaceholder}
+                  rows={2}
+                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none resize-none"
+                  style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
+                />
+                <div className="flex justify-end gap-2">
+                  <button onClick={() => setOpenNoteId(null)} className="rounded-lg px-3 py-1.5 text-muted-foreground hover:bg-muted" style={{ fontSize: "0.82rem", fontWeight: 600 }}>
+                    {t.habits.cancel}
+                  </button>
+                  <button onClick={() => saveNote(habit.id)} className="rounded-lg px-3 py-1.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontSize: "0.82rem", fontWeight: 700 }}>
+                    {t.habits.saveNote}
+                  </button>
+                </div>
+              </div>
+            )}
             </div>
           </Reorder.Item>
           );

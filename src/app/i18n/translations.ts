@@ -90,6 +90,9 @@ const en = {
     clearYes: "Yes, delete everything",
     clearNo: "Cancel",
     dataCleared: "All data deleted.",
+    exportData: "Export my data",
+    importData: "Import data",
+    importError: "Couldn't read that file. Make sure it's a Steady export.",
     privacy:
       "Your data stays on this device only. Nothing is sent to any server, and there is no tracking or advertising of any kind. Account creation is optional.",
     privacyLink: "Read full privacy policy",
@@ -115,7 +118,7 @@ const en = {
         },
         {
           heading: "Deleting your data",
-          body: "You can delete all your data at any time from 'Settings' → 'Data & Privacy' → 'Clear all my data'. You can also clear your browser's localStorage directly. Either way, all data is permanently removed.",
+          body: "You can delete all your data at any time from 'Settings' → 'Account' → 'Delete all my data'. You can also export a backup first from 'Data & Privacy', or clear your browser's localStorage directly. Either way, all data is permanently removed.",
         },
         {
           heading: "Tracking and analytics",
@@ -659,6 +662,9 @@ const da: typeof en = {
     clearYes: "Ja, slet alt",
     clearNo: "Annuller",
     dataCleared: "Alle data er slettet.",
+    exportData: "Eksportér mine data",
+    importData: "Importér data",
+    importError: "Filen kunne ikke læses. Sørg for, at det er en Steady-eksport.",
     privacy:
       "Dine data forbliver kun på denne enhed – intet af det sendes til nogen server, og der er ingen sporing eller reklamer af nogen art. Kontooprettelse er helt valgfrit.",
     privacyLink: "Læs fuld privatlivspolitik",
@@ -684,7 +690,7 @@ const da: typeof en = {
         },
         {
           heading: "Sletning af dine data",
-          body: "Du kan slette alle dine data til enhver tid fra 'Indstillinger' → 'Data og privatliv' → 'Ryd alle mine data'. Du kan også rydde din browsers localStorage direkte. Uanset hvad fjernes alle data permanent.",
+          body: "Du kan slette alle dine data til enhver tid fra 'Indstillinger' → 'Konto' → 'Slet alle mine data'. Du kan også eksportere en backup først fra 'Data og privatliv', eller rydde din browsers localStorage direkte. Uanset hvad fjernes alle data permanent.",
         },
         {
           heading: "Sporing og analyser",

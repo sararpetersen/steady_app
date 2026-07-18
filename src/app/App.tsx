@@ -280,6 +280,7 @@ export default function App() {
     localStorage.setItem("steady-routines-done", JSON.stringify([]));
     localStorage.setItem("steady-routines-custom", JSON.stringify({ morning: [], afternoon: [], late: [] }));
     localStorage.setItem("steady-routines-nextid", JSON.stringify(100));
+    localStorage.setItem("steady-important-dates", JSON.stringify([]));
   };
 
   const handleOnboardingComplete = (newProfile: ProfileData) => {
@@ -481,7 +482,7 @@ export default function App() {
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setProfile({ ...profile, a11y: { ...profile.a11y, darkMode: !profile.a11y.darkMode } })}
-                className="nav-tab nav-tab-inactive rounded-xl flex items-center justify-center flex-shrink-0"
+                className="nav-tab nav-tab-inactive rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ width: 44, height: 44, border: "2px solid var(--border)", color: "var(--muted-foreground)" }}
                 aria-label={profile.a11y.darkMode ? "Switch to light mode" : "Switch to dark mode"}
               >
@@ -489,7 +490,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => setSettingsOpen((open) => !open)}
-                className={`nav-tab rounded-xl flex items-center justify-center flex-shrink-0 ${settingsOpen ? "nav-tab-active" : "nav-tab-inactive"}`}
+                className={`nav-tab rounded-full flex items-center justify-center flex-shrink-0 ${settingsOpen ? "nav-tab-active" : "nav-tab-inactive"}`}
                 style={{
                   width: 44,
                   height: 44,
@@ -528,7 +529,7 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setSettingsOpen((o) => !o)}
-                  className="rounded-xl flex items-center justify-center flex-shrink-0 hover:bg-muted"
+                  className="rounded-full flex items-center justify-center flex-shrink-0 hover:bg-muted"
                   style={{ width: 44, height: 44, transition: "background-color 0.15s", color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
                   aria-label="Open settings"
                   aria-pressed={settingsOpen}

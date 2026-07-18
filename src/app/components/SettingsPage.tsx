@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { X, ChevronDown, ChevronUp, Eye, EyeOff, LogOut } from "lucide-react";
+import { X, ChevronDown, ChevronUp, Eye, EyeOff, LogOut, Trash2, Download, Upload } from "lucide-react";
 import { AnimatedCollapse } from "./AnimatedCollapse";
 import { useLang } from "../i18n/LangContext";
 import type { A11ySettings } from "./a11yTypes";
@@ -18,6 +18,25 @@ interface Props {
   onSignOut: () => void;
   onAuthUpdate: (newEmail: string, userId: string, justSignedUp?: boolean) => void;
 }
+
+// Everything that counts as "your data" for export/import and delete — mirrors clearAllData in App.tsx.
+const EXPORT_KEYS = [
+  "steady-tasks",
+  "steady-task-nextid",
+  "steady-tasks-date",
+  "steady-habits-v2",
+  "steady-routines-custom",
+  "steady-routines-done",
+  "steady-routines-done-date",
+  "steady-routines-nextid",
+  "steady-notes",
+  "steady-notes-nextid",
+  "steady-important-dates",
+  "steady-mood-history",
+  "steady-profile",
+  "steady-profile-photo",
+  "steady-growth-celebrated-date",
+];
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
@@ -98,16 +117,26 @@ function OptionRow<V extends string>({ label, options, value, onChange, stacked 
   );
 }
 
-function AccountSection({ auth, onSignOut, onAuthUpdate }: {
+function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
   auth: AuthState | null;
   onSignOut: () => void;
   onAuthUpdate: (newEmail: string, userId: string, justSignedUp?: boolean) => void;
+  onClearData: () => void;
 }) {
   const t = useLang();
   const a = t.account;
+  const s = t.settings;
 
   const [emailOpen, setEmailOpen] = useState(false);
   const [pwOpen, setPwOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+
+  const handleDelete = () => {
+    onClearData();
+    setConfirmDelete(false);
+    setDeleted(true);
+  };
 
   const [newEmail, setNewEmail] = useState("");
   const [verifyPw, setVerifyPw] = useState("");
@@ -329,17 +358,45 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
         </AnimatedCollapse>
       </div>
 
-      {/* Sign out */}
-      <div className="pt-1">
+      {/* Sign out + delete data */}
+      <div className="pt-1 flex items-center gap-1 flex-wrap">
         <button
           onClick={onSignOut}
-          className="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-muted-foreground hover:text-destructive hover:bg-muted"
+          className="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-muted-foreground hover:text-foreground hover:bg-muted"
           style={{ fontSize: "0.88rem", fontWeight: 600, transition: "all 0.15s" }}
         >
           <LogOut size={15} />
           {a.signOut}
         </button>
+        {!confirmDelete && !deleted && (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-muted-foreground hover:text-destructive hover:bg-muted"
+            style={{ fontSize: "0.88rem", fontWeight: 600, transition: "all 0.15s" }}
+          >
+            <Trash2 size={15} />
+            {s.clearData}
+          </button>
+        )}
       </div>
+
+      {confirmDelete && (
+        <div className="rounded-xl p-4 border-2" style={{ borderColor: "var(--destructive)", backgroundColor: "var(--surface-1)" }}>
+          <p className="text-foreground mb-3" style={{ fontSize: "0.9rem" }}>{s.clearConfirm}</p>
+          <div className="flex gap-2">
+            <button onClick={handleDelete} className="rounded-xl px-5 py-2 text-white hover:opacity-85" style={{ backgroundColor: "var(--destructive)", fontWeight: 700, transition: "opacity 0.15s" }}>
+              {s.clearYes}
+            </button>
+            <button onClick={() => setConfirmDelete(false)} className="rounded-xl px-5 py-2 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, transition: "background-color 0.15s" }}>
+              {s.clearNo}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {deleted && (
+        <p className="text-primary text-center" style={{ fontWeight: 600 }}>{s.dataCleared}</p>
+      )}
     </div>
   );
 }
@@ -347,15 +404,47 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
 export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, onClearData, auth, onSignOut, onAuthUpdate }: Props) {
   const t = useLang();
   const s = t.settings;
-  const [confirmClear, setConfirmClear] = useState(false);
-  const [cleared, setCleared] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [importError, setImportError] = useState(false);
+  const importInputRef = useRef<HTMLInputElement>(null);
   const update = (patch: Partial<A11ySettings>) => onChange({ ...settings, ...patch });
 
-  const handleClear = () => {
-    onClearData();
-    setConfirmClear(false);
-    setCleared(true);
+  const exportData = () => {
+    const data: Record<string, unknown> = {};
+    EXPORT_KEYS.forEach((key) => {
+      const raw = localStorage.getItem(key);
+      if (raw === null) return;
+      try { data[key] = JSON.parse(raw); } catch { data[key] = raw; }
+    });
+    const blob = new Blob([JSON.stringify({ app: APP_NAME, exportedAt: new Date().toISOString(), data }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `steady-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importData = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setImportError(false);
+    try {
+      const parsed = JSON.parse(await file.text());
+      const data = parsed?.data && typeof parsed.data === "object" ? parsed.data : parsed;
+      let wrote = false;
+      for (const key of EXPORT_KEYS) {
+        if (key in data) {
+          localStorage.setItem(key, JSON.stringify(data[key]));
+          wrote = true;
+        }
+      }
+      if (!wrote) throw new Error("no recognizable data");
+      window.location.reload();
+    } catch {
+      setImportError(true);
+    }
   };
 
   return (
@@ -371,7 +460,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
       {/* Account */}
       <div className="steady-card bg-card rounded-2xl p-5 border border-border space-y-3">
         <SectionHeading>{s.sections.account}</SectionHeading>
-        <AccountSection auth={auth} onSignOut={onSignOut} onAuthUpdate={onAuthUpdate} />
+        <AccountSection auth={auth} onSignOut={onSignOut} onAuthUpdate={onAuthUpdate} onClearData={onClearData} />
       </div>
 
       {/* Appearance */}
@@ -454,41 +543,35 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
           {s.privacyLink} →
         </button>
 
-        {!confirmClear && !cleared && (
-          <div className="flex gap-2">
-            <button
-              onClick={onResetOnboarding}
-              className="flex-1 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
-              style={{ fontWeight: 600, transition: "background-color 0.15s" }}
-            >
-              {s.resetOnboarding}
-            </button>
-            <button
-              onClick={() => setConfirmClear(true)}
-              className="flex-1 rounded-xl px-4 py-3 text-center hover:opacity-85"
-              style={{ backgroundColor: "var(--destructive)", color: "white", fontWeight: 600, transition: "opacity 0.15s" }}
-            >
-              {s.clearData}
-            </button>
-          </div>
-        )}
+        <button
+          onClick={onResetOnboarding}
+          className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
+          style={{ fontWeight: 600, transition: "background-color 0.15s" }}
+        >
+          {s.resetOnboarding}
+        </button>
 
-        {confirmClear && (
-          <div className="rounded-xl p-4 border-2" style={{ borderColor: "var(--destructive)", backgroundColor: "var(--surface-1)" }}>
-            <p className="text-foreground mb-3" style={{ fontSize: "0.9rem" }}>{s.clearConfirm}</p>
-            <div className="flex gap-2">
-              <button onClick={handleClear} className="rounded-xl px-5 py-2 text-white hover:opacity-85" style={{ backgroundColor: "var(--destructive)", fontWeight: 700, transition: "opacity 0.15s" }}>
-                {s.clearYes}
-              </button>
-              <button onClick={() => setConfirmClear(false)} className="rounded-xl px-5 py-2 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, transition: "background-color 0.15s" }}>
-                {s.clearNo}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {cleared && (
-          <p className="text-primary text-center" style={{ fontWeight: 600 }}>{s.dataCleared}</p>
+        <div className="flex gap-2">
+          <button
+            onClick={exportData}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
+            style={{ fontWeight: 600, transition: "background-color 0.15s" }}
+          >
+            <Download size={16} />
+            {s.exportData}
+          </button>
+          <button
+            onClick={() => importInputRef.current?.click()}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
+            style={{ fontWeight: 600, transition: "background-color 0.15s" }}
+          >
+            <Upload size={16} />
+            {s.importData}
+          </button>
+          <input ref={importInputRef} type="file" accept="application/json" onChange={importData} className="hidden" />
+        </div>
+        {importError && (
+          <p role="alert" style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{s.importError}</p>
         )}
 
         <p className="text-center text-muted-foreground" style={{ fontSize: "0.78rem", paddingTop: 8 }}>

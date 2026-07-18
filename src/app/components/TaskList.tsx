@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLang } from "../i18n/LangContext";
-import { Plus, X, CheckCircle2, Check, ChevronUp, ChevronDown } from "lucide-react";
+import { Reorder } from "motion/react";
+import { Plus, X, CheckCircle2, Check, GripVertical } from "lucide-react";
 
 export interface Task {
   id: number;
@@ -39,16 +40,6 @@ export function TaskList({
 
   const remove = (id: number) =>
     setTasks((prev) => prev.filter((task) => task.id !== id));
-
-  const move = (index: number, offset: -1 | 1) => {
-    setTasks((prev) => {
-      const nextIndex = index + offset;
-      if (nextIndex < 0 || nextIndex >= prev.length) return prev;
-      const next = [...prev];
-      [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
-      return next;
-    });
-  };
 
   const startEditing = (task: Task) => {
     setEditingId(task.id);
@@ -114,17 +105,23 @@ export function TaskList({
         </div>
       )}
 
-      <div className="space-y-2 mb-4">
-        {tasks.map((task, index) => (
-          <div
+      <Reorder.Group axis="y" values={tasks} onReorder={setTasks} className="space-y-2 mb-4">
+        {tasks.map((task) => (
+          <Reorder.Item
             key={task.id}
-            className="flex items-center gap-3 rounded-xl p-3 hover:brightness-95"
+            value={task}
+            dragListener={editingId !== task.id}
+            whileDrag={{ scale: 1.02, zIndex: 10 }}
+            className="flex items-center gap-1 rounded-xl hover:brightness-95"
             style={{
               backgroundColor: task.done
                 ? "var(--surface-2)"
                 : "var(--surface-1)",
             }}
           >
+            <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
+              <GripVertical size={19} />
+            </span>
             <button
               onClick={() => toggle(task.id)}
               className="flex-shrink-0 rounded-full flex items-center justify-center"
@@ -172,9 +169,7 @@ export function TaskList({
             ) : (
               <span className="flex-1 text-foreground" style={{ textDecoration: task.done ? "line-through" : "none", opacity: task.done ? 0.5 : 1 }}>{task.text}</span>
             )}
-            <div className="flex items-center gap-1 flex-shrink-0">
-              <button onClick={() => move(index, -1)} disabled={index === 0} className="text-muted-foreground p-2 rounded-lg disabled:opacity-25 hover:bg-muted" aria-label={`${t.tasks.moveUp}: ${task.text}`}><ChevronUp size={16} /></button>
-              <button onClick={() => move(index, 1)} disabled={index === tasks.length - 1} className="text-muted-foreground p-2 rounded-lg disabled:opacity-25 hover:bg-muted" aria-label={`${t.tasks.moveDown}: ${task.text}`}><ChevronDown size={16} /></button>
+            <div className="flex items-center gap-1 flex-shrink-0 pr-1">
               <button onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} className="text-muted-foreground hover:text-primary px-2.5 py-2 rounded-lg hover:bg-muted flex items-center justify-center" style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>{editingId === task.id ? <Check size={16} /> : t.tasks.editLabel}</button>
             <button
               onClick={() => remove(task.id)}
@@ -185,9 +180,9 @@ export function TaskList({
               <X size={16} />
             </button>
             </div>
-          </div>
+          </Reorder.Item>
         ))}
-      </div>
+      </Reorder.Group>
 
       {tasks.length > 0 && remaining === 0 && (
         <div

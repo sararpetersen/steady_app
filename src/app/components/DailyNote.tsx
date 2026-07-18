@@ -8,6 +8,7 @@ export interface NoteEntry {
   id: number;
   date: string; // "YYYY-MM-DD"
   text: string;
+  prompt?: string; // the reflection prompt shown while writing this entry, if any
 }
 
 function formatEntryDate(dateStr: string, locale: string, todayLabel: string, today: string): string {
@@ -38,10 +39,11 @@ export function DailyNote() {
   const save = () => {
     const trimmed = draft.trim();
     if (!trimmed) return;
+    const prompt = t.note.prompts[promptIndex];
     if (todayEntry) {
-      setEntries((prev) => prev.map((e) => (e.date === today ? { ...e, text: trimmed } : e)));
+      setEntries((prev) => prev.map((e) => (e.date === today ? { ...e, text: trimmed, prompt } : e)));
     } else {
-      setEntries((prev) => [...prev, { id: nextId, date: today, text: trimmed }]);
+      setEntries((prev) => [...prev, { id: nextId, date: today, text: trimmed, prompt }]);
       setNextId((n) => n + 1);
     }
     setDraft("");
@@ -154,6 +156,12 @@ export function DailyNote() {
                         </button>
                       </div>
                     </div>
+                    {entry.prompt && (
+                      <p className="mb-1" style={{ fontSize: "0.78rem", fontStyle: "italic", color: "var(--purple-text)" }}>
+                        <span aria-hidden="true">💭 </span>
+                        {entry.prompt}
+                      </p>
+                    )}
                     {editing ? (
                       <textarea
                         autoFocus

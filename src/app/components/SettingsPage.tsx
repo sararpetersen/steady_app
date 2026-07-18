@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { X, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
+import { X, ChevronDown, ChevronUp, Eye, EyeOff, LogOut } from "lucide-react";
+import { AnimatedCollapse } from "./AnimatedCollapse";
 import { useLang } from "../i18n/LangContext";
 import type { A11ySettings } from "./a11yTypes";
 import type { Lang } from "../i18n/translations";
@@ -278,7 +279,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
           <span className="text-foreground" style={{ fontWeight: 600 }}>{emailSaved ? a.saved : a.changeEmail}</span>
           {emailOpen ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
         </button>
-        {emailOpen && (
+        <AnimatedCollapse open={emailOpen}>
           <div className="px-4 pb-4 space-y-3 border-t border-border" style={{ paddingTop: 12 }}>
             <div>
               <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{a.newEmailLabel}</label>
@@ -294,7 +295,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
               <button onClick={() => setEmailOpen(false)} className="rounded-xl px-4 py-2.5 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, fontSize: "0.88rem", transition: "background-color 0.15s" }}>{a.cancel}</button>
             </div>
           </div>
-        )}
+        </AnimatedCollapse>
       </div>
 
       {/* Change password */}
@@ -307,7 +308,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
           <span className="text-foreground" style={{ fontWeight: 600 }}>{pwSaved ? a.saved : a.changePassword}</span>
           {pwOpen ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
         </button>
-        {pwOpen && (
+        <AnimatedCollapse open={pwOpen}>
           <div className="px-4 pb-4 space-y-3 border-t border-border" style={{ paddingTop: 12 }}>
             {[
               { label: a.currentPasswordLabel, value: currentPw, set: setCurrentPw, autocomplete: "current-password" },
@@ -325,17 +326,20 @@ function AccountSection({ auth, onSignOut, onAuthUpdate }: {
               <button onClick={() => setPwOpen(false)} className="rounded-xl px-4 py-2.5 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, fontSize: "0.88rem", transition: "background-color 0.15s" }}>{a.cancel}</button>
             </div>
           </div>
-        )}
+        </AnimatedCollapse>
       </div>
 
       {/* Sign out */}
-      <button
-        onClick={onSignOut}
-        className="w-full rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
-        style={{ fontWeight: 600, transition: "background-color 0.15s" }}
-      >
-        {a.signOut}
-      </button>
+      <div className="pt-1">
+        <button
+          onClick={onSignOut}
+          className="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-muted-foreground hover:text-destructive hover:bg-muted"
+          style={{ fontSize: "0.88rem", fontWeight: 600, transition: "all 0.15s" }}
+        >
+          <LogOut size={15} />
+          {a.signOut}
+        </button>
+      </div>
     </div>
   );
 }
@@ -462,7 +466,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
             <button
               onClick={() => setConfirmClear(true)}
               className="flex-1 rounded-xl px-4 py-3 text-center hover:opacity-85"
-              style={{ backgroundColor: "var(--destructive)", color: "white", fontWeight: 600, transition: "opacity 0.15s", borderRadius: "0.75rem" }}
+              style={{ backgroundColor: "var(--destructive)", color: "white", fontWeight: 600, transition: "opacity 0.15s" }}
             >
               {s.clearData}
             </button>

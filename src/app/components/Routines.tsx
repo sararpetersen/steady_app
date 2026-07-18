@@ -4,6 +4,7 @@ import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
+import { AnimatedCollapse } from "./AnimatedCollapse";
 
 const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
 type SectionKey = typeof SECTION_KEYS[number];
@@ -185,7 +186,7 @@ function SectionPanel({
         {open ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />}
       </button>
 
-      {open && (
+      <AnimatedCollapse open={open}>
         <div className="p-4 space-y-1 bg-card">
           {/* Custom items */}
           {customItems.length === 0 && !addingStep && (
@@ -237,7 +238,7 @@ function SectionPanel({
             </button>
           )}
         </div>
-      )}
+      </AnimatedCollapse>
     </div>
   );
 }

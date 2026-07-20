@@ -196,6 +196,7 @@ const en = {
     avatar: {
       title: "Pick your avatar",
       subtitle: "Choose one that feels like you.",
+      orPickEmoji: "Or pick an emoji below instead.",
     },
     language: {
       title: "Choose your language",
@@ -768,6 +769,7 @@ const da: typeof en = {
     avatar: {
       title: "Vælg din avatar",
       subtitle: "Vælg én der føles som dig.",
+      orPickEmoji: "Eller vælg en emoji nedenfor i stedet.",
     },
     language: {
       title: "Vælg dit sprog",

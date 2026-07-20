@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, Check, Camera, X } from "lucide-react";
 import { translations, type Lang } from "../i18n/translations";
 import { type ProfileData, DEFAULT_PROFILE } from "./profileTypes";
 import { DEFAULT_A11Y } from "./a11yTypes";
 import { supabase } from "../lib/supabaseClient";
+import { resizeImageToBase64 } from "../lib/image";
 
 const AVATARS = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨"];
 
@@ -32,14 +33,24 @@ interface Props {
   onSkip: () => void;
   isGuest?: boolean;
   onRegister?: (email: string, userId: string) => void;
+  onPhotoChange?: (photo: string | null) => void;
 }
 
-export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
+export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoChange }: Props) {
   const [step, setStep] = useState(0);
   const [lang, setLang] = useState<Lang>("en");
   const [name, setName] = useState("");
   const [pronoun, setPronoun] = useState("");
   const [avatar, setAvatar] = useState("🌱");
+  const [photo, setPhoto] = useState<string | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhoto(await resizeImageToBase64(file));
+    e.target.value = "";
+  };
   const [sensory, setSensory] = useState<string[]>([]);
   const [support, setSupport] = useState<string[]>([]);
   const [fontSize, setFontSize] = useState<"normal" | "large" | "xlarge">("normal");
@@ -106,6 +117,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
         font: readableFont ? "readable" : "standard",
       },
     };
+    onPhotoChange?.(photo);
     onComplete(profile);
   };
 
@@ -230,11 +242,35 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
                   <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>{t.onboarding.avatar.subtitle}</p>
                 </div>
                 <div
-                  className="rounded-2xl p-4 flex items-center justify-center border border-border bg-card"
+                  className="rounded-2xl p-4 flex items-center justify-center border border-border bg-card overflow-hidden"
                   style={{ fontSize: "4rem", height: 100 }}
                 >
-                  {avatar}
+                  {photo ? (
+                    <img src={photo} alt="" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "inherit" }} />
+                  ) : (
+                    avatar
+                  )}
                 </div>
+                <input ref={photoInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => photoInputRef.current?.click()}
+                    className="flex items-center gap-1.5 rounded-lg px-3 py-2 border border-border text-foreground hover:bg-muted"
+                    style={{ fontSize: "0.85rem", fontWeight: 600, transition: "background-color 0.15s" }}
+                  >
+                    <Camera size={14} />{photo ? t.profile.changePhoto : t.profile.addPhoto}
+                  </button>
+                  {photo && (
+                    <button onClick={() => setPhoto(null)} className="rounded-lg p-2 border border-border text-muted-foreground hover:text-destructive" aria-label={t.profile.removePhoto}>
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+                {photo && (
+                  <p className="text-muted-foreground text-center" style={{ fontSize: "0.82rem" }}>
+                    {t.onboarding.avatar.orPickEmoji}
+                  </p>
+                )}
                 <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(6, 1fr)" }}>
                   {AVATARS.map((e) => (
                     <button
@@ -443,7 +479,11 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister }: Props) {
             {/* Step 7: Done */}
             {step === 7 && (
               <div className="flex flex-col items-center text-center gap-6 flex-1 justify-center">
-                <div style={{ fontSize: "5rem", lineHeight: 1 }}>{avatar}</div>
+                {photo ? (
+                  <img src={photo} alt="" style={{ width: 96, height: 96, objectFit: "cover", borderRadius: "9999px" }} />
+                ) : (
+                  <div style={{ fontSize: "5rem", lineHeight: 1 }}>{avatar}</div>
+                )}
                 <div>
                   <h2 className="text-foreground mb-3" style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800, fontSize: "1.8rem" }}>
                     {name ? `${t.onboarding.done.title.replace("!", "")} ${name}! ✨` : t.onboarding.done.title}

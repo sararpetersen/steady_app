@@ -69,6 +69,12 @@ export function HabitTracker() {
   const [noteDraft, setNoteDraft] = useState("");
   const today = useToday();
 
+  // Let App.tsx's growth/celebration state know immediately — it reads this same
+  // localStorage key but doesn't otherwise learn about changes made while this tab is open.
+  useEffect(() => {
+    window.dispatchEvent(new Event("steady-habits-changed"));
+  }, [habits]);
+
   // Reset doneToday when the day rolls over, so habits start fresh each day.
   useEffect(() => {
     setHabits((prev) => {

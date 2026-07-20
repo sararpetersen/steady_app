@@ -116,22 +116,30 @@ export default function App() {
     }
   }, [today]);
 
-  // Habit stats — re-read from localStorage when tab or day changes (habits live in HabitTracker)
+  // Habit stats — habits live in HabitTracker's own localStorage-backed state, so we re-read
+  // on tab/day change AND on "steady-habits-changed" (fired by HabitTracker on every edit) —
+  // otherwise checking off the last habit while staying on the Habits tab wouldn't be noticed
+  // until some later tab switch, badly delaying the 100%-completion celebration below.
   const [habitsDone, setHabitsDone] = useState(0);
   const [habitsTotal, setHabitsTotal] = useState(0);
   const [habitGrowth, setHabitGrowth] = useState(0);
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("steady-habits-v2");
-      if (!raw) return;
-      const data = JSON.parse(raw) as Habit[];
-      if (!Array.isArray(data)) return;
-      setHabitsDone(data.filter((h) => h.doneToday).length);
-      setHabitsTotal(data.length);
-      setHabitGrowth(data.reduce((sum, h) => sum + (h.totalCompletions ?? 0), 0));
-    } catch {
-      /* ignore */
-    }
+    const syncHabitStats = () => {
+      try {
+        const raw = localStorage.getItem("steady-habits-v2");
+        if (!raw) return;
+        const data = JSON.parse(raw) as Habit[];
+        if (!Array.isArray(data)) return;
+        setHabitsDone(data.filter((h) => h.doneToday).length);
+        setHabitsTotal(data.length);
+        setHabitGrowth(data.reduce((sum, h) => sum + (h.totalCompletions ?? 0), 0));
+      } catch {
+        /* ignore */
+      }
+    };
+    syncHabitStats();
+    window.addEventListener("steady-habits-changed", syncHabitStats);
+    return () => window.removeEventListener("steady-habits-changed", syncHabitStats);
   }, [activeTab, today]);
 
   // Celebrate hitting 100% once per day — a one-off moment, not a permanent card.
@@ -317,6 +325,7 @@ export default function App() {
             justConvertedRef.current = true;
             setAuthState({ email, isGuest: false, userId });
           }}
+          onPhotoChange={setProfilePhoto}
         />
       </LangContext.Provider>
     );

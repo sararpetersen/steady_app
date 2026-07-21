@@ -5,8 +5,7 @@ import { type ProfileData, DEFAULT_PROFILE } from "./profileTypes";
 import { DEFAULT_A11Y } from "./a11yTypes";
 import { supabase } from "../lib/supabaseClient";
 import { resizeImageToBase64 } from "../lib/image";
-
-const AVATARS = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨"];
+import { EmojiPicker } from "./ui/EmojiPicker";
 
 const SENSORY_OPTIONS = [
   { key: "Noise-sensitive", emoji: "🔇" },
@@ -271,25 +270,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                     {t.onboarding.avatar.orPickEmoji}
                   </p>
                 )}
-                <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(6, 1fr)" }}>
-                  {AVATARS.map((e) => (
-                    <button
-                      key={e}
-                      onClick={() => setAvatar(e)}
-                      aria-pressed={avatar === e}
-                      className="avatar-option rounded-2xl flex items-center justify-center"
-                      style={{
-                        aspectRatio: "1",
-                        fontSize: "1.8rem",
-                        backgroundColor: avatar === e ? "var(--green-bg)" : "var(--avatar-option-bg)",
-                        border: avatar === e ? "2px solid var(--primary)" : "1px solid var(--border)",
-                        transition: "background-color 0.15s, border-color 0.15s",
-                      }}
-                    >
-                      {e}
-                    </button>
-                  ))}
-                </div>
+                <EmojiPicker value={avatar} onChange={setAvatar} layout="grid" groupLabel={t.onboarding.avatar.title} />
               </div>
             )}
 

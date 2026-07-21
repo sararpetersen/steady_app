@@ -3,7 +3,9 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { Reorder } from "motion/react";
-import { Plus, X, Check, GripVertical } from "lucide-react";
+import { Plus, X, Check } from "lucide-react";
+import { ReorderRow } from "./ui/ReorderRow";
+import { IconButton } from "./ui/IconButton";
 
 export interface ImportantDateEntry {
   id: string;
@@ -147,10 +149,7 @@ export function ImportantDates() {
         {dates.map((entry) => {
           const status = getDateStatus(entry, today);
           return (
-            <Reorder.Item key={entry.id} value={entry} dragListener={editingId !== entry.id} className="flex items-center gap-1 group relative" whileDrag={{ scale: 1.02, zIndex: 10 }}>
-              <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
-                <GripVertical size={19} />
-              </span>
+            <ReorderRow key={entry.id} value={entry} dragDisabled={editingId === entry.id}>
               <div className="relative flex-1 min-w-0">
                 {editingId === entry.id ? (
                   <div className="flex flex-col gap-2 p-3 pr-20 rounded-xl border-2 border-primary bg-input-background">
@@ -200,11 +199,11 @@ export function ImportantDates() {
                 )}
 
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-                  <button onClick={() => editingId === entry.id ? saveEdit(entry.id) : startEditing(entry)} className="px-2.5 py-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted flex items-center justify-center" style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === entry.id ? d.saveEdit : d.edit}: ${entry.name}`}>{editingId === entry.id ? <Check size={15} /> : d.editLabel}</button>
-                  <button onClick={() => deleteDate(entry.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted" aria-label={`${d.deleteDate}: ${entry.name}`}><X size={15} /></button>
+                  <IconButton size="pill" tone="primary" onClick={() => editingId === entry.id ? saveEdit(entry.id) : startEditing(entry)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === entry.id ? d.saveEdit : d.edit}: ${entry.name}`}>{editingId === entry.id ? <Check size={15} /> : d.editLabel}</IconButton>
+                  <IconButton tone="destructive" onClick={() => deleteDate(entry.id)} aria-label={`${d.deleteDate}: ${entry.name}`}><X size={15} /></IconButton>
                 </div>
               </div>
-            </Reorder.Item>
+            </ReorderRow>
           );
         })}
       </Reorder.Group>

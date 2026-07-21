@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, GripVertical } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check } from "lucide-react";
 import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { AnimatedCollapse } from "./AnimatedCollapse";
+import { ReorderRow } from "./ui/ReorderRow";
+import { IconButton } from "./ui/IconButton";
 
 const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
 type SectionKey = typeof SECTION_KEYS[number];
@@ -85,10 +87,7 @@ function SectionPanel({
     const { id, text } = item;
     const done = doneIds.includes(id);
     return (
-      <Reorder.Item key={id} value={item} dragListener={editingId !== id} className="flex items-center gap-2 group relative" whileDrag={{ scale: 1.02, zIndex: 10 }}>
-        <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
-          <GripVertical size={18} />
-        </span>
+      <ReorderRow key={id} value={item} dragDisabled={editingId === id} className="flex items-center gap-2 group relative" handleSize={18}>
         {editingId === id ? (
           <div className="flex-1 flex items-center gap-3 rounded-xl p-3 bg-muted">
             <span
@@ -137,23 +136,24 @@ function SectionPanel({
           </button>
         )}
         <div className="flex items-center gap-0.5 flex-shrink-0">
-          <button
+          <IconButton
+            size="md"
+            tone="primary"
             onClick={() => editingId === id ? saveEdit(id) : startEditing(item)}
-            className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted"
             aria-label={`${editingId === id ? t.routines.saveStep : t.routines.editStep}: ${text}`}
           >
             {editingId === id ? <Check size={15} /> : <span style={{ fontSize: "0.75rem", fontWeight: 700 }}>{t.routines.editLabel}</span>}
-          </button>
-          <button
+          </IconButton>
+          <IconButton
+            size="md"
+            tone="destructive"
             onClick={() => onDeleteCustom(id)}
-            className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted"
-            style={{ transition: "all 0.15s" }}
             aria-label={`${t.routines.deleteStep}: ${text}`}
           >
             <X size={14} />
-          </button>
+          </IconButton>
         </div>
-      </Reorder.Item>
+      </ReorderRow>
     );
   };
 

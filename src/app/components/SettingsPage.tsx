@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { X, ChevronDown, ChevronUp, Eye, EyeOff, LogOut, Trash2, Download, Upload } from "lucide-react";
 import { AnimatedCollapse } from "./AnimatedCollapse";
+import { IconButton } from "./ui/IconButton";
 import { useLang } from "../i18n/LangContext";
 import type { A11ySettings } from "./a11yTypes";
 import type { Lang } from "../i18n/translations";
@@ -237,14 +238,15 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
               style={{ ...inputStyle, paddingRight: "2.5rem" }}
               autoComplete="new-password"
             />
-            <button
+            <IconButton
               type="button"
+              size="md"
               onClick={() => setSignUpShowPw((v) => !v)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
+              className="absolute right-1 top-1/2 -translate-y-1/2"
               aria-label={signUpShowPw ? "Hide password" : "Show password"}
             >
               {signUpShowPw ? <EyeOff size={15} /> : <Eye size={15} />}
-            </button>
+            </IconButton>
           </div>
         </div>
 

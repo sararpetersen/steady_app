@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useLang } from "../i18n/LangContext";
 import { Reorder } from "motion/react";
-import { Plus, X, CheckCircle2, Check, GripVertical } from "lucide-react";
+import { Plus, X, CheckCircle2, Check } from "lucide-react";
+import { ReorderRow } from "./ui/ReorderRow";
+import { IconButton } from "./ui/IconButton";
 
 export interface Task {
   id: number;
@@ -107,11 +109,10 @@ export function TaskList({
 
       <Reorder.Group axis="y" values={tasks} onReorder={setTasks} className="space-y-2 mb-4">
         {tasks.map((task) => (
-          <Reorder.Item
+          <ReorderRow
             key={task.id}
             value={task}
-            dragListener={editingId !== task.id}
-            whileDrag={{ scale: 1.02, zIndex: 10 }}
+            dragDisabled={editingId === task.id}
             className="flex items-center gap-1 rounded-xl hover:brightness-95"
             style={{
               backgroundColor: task.done
@@ -119,9 +120,6 @@ export function TaskList({
                 : "var(--surface-1)",
             }}
           >
-            <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
-              <GripVertical size={19} />
-            </span>
             <button
               onClick={() => toggle(task.id)}
               className="flex-shrink-0 rounded-full flex items-center justify-center"
@@ -170,17 +168,17 @@ export function TaskList({
               <span className="flex-1 text-foreground" style={{ textDecoration: task.done ? "line-through" : "none", opacity: task.done ? 0.5 : 1 }}>{task.text}</span>
             )}
             <div className="flex items-center gap-1 flex-shrink-0 pr-1">
-              <button onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} className="text-muted-foreground hover:text-primary px-2.5 py-2 rounded-lg hover:bg-muted flex items-center justify-center" style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>{editingId === task.id ? <Check size={16} /> : t.tasks.editLabel}</button>
-            <button
+              <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>{editingId === task.id ? <Check size={16} /> : t.tasks.editLabel}</IconButton>
+            <IconButton
+              size="md"
+              tone="destructive"
               onClick={() => remove(task.id)}
-              className="text-muted-foreground hover:text-destructive p-2 rounded-lg hover:bg-muted"
-              style={{ transition: "color 0.15s" }}
               aria-label={`${t.tasks.remove}: ${task.text}`}
             >
               <X size={16} />
-            </button>
+            </IconButton>
             </div>
-          </Reorder.Item>
+          </ReorderRow>
         ))}
       </Reorder.Group>
 

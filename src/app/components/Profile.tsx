@@ -5,8 +5,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { resizeImageToBase64 } from "../lib/image";
 import type { MoodEntry } from "./MoodCheck";
 import { normalizePronoun, type ProfileData } from "./profileTypes";
-
-const avatarEmojis = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨"];
+import { EmojiPicker } from "./ui/EmojiPicker";
 
 interface ProfileProps {
   profile: ProfileData;
@@ -118,27 +117,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
                 </span>
               )}
             </p>
-            <div role="group" aria-label={p.emojiAvatar} className="flex flex-wrap gap-2">
-              {avatarEmojis.map((e) => (
-                <button
-                  key={e}
-                  onClick={() => update({ avatar: e })}
-                  aria-label={e}
-                  aria-pressed={profile.avatar === e}
-                  className="avatar-option rounded-xl flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                  style={{
-                    width: 40,
-                    height: 40,
-                    fontSize: "1.4rem",
-                    backgroundColor: profile.avatar === e ? "var(--green-bg)" : "var(--avatar-option-bg)",
-                    border: profile.avatar === e ? "2px solid var(--primary)" : "1px solid var(--border)",
-                    transition: "background-color 0.15s, border-color 0.15s",
-                  }}
-                >
-                  {e}
-                </button>
-              ))}
-            </div>
+            <EmojiPicker value={profile.avatar} onChange={(avatar) => update({ avatar })} layout="wrap" groupLabel={p.emojiAvatar} />
           </div>
         </div>
 

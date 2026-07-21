@@ -3,6 +3,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { Save, Trash2, Check } from "lucide-react";
+import { IconButton } from "./ui/IconButton";
 
 export interface NoteEntry {
   id: number;
@@ -139,21 +140,23 @@ export function DailyNote() {
                         {label}
                       </span>
                       <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100" style={{ transition: "opacity 0.15s" }}>
-                        <button
+                        <IconButton
+                          size="pill"
+                          tone="primary"
                           onClick={() => editing ? saveEntryEdit(entry.id) : startEditing(entry)}
-                          className="text-muted-foreground hover:text-primary hover:bg-muted px-2.5 py-1.5 rounded-lg flex items-center justify-center"
                           style={{ fontSize: "0.78rem", fontWeight: 700 }}
                           aria-label={`${editing ? t.noteHistory.saveEntry : t.noteHistory.editEntry}: ${label}`}
                         >
                           {editing ? <Check size={14} /> : t.noteHistory.editLabel}
-                        </button>
-                        <button
+                        </IconButton>
+                        <IconButton
+                          size="md"
+                          tone="destructive"
                           onClick={() => deleteEntry(entry.id)}
-                          className="text-muted-foreground hover:text-destructive hover:bg-muted p-2 rounded-lg"
                           aria-label={`${t.noteHistory.deleteEntry}: ${label}`}
                         >
                           <Trash2 size={14} />
-                        </button>
+                        </IconButton>
                       </div>
                     </div>
                     {entry.prompt && (

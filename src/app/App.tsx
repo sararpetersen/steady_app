@@ -20,6 +20,7 @@ import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
 import { LayoutDashboard, ClipboardList, Repeat2, Sprout, UserCircle2, NotebookPen, Settings, CalendarDays, MoreHorizontal, Sun, Moon } from "lucide-react";
 import { SteadyWordmark } from "./components/SteadyWordmark";
+import { IconButton } from "./components/ui/IconButton";
 
 {
   /* MARKER-MAKE-KIT-INVOKED */
@@ -489,28 +490,25 @@ export default function App() {
           {/* Bottom controls */}
           <div className="p-4 border-t border-border">
             <div className="flex items-center justify-end gap-2">
-              <button
+              <IconButton
+                size="lg"
+                bordered
                 onClick={() => setProfile({ ...profile, a11y: { ...profile.a11y, darkMode: !profile.a11y.darkMode } })}
-                className="nav-tab nav-tab-inactive rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ width: 44, height: 44, border: "2px solid var(--border)", color: "var(--muted-foreground)" }}
                 aria-label={profile.a11y.darkMode ? "Switch to light mode" : "Switch to dark mode"}
               >
                 {profile.a11y.darkMode ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
-              <button
+              </IconButton>
+              <IconButton
+                size="lg"
+                bordered
+                active={settingsOpen}
+                style={{ backgroundColor: settingsOpen ? "var(--green-bg)" : undefined }}
                 onClick={() => setSettingsOpen((open) => !open)}
-                className={`nav-tab rounded-full flex items-center justify-center flex-shrink-0 ${settingsOpen ? "nav-tab-active" : "nav-tab-inactive"}`}
-                style={{
-                  width: 44,
-                  height: 44,
-                  border: `2px solid ${settingsOpen ? "var(--primary)" : "var(--border)"}`,
-                  color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)",
-                }}
                 aria-label="Open settings"
                 aria-pressed={settingsOpen}
               >
                 <Settings size={18} />
-              </button>
+              </IconButton>
               <AvatarButton />
             </div>
           </div>
@@ -536,15 +534,15 @@ export default function App() {
                 </p>
               </button>
               <div className="flex items-center gap-2">
-                <button
+                <IconButton
+                  size="lg"
+                  active={settingsOpen}
                   onClick={() => setSettingsOpen((o) => !o)}
-                  className="rounded-full flex items-center justify-center flex-shrink-0 hover:bg-muted"
-                  style={{ width: 44, height: 44, transition: "background-color 0.15s", color: settingsOpen ? "var(--primary)" : "var(--muted-foreground)" }}
                   aria-label="Open settings"
                   aria-pressed={settingsOpen}
                 >
                   <Settings size={20} />
-                </button>
+                </IconButton>
                 <AvatarButton />
               </div>
             </div>

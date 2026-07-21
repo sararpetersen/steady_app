@@ -3,8 +3,10 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { Reorder } from "motion/react";
-import { Sprout, Plus, X, Check, GripVertical, StickyNote } from "lucide-react";
+import { Sprout, Plus, X, Check, StickyNote } from "lucide-react";
 import { AnimatedCollapse } from "./AnimatedCollapse";
+import { ReorderRow } from "./ui/ReorderRow";
+import { IconButton } from "./ui/IconButton";
 
 export interface Habit {
   id: string;
@@ -172,10 +174,7 @@ export function HabitTracker() {
         {habits.map((habit, index) => {
           const totalCompletions = habit.totalCompletions ?? 0; // legacy entries may predate this field
           return (
-          <Reorder.Item key={habit.id} value={habit} dragListener={editingId !== habit.id} className="flex items-center gap-1 group relative" whileDrag={{ scale: 1.02, zIndex: 10 }}>
-            <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
-              <GripVertical size={19} />
-            </span>
+          <ReorderRow key={habit.id} value={habit} dragDisabled={editingId === habit.id}>
             <div className="flex-1 min-w-0">
             <div className="relative">
             {/* Main tap area — full width */}
@@ -226,17 +225,17 @@ export function HabitTracker() {
             )}
 
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-              <button
+              <IconButton
                 onClick={() => toggleNote(habit)}
-                className="p-1.5 rounded-lg hover:bg-muted flex items-center justify-center"
-                style={{ color: habit.note ? "var(--primary)" : "var(--muted-foreground)" }}
+                tone="none"
+                active={!!habit.note}
                 aria-label={`${habit.note ? t.habits.editNote : t.habits.addNote}: ${habit.name}`}
                 aria-pressed={openNoteId === habit.id}
               >
                 <StickyNote size={15} />
-              </button>
-              <button onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} className="px-2.5 py-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted flex items-center justify-center" style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : t.habits.editLabel}</button>
-              <button onClick={() => deleteHabit(habit.id)} className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted" aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></button>
+              </IconButton>
+              <IconButton size="pill" tone="primary" onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : t.habits.editLabel}</IconButton>
+              <IconButton tone="destructive" onClick={() => deleteHabit(habit.id)} aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></IconButton>
             </div>
             </div>
             <AnimatedCollapse open={openNoteId === habit.id}>
@@ -276,7 +275,7 @@ export function HabitTracker() {
               </button>
             </AnimatedCollapse>
             </div>
-          </Reorder.Item>
+          </ReorderRow>
           );
         })}
       </Reorder.Group>

@@ -67,8 +67,14 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
 
   const registerAndFinish = async () => {
     setSignUpError("");
-    if (!signUpEmail.trim()) { setSignUpError("Please enter your email."); return; }
-    if (signUpPassword.length < 6) { setSignUpError("Password must be at least 6 characters."); return; }
+    if (!signUpEmail.trim()) {
+      setSignUpError("Please enter your email.");
+      return;
+    }
+    if (signUpPassword.length < 6) {
+      setSignUpError("Password must be at least 6 characters.");
+      return;
+    }
     setSigningUp(true);
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -79,7 +85,10 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
         setSignUpError(error.message === "User already registered" ? "That email is already in use." : error.message);
         return;
       }
-      if (!data.user) { setSignUpError("Something went wrong. Please try again."); return; }
+      if (!data.user) {
+        setSignUpError("Something went wrong. Please try again.");
+        return;
+      }
       onRegister?.(signUpEmail.toLowerCase(), data.user.id);
       finish();
     } finally {
@@ -89,16 +98,11 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
 
   const toggleSensory = (key: string) => {
     const isAdding = !sensory.includes(key);
-    setSensory((prev) =>
-      isAdding ? [...prev, key] : prev.filter((k) => k !== key)
-    );
+    setSensory((prev) => (isAdding ? [...prev, key] : prev.filter((k) => k !== key)));
     if (key === "Light-sensitive" && isAdding) setDarkMode(true);
   };
 
-  const toggleSupport = (key: string) =>
-    setSupport((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
-    );
+  const toggleSupport = (key: string) => setSupport((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
 
   const finish = () => {
     const profile: ProfileData = {
@@ -142,11 +146,20 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
             <img src="/sprout1.webp" alt="Sprout, Steady's mascot" style={{ width: 80, height: 80, objectFit: "contain" }} />
           </div>
           <div>
-            <h1 className="text-foreground" style={{ fontFamily: "var(--app-font-heading, Nunito)", fontSize: "2rem", fontWeight: 800, marginBottom: 12 }}>
+            <h1
+              className="text-foreground"
+              style={{ fontFamily: "var(--app-font-heading, Nunito)", fontSize: "2rem", fontWeight: 800, marginBottom: 12 }}
+            >
               {t.onboarding.welcome.title}
             </h1>
-            <p className="text-muted-foreground" style={{ fontSize: "1.05rem", lineHeight: 1.7, maxWidth: 320 }}>
+            <p
+              className="text-muted-foreground"
+              style={{ fontSize: "1.05rem", lineHeight: 1.7, maxWidth: 320, marginInline: "auto", marginBottom: 16 }}
+            >
               {t.onboarding.welcome.subtitle}
+            </p>
+            <p className="text-muted-foreground" style={{ fontSize: "0.9rem", lineHeight: 1.6, maxWidth: 380, margin: "12px auto 0" }}>
+              {t.onboarding.welcome.reassurance}
             </p>
           </div>
           <button
@@ -158,10 +171,16 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
           </button>
           <div className="flex items-center gap-3 w-full max-w-xs">
             <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
-            <span className="text-muted-foreground" style={{ fontSize: "0.75rem" }}>or</span>
+            <span className="text-muted-foreground" style={{ fontSize: "0.75rem" }}>
+              or
+            </span>
             <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
           </div>
-          <button onClick={onSkip} className="text-muted-foreground hover:text-foreground" style={{ fontSize: "0.88rem", transition: "color 0.15s" }}>
+          <button
+            onClick={onSkip}
+            className="text-muted-foreground hover:text-foreground hover:underline"
+            style={{ fontSize: "0.88rem", transition: "color 0.15s" }}
+          >
             {isGuest ? t.onboarding.welcome.skipGuest : t.onboarding.welcome.returning}
           </button>
         </div>
@@ -172,7 +191,12 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
         <>
           {/* Progress bar */}
           <div className="px-6 pt-6 pb-2 flex items-center gap-3 max-w-lg mx-auto w-full">
-            <button onClick={() => setStep((s) => Math.max(1, s - 1))} aria-label={t.lang === "en" ? "Go back" : "Gå tilbage"} className="text-muted-foreground hover:text-foreground p-3" style={{ transition: "color 0.15s" }}>
+            <button
+              onClick={() => setStep((s) => Math.max(1, s - 1))}
+              aria-label={t.lang === "en" ? "Go back" : "Gå tilbage"}
+              className="text-muted-foreground hover:text-foreground p-3"
+              style={{ transition: "color 0.15s" }}
+            >
               <ArrowLeft size={20} />
             </button>
             <div className="flex-1 flex gap-1.5">
@@ -194,7 +218,6 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
           </div>
 
           <div className="flex-1 flex flex-col px-6 py-4 max-w-lg mx-auto w-full">
-
             {/* Step 1: Name */}
             {step === 1 && (
               <div className="flex flex-col gap-5 flex-1">
@@ -202,7 +225,9 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                   <h2 className="text-foreground mb-2" style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800 }}>
                     {t.onboarding.name.title}
                   </h2>
-                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>{t.onboarding.name.subtitle}</p>
+                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>
+                    {t.onboarding.name.subtitle}
+                  </p>
                 </div>
                 <input
                   type="text"
@@ -217,11 +242,21 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                   value={pronoun}
                   onChange={(e) => setPronoun(e.target.value)}
                   className="w-full rounded-2xl px-5 py-4 border border-border bg-card text-foreground outline-none focus:border-primary appearance-none"
-                  style={{ fontSize: "1rem", transition: "border-color 0.15s", backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6560' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center", paddingRight: "3rem" }}
+                  style={{
+                    fontSize: "1rem",
+                    transition: "border-color 0.15s",
+                    backgroundImage:
+                      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6560' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "right 16px center",
+                    paddingRight: "3rem",
+                  }}
                 >
                   <option value="">{t.onboarding.name.pronounPlaceholder}</option>
                   {t.profile.pronounsOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -234,17 +269,15 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                   <h2 className="text-foreground mb-2" style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800 }}>
                     {t.onboarding.avatar.title}
                   </h2>
-                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>{t.onboarding.avatar.subtitle}</p>
+                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>
+                    {t.onboarding.avatar.subtitle}
+                  </p>
                 </div>
                 <div
                   className="rounded-2xl p-4 flex items-center justify-center border border-border bg-card overflow-hidden"
                   style={{ fontSize: "4rem", height: 100 }}
                 >
-                  {photo ? (
-                    <img src={photo} alt="" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "inherit" }} />
-                  ) : (
-                    avatar
-                  )}
+                  {photo ? <img src={photo} alt="" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: "inherit" }} /> : avatar}
                 </div>
                 <input ref={photoInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
                 <div className="flex items-center justify-center gap-2">
@@ -253,10 +286,15 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                     className="flex items-center gap-1.5 rounded-lg px-3 py-2 border border-border text-foreground hover:bg-muted"
                     style={{ fontSize: "0.85rem", fontWeight: 600, transition: "background-color 0.15s" }}
                   >
-                    <Camera size={14} />{photo ? t.profile.changePhoto : t.profile.addPhoto}
+                    <Camera size={14} />
+                    {photo ? t.profile.changePhoto : t.profile.addPhoto}
                   </button>
                   {photo && (
-                    <button onClick={() => setPhoto(null)} className="rounded-lg p-2 border border-border text-muted-foreground hover:text-destructive" aria-label={t.profile.removePhoto}>
+                    <button
+                      onClick={() => setPhoto(null)}
+                      className="rounded-lg p-2 border border-border text-muted-foreground hover:text-destructive"
+                      aria-label={t.profile.removePhoto}
+                    >
                       <X size={14} />
                     </button>
                   )}
@@ -277,7 +315,9 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                   <h2 className="text-foreground mb-2" style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800 }}>
                     {t.onboarding.language.title}
                   </h2>
-                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>{t.onboarding.language.subtitle}</p>
+                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>
+                    {t.onboarding.language.subtitle}
+                  </p>
                 </div>
                 <div className="flex flex-col gap-3">
                   {(["en", "da"] as Lang[]).map((l) => (
@@ -293,7 +333,9 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                     >
                       <span style={{ fontSize: "2rem" }}>{l === "en" ? "🇬🇧" : "🇩🇰"}</span>
                       <div>
-                        <p className="text-foreground" style={{ fontWeight: 700 }}>{l === "en" ? "English" : "Dansk"}</p>
+                        <p className="text-foreground" style={{ fontWeight: 700 }}>
+                          {l === "en" ? "English" : "Dansk"}
+                        </p>
                         <p className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>
                           {l === "en" ? "English" : "Danish"}
                         </p>
@@ -319,7 +361,9 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                   <h2 className="text-foreground mb-2" style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800 }}>
                     {t.onboarding.sensory.title}
                   </h2>
-                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>{t.onboarding.sensory.subtitle}</p>
+                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>
+                    {t.onboarding.sensory.subtitle}
+                  </p>
                 </div>
                 <div className="flex flex-col gap-2">
                   {SENSORY_OPTIONS.map((opt) => {
@@ -338,7 +382,9 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                         aria-pressed={active}
                       >
                         <span style={{ fontSize: "1.5rem", width: 32 }}>{opt.emoji}</span>
-                        <span className="text-foreground flex-1" style={{ fontWeight: active ? 700 : 500 }}>{label}</span>
+                        <span className="text-foreground flex-1" style={{ fontWeight: active ? 700 : 500 }}>
+                          {label}
+                        </span>
                         {active && (
                           <div className="rounded-full bg-primary flex items-center justify-center" style={{ width: 24, height: 24, flexShrink: 0 }}>
                             <Check size={14} color="white" />
@@ -358,7 +404,9 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                   <h2 className="text-foreground mb-2" style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800 }}>
                     {t.onboarding.support.title}
                   </h2>
-                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>{t.onboarding.support.subtitle}</p>
+                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>
+                    {t.onboarding.support.subtitle}
+                  </p>
                 </div>
                 <div className="flex flex-col gap-2">
                   {SUPPORT_OPTIONS.map((opt) => {
@@ -377,9 +425,14 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                         aria-pressed={active}
                       >
                         <span style={{ fontSize: "1.5rem", width: 32 }}>{opt.emoji}</span>
-                        <span className="text-foreground flex-1" style={{ fontWeight: active ? 700 : 500 }}>{label}</span>
+                        <span className="text-foreground flex-1" style={{ fontWeight: active ? 700 : 500 }}>
+                          {label}
+                        </span>
                         {active && (
-                          <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: "var(--purple-vivid)", flexShrink: 0 }}>
+                          <div
+                            className="rounded-full flex items-center justify-center"
+                            style={{ width: 24, height: 24, backgroundColor: "var(--purple-vivid)", flexShrink: 0 }}
+                          >
                             <Check size={14} color="white" />
                           </div>
                         )}
@@ -397,12 +450,16 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                   <h2 className="text-foreground mb-2" style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800 }}>
                     {t.onboarding.setup.title}
                   </h2>
-                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>{t.onboarding.setup.subtitle}</p>
+                  <p className="text-muted-foreground" style={{ fontSize: "0.95rem" }}>
+                    {t.onboarding.setup.subtitle}
+                  </p>
                 </div>
 
                 <div className="bg-card rounded-2xl p-5 border border-border space-y-4">
                   <div>
-                    <p className="text-foreground mb-3" style={{ fontWeight: 700 }}>{t.onboarding.setup.textSize}</p>
+                    <p className="text-foreground mb-3" style={{ fontWeight: 700 }}>
+                      {t.onboarding.setup.textSize}
+                    </p>
                     <div className="flex gap-2">
                       {(["normal", "large", "xlarge"] as const).map((size) => {
                         const labels = { normal: t.a11y.fontSize.normal, large: t.a11y.fontSize.large, xlarge: t.a11y.fontSize.xlarge };
@@ -443,9 +500,17 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                       }}
                       aria-pressed={value}
                     >
-                      <span className="text-foreground" style={{ fontWeight: value ? 700 : 500 }}>{label}</span>
-                      <div className="rounded-full relative" style={{ width: 44, height: 24, backgroundColor: value ? "var(--primary)" : "var(--muted-foreground)" }}>
-                        <div className="absolute top-1 rounded-full bg-white" style={{ width: 16, height: 16, left: value ? 24 : 4, transition: "left 0.2s" }} />
+                      <span className="text-foreground" style={{ fontWeight: value ? 700 : 500 }}>
+                        {label}
+                      </span>
+                      <div
+                        className="rounded-full relative"
+                        style={{ width: 44, height: 24, backgroundColor: value ? "var(--primary)" : "var(--muted-foreground)" }}
+                      >
+                        <div
+                          className="absolute top-1 rounded-full bg-white"
+                          style={{ width: 16, height: 16, left: value ? 24 : 4, transition: "left 0.2s" }}
+                        />
                       </div>
                     </button>
                   ))}
@@ -475,11 +540,15 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                     lang === "da" ? "🇩🇰 Dansk" : "🇬🇧 English",
                     sensory.length > 0 && `🧠 ${sensory.length} sensory note${sensory.length > 1 ? "s" : ""}`,
                     support.length > 0 && `✨ ${support.length} support style${support.length > 1 ? "s" : ""}`,
-                  ].filter(Boolean).map((line, i) => (
-                    <div key={i} className="rounded-xl px-4 py-2 text-left" style={{ backgroundColor: "var(--surface-1)" }}>
-                      <p className="text-foreground" style={{ fontSize: "0.9rem" }}>{line as string}</p>
-                    </div>
-                  ))}
+                  ]
+                    .filter(Boolean)
+                    .map((line, i) => (
+                      <div key={i} className="rounded-xl px-4 py-2 text-left" style={{ backgroundColor: "var(--surface-1)" }}>
+                        <p className="text-foreground" style={{ fontSize: "0.9rem" }}>
+                          {line as string}
+                        </p>
+                      </div>
+                    ))}
                 </div>
               </div>
             )}
@@ -491,15 +560,24 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                   {isGuest && onRegister && (
                     <div className="rounded-2xl border border-border overflow-hidden" style={{ backgroundColor: "var(--surface-1)" }}>
                       <button
-                        onClick={() => { setSignUpOpen((o) => !o); setSignUpError(""); }}
+                        onClick={() => {
+                          setSignUpOpen((o) => !o);
+                          setSignUpError("");
+                        }}
                         className="w-full flex items-center justify-between px-4 py-3 text-left hover:opacity-85"
                         style={{ transition: "opacity 0.15s" }}
                       >
                         <div>
-                          <p className="text-foreground" style={{ fontWeight: 700, fontSize: "0.95rem" }}>Save your setup</p>
-                          <p className="text-muted-foreground" style={{ fontSize: "0.8rem" }}>Create a free account to keep your data</p>
+                          <p className="text-foreground" style={{ fontWeight: 700, fontSize: "0.95rem" }}>
+                            Save your setup
+                          </p>
+                          <p className="text-muted-foreground" style={{ fontSize: "0.8rem" }}>
+                            Create a free account to keep your data
+                          </p>
                         </div>
-                        <span className="text-muted-foreground" style={{ fontSize: "1.2rem", lineHeight: 1 }}>{signUpOpen ? "−" : "+"}</span>
+                        <span className="text-muted-foreground" style={{ fontSize: "1.2rem", lineHeight: 1 }}>
+                          {signUpOpen ? "−" : "+"}
+                        </span>
                       </button>
                       {signUpOpen && (
                         <div className="px-4 pb-4 space-y-2.5 border-t border-border" style={{ paddingTop: 12 }}>
@@ -522,9 +600,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                             style={{ fontSize: "0.9rem", transition: "border-color 0.15s" }}
                             autoComplete="new-password"
                           />
-                          {signUpError && (
-                            <p style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{signUpError}</p>
-                          )}
+                          {signUpError && <p style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{signUpError}</p>}
                           <button
                             onClick={registerAndFinish}
                             disabled={signingUp}
@@ -537,7 +613,11 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                       )}
                     </div>
                   )}
-                  <button onClick={finish} className="w-full rounded-2xl py-4 bg-primary text-primary-foreground hover:opacity-90" style={{ fontWeight: 700, fontSize: "1.05rem", transition: "opacity 0.15s" }}>
+                  <button
+                    onClick={finish}
+                    className="w-full rounded-2xl py-4 bg-primary text-primary-foreground hover:opacity-90"
+                    style={{ fontWeight: 700, fontSize: "1.05rem", transition: "opacity 0.15s" }}
+                  >
                     {t.onboarding.done.enter}
                   </button>
                 </>
@@ -552,7 +632,11 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                     <ArrowRight size={18} />
                   </button>
                   {(step === 4 || step === 5) && (
-                    <button onClick={() => setStep((s) => s + 1)} className="text-muted-foreground hover:text-foreground text-center py-1" style={{ fontSize: "0.9rem", transition: "color 0.15s" }}>
+                    <button
+                      onClick={() => setStep((s) => s + 1)}
+                      className="text-muted-foreground hover:text-foreground text-center py-1"
+                      style={{ fontSize: "0.9rem", transition: "color 0.15s" }}
+                    >
                       {step === 4 ? t.onboarding.sensory.skip : t.onboarding.support.skip}
                     </button>
                   )}

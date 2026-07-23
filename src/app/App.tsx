@@ -72,11 +72,12 @@ export default function App() {
   const [nextId, setNextId] = useLocalStorage<number>("steady-task-nextid", 1);
   const [tasksDate, setTasksDate] = useLocalStorage<string | null>("steady-tasks-date", null);
 
-  // Tasks are a daily list, not a persistent backlog — the whole list clears at rollover,
-  // done or not, so nothing from a previous day lingers.
+  // Completed tasks clear at rollover so the list doesn't grow forever, but
+  // unfinished ones carry over — nothing gets silently forgotten just because
+  // the day changed before you got to it.
   useEffect(() => {
     if (tasksDate !== today) {
-      setTasks([]);
+      setTasks((prev) => prev.filter((task) => !task.done));
       setTasksDate(today);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -207,6 +208,11 @@ export default function App() {
     setActiveTab("overview");
     setAuthState(null);
     supabase.auth.signOut();
+  };
+
+  const closeSettings = () => {
+    setSettingsOpen(false);
+    setActiveTab("overview");
   };
 
   // When a guest converts to a real account, their local data is the source of
@@ -612,7 +618,7 @@ export default function App() {
               <SettingsPage
                 settings={profile.a11y}
                 onChange={(a11y) => setProfile({ ...profile, a11y })}
-                onClose={() => setSettingsOpen(false)}
+                onClose={closeSettings}
                 onResetOnboarding={() => {
                   setOnboarded(false);
                   setSettingsOpen(false);

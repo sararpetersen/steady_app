@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
-import { Reorder } from "motion/react";
+import { Reorder, motion } from "motion/react";
 import { Sprout, Plus, X, Check, StickyNote } from "lucide-react";
-import { AnimatedCollapse } from "./AnimatedCollapse";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 
@@ -161,39 +160,28 @@ export function HabitTracker() {
           const totalCompletions = habit.totalCompletions ?? 0; // legacy entries may predate this field
           return (
           <ReorderRow key={habit.id} value={habit} dragDisabled={editingId === habit.id}>
-            <div className="flex-1 min-w-0">
+            <motion.div
+              layout
+              className="flex-1 min-w-0 rounded-xl"
+              style={{
+                overflow: "hidden",
+                backgroundColor: editingId === habit.id ? "var(--input-background)" : habit.doneToday ? getDoneColor(index) : "var(--surface-1)",
+                border: editingId === habit.id || habit.doneToday ? "2px solid var(--primary)" : "2px solid transparent",
+                transition: "background-color 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s cubic-bezier(0.34,1.56,0.64,1)",
+              }}
+            >
             <div className="relative">
             {/* Main tap area — full width */}
             {editingId === habit.id ? (
-              <div className="flex flex-col gap-2 p-3 pr-20 rounded-xl border-2 border-primary bg-input-background">
-                <div className="flex items-center gap-2">
-                  <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
-                  <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) saveEdit(habit.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
-                </div>
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <StickyNote size={12} />
-                  <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.02em" }}>{t.habits.noteLabel}</span>
-                </div>
-                <textarea
-                  value={editNote}
-                  onChange={(e) => setEditNote(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Escape") setEditingId(null); }}
-                  placeholder={t.habits.notePlaceholder}
-                  rows={2}
-                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none resize-none"
-                  style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
-                />
+              <div className="flex items-center gap-2 p-3 pr-20">
+                <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
+                <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) saveEdit(habit.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
               </div>
             ) : (
             <button
               onClick={() => toggle(habit.id)}
-              className="w-full flex items-center gap-3 p-3 pr-24 rounded-xl hover:opacity-90 text-left"
-              style={{
-                backgroundColor: habit.doneToday ? getDoneColor(index) : "var(--surface-1)",
-                border: habit.doneToday ? "2px solid var(--primary)" : "2px solid transparent",
-                transition: "background-color 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s cubic-bezier(0.34,1.56,0.64,1), transform 0.25s cubic-bezier(0.34,1.56,0.64,1)",
-                transform: habit.doneToday ? "scale(1.01)" : "scale(1)",
-              }}
+              className="w-full flex items-center gap-3 p-3 pr-24 hover:opacity-90 text-left"
+              style={{ transform: habit.doneToday ? "scale(1.01)" : "scale(1)", transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1)" }}
             >
               <span style={{ fontSize: "1.7rem", flexShrink: 0 }}>{habit.emoji}</span>
               <span className="flex-1 text-foreground" style={{ fontWeight: 600 }}>
@@ -234,18 +222,35 @@ export function HabitTracker() {
               <IconButton tone="destructive" onClick={() => deleteHabit(habit.id)} aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></IconButton>
             </div>
             </div>
-            <AnimatedCollapse open={editingId !== habit.id && !!habit.note}>
+
+            {editingId === habit.id ? (
+              <div className="px-3 pb-3 flex flex-col gap-1.5">
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <StickyNote size={12} />
+                  <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.02em" }}>{t.habits.noteLabel}</span>
+                </div>
+                <textarea
+                  value={editNote}
+                  onChange={(e) => setEditNote(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Escape") setEditingId(null); }}
+                  placeholder={t.habits.notePlaceholder}
+                  rows={2}
+                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none resize-none"
+                  style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
+                />
+              </div>
+            ) : habit.note ? (
               <button
                 onClick={() => startEditing(habit)}
-                className="mt-1.5 w-full flex items-start gap-1.5 px-3 py-2 rounded-xl border border-dashed text-left text-muted-foreground hover:text-foreground hover:border-primary"
-                style={{ borderColor: "var(--border)", backgroundColor: "var(--surface-1)", transition: "color 0.15s, border-color 0.15s" }}
+                className="w-full flex items-start gap-1.5 px-3 pb-3 pt-0.5 text-left text-muted-foreground hover:text-foreground"
+                style={{ transition: "color 0.15s" }}
                 aria-label={`${t.habits.editNote}: ${habit.name}`}
               >
                 <StickyNote size={12} className="flex-shrink-0 mt-0.5" style={{ color: "var(--primary)" }} />
                 <span style={{ fontSize: "0.82rem", lineHeight: 1.4, whiteSpace: "pre-wrap" }}>{habit.note}</span>
               </button>
-            </AnimatedCollapse>
-            </div>
+            ) : null}
+            </motion.div>
           </ReorderRow>
           );
         })}

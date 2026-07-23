@@ -68,6 +68,11 @@ export function TaskList({
 
   const remaining = tasks.filter((task) => !task.done).length;
 
+  // Completed tasks sink to the bottom instead of staying scattered wherever
+  // they were checked off — sort is stable, so drag order within each group holds.
+  const sortedTasks = [...tasks].sort((a, b) => Number(a.done) - Number(b.done));
+  const firstCompletedIndex = sortedTasks.findIndex((task) => task.done);
+
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <div className="flex items-center justify-between mb-2">
@@ -107,16 +112,24 @@ export function TaskList({
         </div>
       )}
 
-      <Reorder.Group axis="y" values={tasks} onReorder={setTasks} className="space-y-2 mb-4">
-        {tasks.map((task) => (
+      <Reorder.Group axis="y" values={sortedTasks} onReorder={setTasks} className="space-y-2 mb-4">
+        {sortedTasks.map((task, index) => (
+          <div key={task.id}>
+            {task.done && index === firstCompletedIndex && (
+              <p
+                className="text-muted-foreground"
+                style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", margin: "12px 0 8px 4px" }}
+              >
+                {t.tasks.completedHeading}
+              </p>
+            )}
           <ReorderRow
-            key={task.id}
             value={task}
             dragDisabled={editingId === task.id}
             className="flex items-center gap-1 rounded-xl hover:brightness-95"
             style={{
               backgroundColor: task.done
-                ? "var(--surface-2)"
+                ? "var(--green-bg)"
                 : "var(--surface-1)",
             }}
           >
@@ -165,7 +178,16 @@ export function TaskList({
             {editingId === task.id ? (
               <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
             ) : (
-              <span className="flex-1 text-foreground" style={{ textDecoration: task.done ? "line-through" : "none", opacity: task.done ? 0.5 : 1 }}>{task.text}</span>
+              <span
+                className="flex-1"
+                style={{
+                  color: task.done ? "var(--green-text)" : "var(--foreground)",
+                  textDecoration: task.done ? "line-through" : "none",
+                  opacity: task.done ? 0.75 : 1,
+                }}
+              >
+                {task.text}
+              </span>
             )}
             <div className="flex items-center gap-1 flex-shrink-0 pr-1">
               <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>{editingId === task.id ? <Check size={16} /> : t.tasks.editLabel}</IconButton>
@@ -179,6 +201,7 @@ export function TaskList({
             </IconButton>
             </div>
           </ReorderRow>
+          </div>
         ))}
       </Reorder.Group>
 

@@ -200,6 +200,8 @@ const en = {
     welcome: {
       title: "Welcome to Steady!",
       subtitle: "Your calm daily companion for neurodivergent minds.",
+      reassurance:
+        "Whether you're diagnosed, self-identify, suspect you might be, or just want a calmer way to get through your day – this is for you.",
       start: "Get started",
       returning: "I've been here before",
       skipGuest: "Skip setup, just let me look around",
@@ -257,8 +259,8 @@ const en = {
     tipForYou: "✨ A tip for you",
     growthFullBloom: "Full bloom! You've completed all your habits today 🎉",
     personalizeTitle: "Get tips made for you",
-    personalizeText: "Answer a couple of quick questions about what helps and what's tricky for you — totally optional.",
-    personalizeButton: "Personalize my tips",
+    personalizeText: "Answer a couple of quick questions about what helps and what's tricky for you – totally optional.",
+    personalizeButton: "Personalise my tips",
     personalizeDismiss: "Dismiss",
   },
 
@@ -312,6 +314,7 @@ const en = {
     emptySubtitle: "Add something simple to start with – even one thing is more than enough.",
     allDone: "All done!",
     allDoneMessage: "Everything on your list is done – great work! 🎉",
+    completedHeading: "Completed",
   },
 
   routines: {
@@ -606,7 +609,7 @@ const da: typeof en = {
     overview: "Hjem",
     tasks: "Opgaver",
     routines: "Rutiner",
-    habits: "Habits",
+    habits: "Vaner",
     focus: "Fokus",
     note: "Refleksion",
     dates: "Datoer",
@@ -675,7 +678,7 @@ const da: typeof en = {
     font: { label: "Skrifttype", standard: "Standard", readable: "Dysleksivenlig (Atkinson)" },
     lineSpacing: { label: "Linjeafstand", normal: "Normal", spacious: "Rumlig" },
     reduceMotion: { label: "Reducér bevægelse", description: "Slå animationer fra i appen" },
-    highContrast: { label: "Høj kontrast", description: "Stærkere tekst- og border-kontrast" },
+    highContrast: { label: "Høj kontrast", description: "Stærkere tekst- og kant-kontrast" },
     resetOnboarding: "Genstart opsætning",
     clearData: "Slet alle mine data",
     clearConfirm: "Er du sikker? Dette fjerner alle opgaver, noter, habits og stemningshistorik.",
@@ -792,6 +795,8 @@ const da: typeof en = {
     welcome: {
       title: "Velkommen til Steady!",
       subtitle: "Din rolige dagligdagsfølgesvend til neurodivergente sind.",
+      reassurance:
+        "Uanset om du har en diagnose, identificerer dig som neurodivergent, tror du måske er det, eller bare ønsker en roligere måde at komme gennem dagen på – så er Steady til dig.",
       start: "Kom i gang",
       returning: "Jeg har været her før",
       skipGuest: "Spring opsætning over, lad mig bare kigge",
@@ -842,14 +847,14 @@ const da: typeof en = {
 
   overview: {
     tasksLeft: "Opgaver tilbage",
-    habitsDone: "Habits gennemført",
-    habitGrowth: "Habit-vækst",
+    habitsDone: "Vaner gennemført",
+    habitGrowth: "Vane-vækst",
     reminderTitle: "💡 Påmindelse",
     reminderText: "Alting behøver ikke at blive gjort perfekt. Bare tag det næste lille skridt. Det er nok.",
     tipForYou: "✨ Et tip til dig",
-    growthFullBloom: "Fuldt udsprunget! Du har gennemført alle dine habits i dag 🎉",
+    growthFullBloom: "Fuldt udsprunget! Du har gennemført alle dine vaner i dag 🎉",
     personalizeTitle: "Få tips lavet til dig",
-    personalizeText: "Svar på et par hurtige spørgsmål om, hvad der hjælper, og hvad der kan være svært for dig — helt valgfrit.",
+    personalizeText: "Svar på et par hurtige spørgsmål om, hvad der hjælper, og hvad der kan være svært for dig – helt valgfrit.",
     personalizeButton: "Personalisér mine tips",
     personalizeDismiss: "Afvis",
   },
@@ -904,6 +909,7 @@ const da: typeof en = {
     emptySubtitle: "Tilføj noget enkelt at starte med. Selv én ting er mere end nok.",
     allDone: "Klaret!",
     allDoneMessage: "Alt på din liste er klaret – godt gået! 🎉",
+    completedHeading: "Fuldført",
   },
 
   routines: {
@@ -941,18 +947,18 @@ const da: typeof en = {
   },
 
   habits: {
-    heading: "Habit-tracker",
-    description: "Tryk for at markere en habit som gennemført i dag. Én er mere end nok.",
-    addHabit: "Tilføj en habit",
-    namePlaceholder: "Habit-navn…",
-    deleteHabit: "Slet habit",
-    edit: "Rediger habit",
+    heading: "Vane-tracker",
+    description: "Tryk for at markere en vane som gennemført i dag. Én er mere end nok.",
+    addHabit: "Tilføj en vane",
+    namePlaceholder: "Vanenavn…",
+    deleteHabit: "Slet vane",
+    edit: "Rediger vane",
     editLabel: "Rediger",
-    saveEdit: "Gem habit",
-    emojiLabel: "Habit-emoji",
-    noHabits: "Ingen habits endnu. Tilføj én nedenfor.",
-    emptyTitle: "Ingen habits endnu",
-    emptySubtitle: "Start med noget enkelt – én lille habit gør en forskel.",
+    saveEdit: "Gem vane",
+    emojiLabel: "Vane-emoji",
+    noHabits: "Ingen vaner endnu. Tilføj én nedenfor.",
+    emptyTitle: "Ingen vaner endnu",
+    emptySubtitle: "Start med noget enkelt – én lille vane gør en forskel.",
     cancel: "Annullér",
     editNote: "Rediger note",
     noteLabel: "Note",
@@ -1032,7 +1038,7 @@ const da: typeof en = {
 
   more: {
     heading: "Mere",
-    description: "Et par ekstra værktøjer til de dage, du har brug for dem.",
+    description: "Et par ekstra værktøjer til de dage, hvor du har brug for dem.",
     back: "Tilbage",
   },
 

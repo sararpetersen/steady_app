@@ -208,18 +208,18 @@ export function TaskList({
       {tasks.length > 0 && remaining === 0 && (
         <div
           className="rounded-xl px-4 py-3 flex items-center gap-3 mb-4"
-          style={{ backgroundColor: "var(--green-bg)" }}
+          style={{ backgroundColor: "var(--orange-bg)" }}
         >
           <CheckCircle2
             size={20}
             style={{
-              color: "var(--green-text)",
+              color: "var(--orange-text)",
               flexShrink: 0,
             }}
           />
           <p
             style={{
-              color: "var(--green-text)",
+              color: "var(--orange-text)",
               fontWeight: 700,
               fontSize: "0.95rem",
             }}

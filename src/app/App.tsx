@@ -298,6 +298,7 @@ export default function App() {
     localStorage.setItem("steady-routines-custom", JSON.stringify({ morning: [], afternoon: [], late: [] }));
     localStorage.setItem("steady-routines-nextid", JSON.stringify(100));
     localStorage.setItem("steady-important-dates", JSON.stringify([]));
+    localStorage.setItem("steady-personalize-dismissed", JSON.stringify(false));
   };
 
   const handleOnboardingComplete = (newProfile: ProfileData) => {

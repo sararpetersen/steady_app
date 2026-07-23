@@ -664,7 +664,7 @@ export default function App() {
                       ))}
                     </div>
                     <MoodCheck />
-                    <PersonalizedTip support={profile.support} sensory={profile.sensory} />
+                    <PersonalizedTip support={profile.support} sensory={profile.sensory} onPersonalize={() => setActiveTab("profile")} />
                     <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
                   </>
                 )}

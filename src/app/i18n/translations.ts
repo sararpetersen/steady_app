@@ -16,7 +16,7 @@ const en = {
     routines: "Routines",
     habits: "Habits",
     focus: "Focus",
-    note: "Note",
+    note: "Reflect",
     dates: "Dates",
     profile: "Profile",
     more: "More",
@@ -171,8 +171,8 @@ const en = {
   },
 
   noteHistory: {
-    heading: "Your Notes",
-    empty: "No notes yet.",
+    heading: "Your Reflections",
+    empty: "No reflections yet.",
     today: "Today",
     deleteEntry: "Delete this entry",
     editEntry: "Edit this entry",
@@ -186,6 +186,7 @@ const en = {
       subtitle: "Your calm daily companion for neurodivergent minds.",
       start: "Get started",
       returning: "I've been here before",
+      skipGuest: "Skip setup, just let me look around",
     },
     name: {
       title: "What should we call you?",
@@ -239,6 +240,10 @@ const en = {
     reminderText: "Everything doesn't need to be done perfectly. Just do the next small step. That's enough.",
     tipForYou: "✨ A tip for you",
     growthFullBloom: "Full bloom! You've completed all your habits today 🎉",
+    personalizeTitle: "Get tips made for you",
+    personalizeText: "Answer a couple of quick questions about what helps and what's tricky for you — totally optional.",
+    personalizeButton: "Personalize my tips",
+    personalizeDismiss: "Dismiss",
   },
 
   supportTips: {
@@ -341,9 +346,7 @@ const en = {
     emptyTitle: "No habits yet",
     emptySubtitle: "Start with something simple – one small habit makes a difference.",
     cancel: "Cancel",
-    addNote: "Add note",
     editNote: "Edit note",
-    saveNote: "Save note",
     noteLabel: "Note",
     notePlaceholder: "Add context – a reason, a reminder, anything worth remembering…",
     items: [
@@ -376,7 +379,7 @@ const en = {
   },
 
   note: {
-    heading: "Daily Note",
+    heading: "Daily Reflection",
     description: "No pressure – just a space to write down anything on your mind.",
     prompts: [
       "What's one thing you're looking forward to today?",
@@ -589,7 +592,7 @@ const da: typeof en = {
     routines: "Rutiner",
     habits: "Habits",
     focus: "Fokus",
-    note: "Note",
+    note: "Refleksion",
     dates: "Datoer",
     profile: "Profil",
     more: "Mere",
@@ -744,8 +747,8 @@ const da: typeof en = {
   },
 
   noteHistory: {
-    heading: "Dine noter",
-    empty: "Ingen noter endnu.",
+    heading: "Dine refleksioner",
+    empty: "Ingen refleksioner endnu.",
     today: "I dag",
     deleteEntry: "Slet denne note",
     editEntry: "Rediger denne note",
@@ -759,6 +762,7 @@ const da: typeof en = {
       subtitle: "Din rolige dagligdagsfølgesvend til neurodivergente sind.",
       start: "Kom i gang",
       returning: "Jeg har været her før",
+      skipGuest: "Spring opsætning over, lad mig bare kigge",
     },
     name: {
       title: "Hvad skal vi kalde dig?",
@@ -812,6 +816,10 @@ const da: typeof en = {
     reminderText: "Alting behøver ikke at blive gjort perfekt. Bare tag det næste lille skridt. Det er nok.",
     tipForYou: "✨ Et tip til dig",
     growthFullBloom: "Fuldt udsprunget! Du har gennemført alle dine habits i dag 🎉",
+    personalizeTitle: "Få tips lavet til dig",
+    personalizeText: "Svar på et par hurtige spørgsmål om, hvad der hjælper, og hvad der kan være svært for dig — helt valgfrit.",
+    personalizeButton: "Personalisér mine tips",
+    personalizeDismiss: "Afvis",
   },
 
   supportTips: {
@@ -914,9 +922,7 @@ const da: typeof en = {
     emptyTitle: "Ingen habits endnu",
     emptySubtitle: "Start med noget enkelt – én lille habit gør en forskel.",
     cancel: "Annullér",
-    addNote: "Tilføj note",
     editNote: "Rediger note",
-    saveNote: "Gem note",
     noteLabel: "Note",
     notePlaceholder: "Tilføj kontekst – en grund, en påmindelse, alt der er værd at huske…",
     items: [
@@ -945,7 +951,7 @@ const da: typeof en = {
   },
 
   note: {
-    heading: "Daglig note",
+    heading: "Daglig refleksion",
     description: "Intet pres – bare et sted til at skrive alt, hvad du har på hjertet.",
     prompts: [
       "Hvad er én ting, du glæder dig til i dag?",

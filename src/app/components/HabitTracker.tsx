@@ -67,8 +67,7 @@ export function HabitTracker() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editEmoji, setEditEmoji] = useState("");
-  const [openNoteId, setOpenNoteId] = useState<string | null>(null);
-  const [noteDraft, setNoteDraft] = useState("");
+  const [editNote, setEditNote] = useState("");
   const today = useToday();
 
   // Let App.tsx's growth/celebration state know immediately — it reads this same
@@ -117,28 +116,15 @@ export function HabitTracker() {
     setEditingId(habit.id);
     setEditName(habit.name);
     setEditEmoji(habit.emoji);
+    setEditNote(habit.note ?? "");
   };
 
   const saveEdit = (id: string) => {
     const name = editName.trim();
     if (!name) return;
-    setHabits((prev) => prev.map((habit) => habit.id === id ? { ...habit, name, emoji: editEmoji || "🎯" } : habit));
+    const note = editNote.trim();
+    setHabits((prev) => prev.map((habit) => habit.id === id ? { ...habit, name, emoji: editEmoji || "🎯", note: note || undefined } : habit));
     setEditingId(null);
-  };
-
-  const toggleNote = (habit: Habit) => {
-    if (openNoteId === habit.id) {
-      setOpenNoteId(null);
-      return;
-    }
-    setOpenNoteId(habit.id);
-    setNoteDraft(habit.note ?? "");
-  };
-
-  const saveNote = (id: string) => {
-    const note = noteDraft.trim();
-    setHabits((prev) => prev.map((habit) => habit.id === id ? { ...habit, note: note || undefined } : habit));
-    setOpenNoteId(null);
   };
 
   const addHabit = () => {
@@ -179,14 +165,29 @@ export function HabitTracker() {
             <div className="relative">
             {/* Main tap area — full width */}
             {editingId === habit.id ? (
-              <div className="flex items-center gap-2 p-3 pr-28 rounded-xl border-2 border-primary bg-input-background">
-                <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
-                <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(habit.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
+              <div className="flex flex-col gap-2 p-3 pr-20 rounded-xl border-2 border-primary bg-input-background">
+                <div className="flex items-center gap-2">
+                  <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
+                  <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) saveEdit(habit.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
+                </div>
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <StickyNote size={12} />
+                  <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.02em" }}>{t.habits.noteLabel}</span>
+                </div>
+                <textarea
+                  value={editNote}
+                  onChange={(e) => setEditNote(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Escape") setEditingId(null); }}
+                  placeholder={t.habits.notePlaceholder}
+                  rows={2}
+                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none resize-none"
+                  style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
+                />
               </div>
             ) : (
             <button
               onClick={() => toggle(habit.id)}
-              className="w-full flex items-center gap-3 p-3 pr-32 rounded-xl hover:opacity-90 text-left"
+              className="w-full flex items-center gap-3 p-3 pr-24 rounded-xl hover:opacity-90 text-left"
               style={{
                 backgroundColor: habit.doneToday ? getDoneColor(index) : "var(--surface-1)",
                 border: habit.doneToday ? "2px solid var(--primary)" : "2px solid transparent",
@@ -225,49 +226,19 @@ export function HabitTracker() {
             )}
 
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-              <IconButton
-                onClick={() => toggleNote(habit)}
-                tone="none"
-                active={!!habit.note}
-                aria-label={`${habit.note ? t.habits.editNote : t.habits.addNote}: ${habit.name}`}
-                aria-pressed={openNoteId === habit.id}
-              >
-                <StickyNote size={15} />
-              </IconButton>
-              <IconButton size="pill" tone="primary" onClick={() => editingId === habit.id ? saveEdit(habit.id) : startEditing(habit)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === habit.id ? t.habits.saveEdit : t.habits.edit}: ${habit.name}`}>{editingId === habit.id ? <Check size={15} /> : t.habits.editLabel}</IconButton>
+              {editingId === habit.id ? (
+                <IconButton size="pill" tone="primary" onClick={() => saveEdit(habit.id)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${t.habits.saveEdit}: ${habit.name}`}><Check size={15} /></IconButton>
+              ) : (
+                <IconButton size="pill" tone="primary" onClick={() => startEditing(habit)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${t.habits.edit}: ${habit.name}`}>{t.habits.editLabel}</IconButton>
+              )}
               <IconButton tone="destructive" onClick={() => deleteHabit(habit.id)} aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></IconButton>
             </div>
             </div>
-            <AnimatedCollapse open={openNoteId === habit.id}>
-              <div className="mt-1.5 p-3 rounded-xl border border-dashed" style={{ borderColor: "var(--border)", backgroundColor: "var(--surface-1)" }}>
-                <div className="flex items-center gap-1.5 mb-1.5 text-muted-foreground">
-                  <StickyNote size={12} />
-                  <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.02em" }}>{t.habits.noteLabel}</span>
-                </div>
-                <textarea
-                  autoFocus
-                  value={noteDraft}
-                  onChange={(e) => setNoteDraft(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Escape") setOpenNoteId(null); }}
-                  placeholder={t.habits.notePlaceholder}
-                  rows={2}
-                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none resize-none"
-                  style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
-                />
-                <div className="flex justify-end gap-2 mt-1">
-                  <button onClick={() => setOpenNoteId(null)} className="rounded-lg px-3 py-1.5 text-muted-foreground hover:bg-muted" style={{ fontSize: "0.82rem", fontWeight: 600 }}>
-                    {t.habits.cancel}
-                  </button>
-                  <button onClick={() => saveNote(habit.id)} className="rounded-lg px-3 py-1.5 bg-primary text-primary-foreground hover:opacity-90" style={{ fontSize: "0.82rem", fontWeight: 700 }}>
-                    {t.habits.saveNote}
-                  </button>
-                </div>
-              </div>
-            </AnimatedCollapse>
-            <AnimatedCollapse open={openNoteId !== habit.id && !!habit.note}>
+            <AnimatedCollapse open={editingId !== habit.id && !!habit.note}>
               <button
-                onClick={() => toggleNote(habit)}
-                className="mt-1 w-full flex items-start gap-1.5 px-3 py-1 text-left text-muted-foreground hover:text-foreground"
+                onClick={() => startEditing(habit)}
+                className="mt-1.5 w-full flex items-start gap-1.5 px-3 py-2 rounded-xl border border-dashed text-left text-muted-foreground hover:text-foreground hover:border-primary"
+                style={{ borderColor: "var(--border)", backgroundColor: "var(--surface-1)", transition: "color 0.15s, border-color 0.15s" }}
                 aria-label={`${t.habits.editNote}: ${habit.name}`}
               >
                 <StickyNote size={12} className="flex-shrink-0 mt-0.5" style={{ color: "var(--primary)" }} />

@@ -156,18 +156,14 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
           >
             {t.onboarding.welcome.start}
           </button>
-          {!isGuest && (
-            <>
-              <div className="flex items-center gap-3 w-full max-w-xs">
-                <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
-                <span className="text-muted-foreground" style={{ fontSize: "0.75rem" }}>or</span>
-                <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
-              </div>
-              <button onClick={onSkip} className="text-muted-foreground hover:text-foreground" style={{ fontSize: "0.88rem", transition: "color 0.15s" }}>
-                {t.onboarding.welcome.returning}
-              </button>
-            </>
-          )}
+          <div className="flex items-center gap-3 w-full max-w-xs">
+            <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
+            <span className="text-muted-foreground" style={{ fontSize: "0.75rem" }}>or</span>
+            <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
+          </div>
+          <button onClick={onSkip} className="text-muted-foreground hover:text-foreground" style={{ fontSize: "0.88rem", transition: "color 0.15s" }}>
+            {isGuest ? t.onboarding.welcome.skipGuest : t.onboarding.welcome.returning}
+          </button>
         </div>
       )}
 

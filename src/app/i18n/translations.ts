@@ -285,7 +285,7 @@ const en = {
 
   mood: {
     heading: "How are you feeling right now?",
-    description: "Just pick the one that feels closest - no wrong answer.",
+    description: "Just pick the one that feels closest - no wrong answer. You can change it anytime throughout the day.",
     options: [
       { key: "Overwhelmed", label: "Overwhelmed", emoji: "😵", result: "That sounds really hard. Be gentle with yourself today." },
       { key: "Stressed", label: "Stressed", emoji: "😟", result: "Stress is rough. Try to take it one step at a time." },
@@ -878,7 +878,7 @@ const da: typeof en = {
 
   mood: {
     heading: "Hvordan har du det lige nu?",
-    description: "Vælg bare den, der føles tættest på – der er intet rigtigt eller forkert svar.",
+    description: "Vælg bare den, der føles tættest på – der er intet rigtigt eller forkert svar. Du kan altid ændre den i løbet af dagen.",
     options: [
       { key: "Overwhelmed", label: "Overvældet", emoji: "😵", result: "Det lyder virkelig hårdt. Vær blid mod dig selv i dag." },
       { key: "Stressed", label: "Stresset", emoji: "😟", result: "Det er hårdt at være stresset. Tag det ét skridt ad gangen." },

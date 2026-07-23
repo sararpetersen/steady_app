@@ -23,10 +23,11 @@ export function PersonalizedTip({ support, sensory, onPersonalize }: Props) {
   const supportTip =
     matchedSupport.length > 0
       ? t.supportTips[matchedSupport[new Date(`${today}T00:00:00`).getDate() % matchedSupport.length]]
-      : t.supportTips["default"];
+      : null;
 
   // No sensory/support answers on file — likely skipped onboarding (e.g. guest
-  // "skip setup"), so tips are stuck on the generic fallback until they opt in.
+  // "skip setup"). Don't show a generic fallback tip alongside the nudge to
+  // personalize — that reads as "you already gave me a tip, why ask again?"
   const hasPersonalization = support.length > 0 || sensory.length > 0;
 
   return (
@@ -41,17 +42,19 @@ export function PersonalizedTip({ support, sensory, onPersonalize }: Props) {
           </p>
         </div>
       )}
-      <div
-        className="rounded-2xl p-4 border border-border"
-        style={{ backgroundColor: "var(--purple-bg)" }}
-      >
-        <p style={{ fontWeight: 700, color: "var(--purple-text)", marginBottom: 4 }}>
-          {t.overview.tipForYou}
-        </p>
-        <p style={{ color: "var(--purple-text)", fontSize: "0.95rem", lineHeight: 1.6 }}>
-          {supportTip}
-        </p>
-      </div>
+      {supportTip && (
+        <div
+          className="rounded-2xl p-4 border border-border"
+          style={{ backgroundColor: "var(--purple-bg)" }}
+        >
+          <p style={{ fontWeight: 700, color: "var(--purple-text)", marginBottom: 4 }}>
+            {t.overview.tipForYou}
+          </p>
+          <p style={{ color: "var(--purple-text)", fontSize: "0.95rem", lineHeight: 1.6 }}>
+            {supportTip}
+          </p>
+        </div>
+      )}
       {!hasPersonalization && !dismissed && (
         <div
           className="rounded-2xl p-4 border border-border flex items-start gap-3"
@@ -67,8 +70,8 @@ export function PersonalizedTip({ support, sensory, onPersonalize }: Props) {
             </p>
             <button
               onClick={onPersonalize}
-              className="rounded-lg px-3 py-1.5 bg-primary text-primary-foreground hover:opacity-90"
-              style={{ fontSize: "0.82rem", fontWeight: 700 }}
+              className="rounded-lg px-3 py-1.5 hover:opacity-90"
+              style={{ fontSize: "0.82rem", fontWeight: 700, backgroundColor: "var(--foreground)", color: "var(--background)" }}
             >
               {t.overview.personalizeButton}
             </button>

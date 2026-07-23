@@ -34,9 +34,13 @@ export function MoodCheck() {
 
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
-      <h3 className="mb-1 text-foreground">{t.mood.heading}</h3>
-      <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>
+      <h3 className="mb-1.5 text-foreground">{t.mood.heading}</h3>
+      <p className="text-muted-foreground mb-3" style={{ fontSize: "0.95rem" }}>
         {t.mood.description}
+        <br />
+        <span className="opacity-80 italic" style={{ fontSize: "0.7rem" }}>
+          {t.mood.changeHint}
+        </span>
       </p>
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
         {moods.map((mood, i) => (

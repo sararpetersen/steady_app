@@ -11,6 +11,7 @@ import { PersonalizedTip } from "./components/PersonalizedTip";
 import { Onboarding } from "./components/Onboarding";
 import { SettingsPage } from "./components/SettingsPage";
 import { AuthPage, type AuthState } from "./components/AuthPage";
+import { FeedbackForm } from "./components/FeedbackForm";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useToday } from "./hooks/useToday";
 import { supabase } from "./lib/supabaseClient";
@@ -18,7 +19,7 @@ import { pushLocalToRemote, pullRemoteToLocal } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
-import { LayoutDashboard, ClipboardList, Repeat2, Sprout, UserCircle2, NotebookPen, Settings, CalendarDays, MoreHorizontal, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Repeat2, Sprout, UserCircle2, NotebookPen, Settings, CalendarDays, MoreHorizontal, Sun, Moon, MessageCircle } from "lucide-react";
 import { SteadyWordmark } from "./components/SteadyWordmark";
 import { IconButton } from "./components/ui/IconButton";
 
@@ -60,6 +61,7 @@ export default function App() {
   const [onboarded, setOnboarded] = useLocalStorage("steady-onboarded", false);
   const [activeTab, setActiveTab] = useLocalStorage("steady-active-tab", "overview");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [rawProfile, setProfile] = useLocalStorage<ProfileData>("steady-profile", DEFAULT_PROFILE);
   const [profilePhoto, setProfilePhoto] = useLocalStorage<string | null>("steady-profile-photo", null);
 
@@ -493,6 +495,14 @@ export default function App() {
               <IconButton
                 size="lg"
                 bordered
+                onClick={() => setFeedbackOpen(true)}
+                aria-label={t.feedback.open}
+              >
+                <MessageCircle size={18} />
+              </IconButton>
+              <IconButton
+                size="lg"
+                bordered
                 onClick={() => setProfile({ ...profile, a11y: { ...profile.a11y, darkMode: !profile.a11y.darkMode } })}
                 aria-label={profile.a11y.darkMode ? "Switch to light mode" : "Switch to dark mode"}
               >
@@ -534,6 +544,13 @@ export default function App() {
                 </p>
               </button>
               <div className="flex items-center gap-2">
+                <IconButton
+                  size="lg"
+                  onClick={() => setFeedbackOpen(true)}
+                  aria-label={t.feedback.open}
+                >
+                  <MessageCircle size={20} />
+                </IconButton>
                 <IconButton
                   size="lg"
                   active={settingsOpen}
@@ -691,6 +708,8 @@ export default function App() {
             </div>
           </div>
         )}
+
+        <FeedbackForm open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
       </div>
     </LangContext.Provider>
   );

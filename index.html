@@ -51,6 +51,14 @@
     <body>
       
       <div id="root"></div>
+      <!-- Static form so Netlify's build-time bot can detect and register it;
+           the real submission happens via fetch() from FeedbackForm.tsx. -->
+      <form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+        <input type="text" name="name" />
+        <p class="hidden"><input name="bot-field" /></p>
+        <input type="email" name="email" />
+        <textarea name="message"></textarea>
+      </form>
       <script type="module" src="/src/main.tsx"></script>
       
     </body>

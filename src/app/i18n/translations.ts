@@ -180,6 +180,22 @@ const en = {
     editLabel: "Edit",
   },
 
+  feedback: {
+    open: "Send feedback",
+    title: "Send feedback",
+    subtitle: "Tell me what's confusing, broken, or working well – anything helps.",
+    messageLabel: "Your message",
+    messagePlaceholder: "What's on your mind?",
+    emailLabel: "Email (optional, if you'd like a reply)",
+    emailPlaceholder: "you@example.com",
+    send: "Send",
+    sending: "Sending…",
+    error: "Something went wrong – try again, or email sara.ringkow@gmail.com directly.",
+    thanksTitle: "Thank you!",
+    thanksBody: "Got it – really appreciate you taking the time.",
+    close: "Close feedback form",
+  },
+
   onboarding: {
     welcome: {
       title: "Welcome to Steady!",
@@ -754,6 +770,22 @@ const da: typeof en = {
     editEntry: "Rediger denne note",
     saveEntry: "Gem denne note",
     editLabel: "Rediger",
+  },
+
+  feedback: {
+    open: "Send feedback",
+    title: "Send feedback",
+    subtitle: "Fortæl mig, hvad der er forvirrende, ikke virker, eller fungerer godt – alt hjælper.",
+    messageLabel: "Din besked",
+    messagePlaceholder: "Hvad tænker du på?",
+    emailLabel: "Email (valgfrit, hvis du gerne vil have svar)",
+    emailPlaceholder: "dig@eksempel.dk",
+    send: "Send",
+    sending: "Sender…",
+    error: "Noget gik galt – prøv igen, eller skriv direkte til sara.ringkow@gmail.com.",
+    thanksTitle: "Tak!",
+    thanksBody: "Modtaget – jeg sætter stor pris på, at du tog dig tid.",
+    close: "Luk feedback-formular",
   },
 
   onboarding: {

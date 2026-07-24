@@ -149,12 +149,18 @@ export default function App() {
   // Celebrate hitting 100% once per day — a one-off moment, not a permanent card.
   const [celebratedDate, setCelebratedDate] = useLocalStorage<string | null>("steady-growth-celebrated-date", null);
   const [showCelebration, setShowCelebration] = useState(false);
+  // Deliberately NOT depending on `today`: when the day rolls over, habitsDone/habitsTotal
+  // still hold yesterday's (possibly 100%) values for one render, before the reset effects
+  // above catch up — depending on `today` here fired this effect on that stale render and
+  // wrongly re-celebrated. Habit toggles already change habitsDone/habitsTotal directly,
+  // so this still re-checks correctly once those settle.
   useEffect(() => {
     if (habitsTotal > 0 && habitsDone === habitsTotal && celebratedDate !== today) {
       setCelebratedDate(today);
       setShowCelebration(true);
     }
-  }, [habitsDone, habitsTotal, today, celebratedDate, setCelebratedDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [habitsDone, habitsTotal, celebratedDate, setCelebratedDate]);
 
   useEffect(() => {
     if (!showCelebration) return;

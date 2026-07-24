@@ -136,7 +136,8 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           </div>
           <div>
             <label className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>
-              {p.pronounsLabel}
+              {p.pronounsLabel}{" "}
+              <span className="text-muted-foreground">({p.optionalSuffix})</span>
             </label>
             <select
               value={pronoun}
@@ -162,7 +163,8 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
         </div>
         <div>
           <label className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>
-            {p.aboutLabel}
+            {p.aboutLabel}{" "}
+            <span className="text-muted-foreground">({p.optionalSuffix})</span>
           </label>
           <textarea
             value={profile.about}

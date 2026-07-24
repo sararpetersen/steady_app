@@ -186,7 +186,8 @@ const en = {
     subtitle: "Tell me what's confusing, broken, or working well – anything helps.",
     messageLabel: "Your message",
     messagePlaceholder: "What's on your mind?",
-    emailLabel: "Email (optional, if you'd like a reply)",
+    emailLabel: "Email",
+    emailOptionalSuffix: "optional, if you'd like a reply",
     emailPlaceholder: "you@example.com",
     send: "Send",
     sending: "Sending…",
@@ -286,7 +287,7 @@ const en = {
   mood: {
     heading: "How are you feeling right now?",
     description: "Just pick the one that feels closest – no wrong answer.",
-    changeHint: "(You can change it anytime throughout the day)",
+    changeHint: "You can change it anytime throughout the day.",
     options: [
       { key: "Overwhelmed", label: "Overwhelmed", emoji: "😵", result: "That sounds really hard. Be gentle with yourself today." },
       { key: "Stressed", label: "Stressed", emoji: "😟", result: "Stress is rough. Try to take it one step at a time." },
@@ -462,7 +463,8 @@ const en = {
     optionalPhoto: "Optional photo",
     photoSet: "Photo set",
     namePlaceholder: "Your name or nickname",
-    pronounsLabel: "Pronouns (optional)",
+    pronounsLabel: "Pronouns",
+    optionalSuffix: "optional",
     pronounsOptions: [
       { value: "he/him", label: "he/him" },
       { value: "she/her", label: "she/her" },
@@ -471,7 +473,7 @@ const en = {
       { value: "she/they", label: "she/they" },
       { value: "any/all", label: "any/all" },
     ],
-    aboutLabel: "A note to yourself (optional)",
+    aboutLabel: "A note to yourself",
     aboutPlaceholder: "A reminder, encouragement, or anything you'd like to remember...",
 
     sensory: {
@@ -780,7 +782,8 @@ const da: typeof en = {
     subtitle: "Fortæl mig, hvad der er forvirrende, ikke virker, eller fungerer godt – alt hjælper.",
     messageLabel: "Din besked",
     messagePlaceholder: "Hvad tænker du på?",
-    emailLabel: "Email (valgfrit, hvis du gerne vil have svar)",
+    emailLabel: "Email",
+    emailOptionalSuffix: "valgfrit, hvis du gerne vil have svar",
     emailPlaceholder: "dig@eksempel.dk",
     send: "Send",
     sending: "Sender…",
@@ -880,7 +883,7 @@ const da: typeof en = {
   mood: {
     heading: "Hvordan har du det lige nu?",
     description: "Vælg bare den, der føles tættest på – der er intet rigtigt eller forkert svar.",
-    changeHint: "(Du kan altid ændre den i løbet af dagen)",
+    changeHint: "Du kan altid ændre den i løbet af dagen.",
     options: [
       { key: "Overwhelmed", label: "Overvældet", emoji: "😵", result: "Det lyder virkelig hårdt. Vær blid mod dig selv i dag." },
       { key: "Stressed", label: "Stresset", emoji: "😟", result: "Det er hårdt at være stresset. Tag det ét skridt ad gangen." },
@@ -1052,7 +1055,8 @@ const da: typeof en = {
     optionalPhoto: "Valgfrit foto",
     photoSet: "Foto valgt",
     namePlaceholder: "Dit navn eller kaldenavn",
-    pronounsLabel: "Pronomener (valgfrit)",
+    pronounsLabel: "Pronomener",
+    optionalSuffix: "valgfrit",
     pronounsOptions: [
       { value: "he/him", label: "han/ham" },
       { value: "she/her", label: "hun/hende" },
@@ -1061,7 +1065,7 @@ const da: typeof en = {
       { value: "she/they", label: "hun/de" },
       { value: "any/all", label: "alle" },
     ],
-    aboutLabel: "En note til dig selv (valgfrit)",
+    aboutLabel: "En note til dig selv",
     aboutPlaceholder: "En påmindelse, opmuntring eller noget andet, du gerne vil huske...",
 
     sensory: {

@@ -105,7 +105,8 @@ export function FeedbackForm({ open, onClose }: Props) {
               </div>
               <div>
                 <label className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>
-                  {t.feedback.emailLabel}
+                  {t.feedback.emailLabel}{" "}
+                  <span className="text-muted-foreground">({t.feedback.emailOptionalSuffix})</span>
                 </label>
                 <input
                   type="email"

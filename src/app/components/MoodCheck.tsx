@@ -38,9 +38,7 @@ export function MoodCheck() {
       <p className="text-muted-foreground mb-3" style={{ fontSize: "0.95rem" }}>
         {t.mood.description}
         <br />
-        <span className="opacity-80 italic" style={{ fontSize: "0.7rem" }}>
-          {t.mood.changeHint}
-        </span>
+        {t.mood.changeHint}
       </p>
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
         {moods.map((mood, i) => (

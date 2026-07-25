@@ -89,7 +89,7 @@ function SectionPanel({
     return (
       <ReorderRow key={id} value={item} dragDisabled={editingId === id} className="flex items-center gap-2 group relative" handleSize={18}>
         {editingId === id ? (
-          <div className="flex-1 flex items-center gap-3 rounded-xl p-3 bg-muted">
+          <div className="flex-1 min-w-0 flex items-center gap-3 rounded-xl p-3 bg-muted">
             <span
               className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
               style={{
@@ -130,7 +130,7 @@ function SectionPanel({
             >
               {done && <Check size={13} color="white" />}
             </span>
-            <span className="flex-1 min-w-0 text-foreground" style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1, wordBreak: "break-word" }}>
+            <span className="flex-1 min-w-0 text-foreground truncate" style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1 }}>
               {text}
             </span>
           </button>

@@ -184,7 +184,7 @@ export function HabitTracker() {
               style={{ transform: habit.doneToday ? "scale(1.01)" : "scale(1)", transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1)" }}
             >
               <span style={{ fontSize: "1.7rem", flexShrink: 0 }}>{habit.emoji}</span>
-              <span className="flex-1 min-w-0 text-foreground" style={{ fontWeight: 600, wordBreak: "break-word" }}>
+              <span className="flex-1 min-w-0 text-foreground truncate" style={{ fontWeight: 600 }}>
                 {habit.name}
               </span>
               <div className="flex items-center gap-1 flex-shrink-0">

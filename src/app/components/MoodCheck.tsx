@@ -37,7 +37,8 @@ export function MoodCheck() {
       <h3 className="mb-1.5 text-foreground">{t.mood.heading}</h3>
       <p className="text-muted-foreground mb-3" style={{ fontSize: "0.95rem" }}>
         {t.mood.description}
-        <br />
+        {" "}
+        <br className="hidden lg:block" />
         {t.mood.changeHint}
       </p>
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">

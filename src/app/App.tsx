@@ -65,6 +65,15 @@ export default function App() {
   const [rawProfile, setProfile] = useLocalStorage<ProfileData>("steady-profile", DEFAULT_PROFILE);
   const [profilePhoto, setProfilePhoto] = useLocalStorage<string | null>("steady-profile-photo", null);
 
+  // While a freshly-authenticated (non-guest) session is still pulling its remote data down,
+  // hold off on the `!onboarded` check below — otherwise a real returning user briefly flashes
+  // onto the Onboarding screen (this device's local "onboarded" is still its stale/default
+  // value) before the pull finishes and reloads the page with their actual synced data.
+  const [syncingRemote, setSyncingRemote] = useState(() => {
+    if (!authState || authState.isGuest || !authState.userId) return false;
+    return !sessionStorage.getItem(`steady-pulled-${authState.userId}`);
+  });
+
   const today = useToday();
 
   // Task state lifted here so Overview stats stay in sync with the TaskList
@@ -72,12 +81,23 @@ export default function App() {
   const [nextId, setNextId] = useLocalStorage<number>("steady-task-nextid", 1);
   const [tasksDate, setTasksDate] = useLocalStorage<string | null>("steady-tasks-date", null);
 
-  // Completed tasks clear at rollover so the list doesn't grow forever, but
-  // unfinished ones carry over — nothing gets silently forgotten just because
-  // the day changed before you got to it.
+  // Completed one-off tasks clear at rollover so the list doesn't grow forever, but
+  // unfinished ones carry over — nothing gets silently forgotten just because the day
+  // changed before you got to it. Recurring tasks are never removed: "daily" ones reset
+  // to undone every rollover, "weekly" ones only reset on their chosen weekday (editable
+  // per-task, so a task doesn't have to be done on the exact day it happens to fall on).
   useEffect(() => {
     if (tasksDate !== today) {
-      setTasks((prev) => prev.filter((task) => !task.done));
+      const todayWeekday = new Date(`${today}T00:00:00`).getDay();
+      setTasks((prev) =>
+        prev
+          .filter((task) => !task.done || task.recurrence)
+          .map((task) => {
+            if (!task.recurrence || !task.done) return task;
+            if (task.recurrence === "daily") return { ...task, done: false };
+            return task.weeklyWeekday === todayWeekday ? { ...task, done: false } : task;
+          }),
+      );
       setTasksDate(today);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -236,26 +256,34 @@ export default function App() {
   // reload — guarded per-session so we don't loop — to make every useLocalStorage-backed
   // field (tasks, profile, onboarded, ...) pick up the newly synced values.
   useEffect(() => {
-    if (!authState || authState.isGuest || !authState.userId) return;
+    if (!authState || authState.isGuest || !authState.userId) {
+      setSyncingRemote(false);
+      return;
+    }
     const userId = authState.userId;
     let cancelled = false;
     (async () => {
       if (justConvertedRef.current) {
         justConvertedRef.current = false;
+        setSyncingRemote(false);
         await pushLocalToRemote(userId);
         return;
       }
       const syncedFlag = `steady-pulled-${userId}`;
-      if (sessionStorage.getItem(syncedFlag)) return;
+      if (sessionStorage.getItem(syncedFlag)) {
+        setSyncingRemote(false);
+        return;
+      }
       const pulled = await pullRemoteToLocal(userId);
       if (cancelled) return;
       sessionStorage.setItem(syncedFlag, "1");
       if (pulled) {
         window.location.reload();
-      } else {
-        // No remote row yet for this account — push current local state up.
-        await pushLocalToRemote(userId);
+        return; // stay in the syncing state — the reload takes over from here
       }
+      // No remote row yet for this account — push current local state up.
+      await pushLocalToRemote(userId);
+      if (!cancelled) setSyncingRemote(false);
     })();
     return () => {
       cancelled = true;
@@ -319,6 +347,9 @@ export default function App() {
         onAuth={(s, justSignedUp) => {
           setSettingsOpen(false);
           if (justSignedUp) justConvertedRef.current = true;
+          if (!s.isGuest && s.userId && !justSignedUp) {
+            setSyncingRemote(!sessionStorage.getItem(`steady-pulled-${s.userId}`));
+          }
           setAuthState(s);
           if (forceAuth) {
             setForceAuth(false);
@@ -326,6 +357,20 @@ export default function App() {
           }
         }}
       />
+    );
+  }
+
+  if (syncingRemote) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        className="min-h-screen flex flex-col items-center justify-center gap-3"
+        style={{ backgroundColor: "var(--background)" }}
+      >
+        <SteadyWordmark height={28} className="opacity-70" aria-hidden="true" />
+        <span className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>{t.overview.syncingData}</span>
+      </div>
     );
   }
 
@@ -493,6 +538,9 @@ export default function App() {
                       color: active ? "var(--primary)" : "var(--muted-foreground)",
                       fontFamily: "var(--app-font-heading, Nunito)",
                       whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: "100%",
                     }}
                   >
                     {tab.label}
@@ -601,7 +649,7 @@ export default function App() {
                         setActiveTab(tab.key);
                         setSettingsOpen(false);
                       }}
-                      className="flex-1 flex flex-col items-center gap-0.5 py-2 px-1 min-w-[44px]"
+                      className="flex-1 flex flex-col items-center gap-0.5 py-2 px-1 min-w-[44px] max-w-full"
                       aria-current={active ? "page" : undefined}
                     >
                       <Icon size={18} style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }} strokeWidth={active ? 2.5 : 1.8} />
@@ -613,6 +661,9 @@ export default function App() {
                           color: active ? "var(--primary)" : "var(--muted-foreground)",
                           fontFamily: "var(--app-font-heading, Nunito)",
                           whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxWidth: "100%",
                         }}
                       >
                         {tab.label}
@@ -691,6 +742,7 @@ export default function App() {
                               marginTop: 4,
                               whiteSpace: "nowrap",
                               overflow: "hidden",
+                              textOverflow: "ellipsis",
                               maxWidth: "100%",
                             }}
                           >

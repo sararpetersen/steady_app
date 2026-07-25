@@ -467,7 +467,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                           <button
                             key={size}
                             onClick={() => setFontSize(size)}
-                            className="flex-1 rounded-xl py-3 border-2"
+                            className="flex-1 min-w-0 rounded-xl py-3 px-1 border-2"
                             style={{
                               backgroundColor: fontSize === size ? "var(--green-bg)" : "var(--surface-1)",
                               borderColor: fontSize === size ? "var(--primary)" : "transparent",
@@ -475,6 +475,9 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                               fontWeight: 600,
                               fontSize: size === "normal" ? "13px" : size === "large" ? "15px" : "17px",
                               whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              display: "block",
                               transition: "all 0.15s",
                             }}
                           >

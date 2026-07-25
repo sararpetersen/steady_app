@@ -191,7 +191,7 @@ const en = {
     emailPlaceholder: "you@example.com",
     send: "Send",
     sending: "Sending…",
-    error: "Something went wrong – try again, or email sara.ringkow@gmail.com directly.",
+    error: "Something went wrong – try again, or email 'sara.ringkow@gmail.com' directly.",
     thanksTitle: "Thank you!",
     thanksBody: "Got it – really appreciate you taking the time.",
     close: "Close feedback form",
@@ -263,6 +263,7 @@ const en = {
     personalizeText: "Answer a couple of quick questions about what helps and what's tricky for you – totally optional.",
     personalizeButton: "Personalise my tips",
     personalizeDismiss: "Dismiss",
+    syncingData: "Loading your data…",
   },
 
   supportTips: {
@@ -315,6 +316,14 @@ const en = {
     allDone: "All done!",
     allDoneMessage: "Everything on your list is done – great work! 🎉",
     completedHeading: "Completed",
+    repeatNone: "Doesn't repeat",
+    repeatDaily: "Repeats daily",
+    repeatWeekly: "Repeats weekly",
+    repeatButtonLabel: "Repeat",
+    repeatDailyBadge: "Daily",
+    repeatWeeklyBadge: "Weekly",
+    weekdaysShort: ["S", "M", "T", "W", "T", "F", "S"],
+    weekdaysFull: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   },
 
   routines: {
@@ -859,6 +868,7 @@ const da: typeof en = {
     personalizeText: "Svar på et par hurtige spørgsmål om, hvad der hjælper, og hvad der kan være svært for dig – helt valgfrit.",
     personalizeButton: "Personalisér mine tips",
     personalizeDismiss: "Afvis",
+    syncingData: "Indlæser dine data…",
   },
 
   supportTips: {
@@ -911,6 +921,14 @@ const da: typeof en = {
     allDone: "Klaret!",
     allDoneMessage: "Alt på din liste er klaret – godt gået! 🎉",
     completedHeading: "Fuldført",
+    repeatNone: "Gentages ikke",
+    repeatDaily: "Gentages dagligt",
+    repeatWeekly: "Gentages ugentligt",
+    repeatButtonLabel: "Gentag",
+    repeatDailyBadge: "Dagligt",
+    repeatWeeklyBadge: "Ugentligt",
+    weekdaysShort: ["S", "M", "T", "O", "T", "F", "L"],
+    weekdaysFull: ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"],
   },
 
   routines: {

@@ -1,14 +1,25 @@
 import { useState } from "react";
 import { useLang } from "../i18n/LangContext";
+import { useToday } from "../hooks/useToday";
 import { Reorder } from "motion/react";
-import { Plus, X, CheckCircle2, Check, Pencil } from "lucide-react";
+import { Plus, X, CheckCircle2, Check, Pencil, Repeat } from "lucide-react";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
+
+export type TaskRecurrence = "daily" | "weekly";
 
 export interface Task {
   id: number;
   text: string;
   done: boolean;
+  // Absent = one-off task, cleared once completed (existing behavior). When set, the
+  // task is never removed at day rollover — it just resets to undone on its cadence
+  // instead (see App.tsx's rollover effect).
+  recurrence?: TaskRecurrence;
+  // Which weekday (0 = Sunday ... 6 = Saturday) a "weekly" task resets on — defaults to
+  // the day it was created, but can be moved to any other day (e.g. skip today, just
+  // reschedule instead of leaving it undone).
+  weeklyWeekday?: number;
 }
 
 interface Props {
@@ -29,9 +40,59 @@ export function TaskList({
   setNextId,
 }: Props) {
   const t = useLang();
+  const today = useToday();
+  const todayWeekday = new Date(`${today}T00:00:00`).getDay();
   const [newText, setNewText] = useState("");
+  const [newRecurrence, setNewRecurrence] = useState<TaskRecurrence | undefined>(undefined);
+  const [newWeekday, setNewWeekday] = useState(todayWeekday);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
+  const [editRecurrence, setEditRecurrence] = useState<TaskRecurrence | undefined>(undefined);
+  const [editWeekday, setEditWeekday] = useState(todayWeekday);
+
+  const cycleRecurrence = (current: TaskRecurrence | undefined): TaskRecurrence | undefined => {
+    if (current === undefined) return "daily";
+    if (current === "daily") return "weekly";
+    return undefined;
+  };
+
+  const recurrenceLabel = (recurrence: TaskRecurrence | undefined) => {
+    if (recurrence === "daily") return t.tasks.repeatDaily;
+    if (recurrence === "weekly") return t.tasks.repeatWeekly;
+    return t.tasks.repeatNone;
+  };
+
+  const recurrenceBadge = (recurrence: TaskRecurrence | undefined) => {
+    if (recurrence === "daily") return t.tasks.repeatDailyBadge;
+    if (recurrence === "weekly") return t.tasks.repeatWeeklyBadge;
+    return null;
+  };
+
+  const WeekdayPicker = ({ value, onChange }: { value: number; onChange: (day: number) => void }) => (
+    <div className="flex items-center gap-1 flex-wrap" role="group" aria-label={t.tasks.repeatWeekly}>
+      {t.tasks.weekdaysShort.map((label, day) => (
+        <button
+          key={day}
+          type="button"
+          onClick={() => onChange(day)}
+          aria-pressed={value === day}
+          aria-label={t.tasks.weekdaysFull[day]}
+          className="rounded-full flex items-center justify-center hover:opacity-85 flex-shrink-0"
+          style={{
+            width: 36,
+            height: 36,
+            fontSize: "0.75rem",
+            fontWeight: 700,
+            backgroundColor: value === day ? "var(--primary)" : "var(--surface-1)",
+            color: value === day ? "var(--primary-foreground)" : "var(--muted-foreground)",
+            transition: "all 0.15s",
+          }}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
 
   const toggle = (id: number) =>
     setTasks((prev) =>
@@ -46,12 +107,25 @@ export function TaskList({
   const startEditing = (task: Task) => {
     setEditingId(task.id);
     setEditText(task.text);
+    setEditRecurrence(task.recurrence);
+    setEditWeekday(task.weeklyWeekday ?? todayWeekday);
   };
 
   const saveEdit = (id: number) => {
     const text = editText.trim();
     if (!text) return;
-    setTasks((prev) => prev.map((task) => task.id === id ? { ...task, text } : task));
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              text,
+              recurrence: editRecurrence,
+              weeklyWeekday: editRecurrence === "weekly" ? editWeekday : undefined,
+            }
+          : task,
+      ),
+    );
     setEditingId(null);
   };
 
@@ -60,10 +134,18 @@ export function TaskList({
     if (!trimmed) return;
     setTasks((prev) => [
       ...prev,
-      { id: nextId, text: trimmed, done: false },
+      {
+        id: nextId,
+        text: trimmed,
+        done: false,
+        recurrence: newRecurrence,
+        weeklyWeekday: newRecurrence === "weekly" ? newWeekday : undefined,
+      },
     ]);
     setNextId((n) => n + 1);
     setNewText("");
+    setNewRecurrence(undefined);
+    setNewWeekday(todayWeekday);
   };
 
   const remaining = tasks.filter((task) => !task.done).length;
@@ -176,18 +258,47 @@ export function TaskList({
               </span>
             </button>
             {editingId === task.id ? (
-              <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
+              <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                <div className="flex items-center gap-1.5">
+                  <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
+                  <button
+                    onClick={() => setEditRecurrence((r) => cycleRecurrence(r))}
+                    className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
+                    style={{
+                      borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
+                      backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
+                      color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
+                      transition: "all 0.15s",
+                    }}
+                    aria-label={recurrenceLabel(editRecurrence)}
+                    title={recurrenceLabel(editRecurrence)}
+                  >
+                    <Repeat size={14} aria-hidden="true" />
+                  </button>
+                </div>
+                {editRecurrence === "weekly" && <WeekdayPicker value={editWeekday} onChange={setEditWeekday} />}
+              </div>
             ) : (
-              <span
-                className="flex-1 min-w-0"
-                style={{
-                  color: task.done ? "var(--green-text)" : "var(--foreground)",
-                  textDecoration: task.done ? "line-through" : "none",
-                  opacity: task.done ? 0.75 : 1,
-                  wordBreak: "break-word",
-                }}
-              >
-                {task.text}
+              <span className="flex-1 min-w-0 flex items-center gap-1.5" style={{ wordBreak: "break-word" }}>
+                <span
+                  style={{
+                    color: task.done ? "var(--green-text)" : "var(--foreground)",
+                    textDecoration: task.done ? "line-through" : "none",
+                    opacity: task.done ? 0.75 : 1,
+                  }}
+                >
+                  {task.text}
+                </span>
+                {task.recurrence && (
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 flex-shrink-0"
+                    style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
+                    title={recurrenceLabel(task.recurrence)}
+                  >
+                    <Repeat size={10} aria-hidden="true" />
+                    {recurrenceBadge(task.recurrence)}
+                  </span>
+                )}
               </span>
             )}
             <div className="flex items-center gap-1 flex-shrink-0 pr-1">
@@ -239,27 +350,51 @@ export function TaskList({
         </div>
       )}
 
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={newText}
-          onChange={(e) => setNewText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && add()}
-          placeholder={t.tasks.placeholder}
-          className="flex-1 min-w-0 rounded-xl px-4 py-3 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
-          style={{ transition: "border-color 0.15s" }}
-        />
-        <button
-          onClick={add}
-          className="rounded-xl px-4 py-3 bg-primary text-primary-foreground flex items-center gap-2 hover:opacity-90 flex-shrink-0"
-          style={{
-            fontWeight: 700,
-            transition: "opacity 0.15s",
-          }}
-        >
-          <Plus size={18} />
-          <span className="hidden sm:inline">{t.tasks.add}</span>
-        </button>
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newText}
+            onChange={(e) => setNewText(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && add()}
+            placeholder={t.tasks.placeholder}
+            className="flex-1 min-w-0 rounded-xl px-4 py-3 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+            style={{ transition: "border-color 0.15s" }}
+          />
+          <button
+            onClick={() => setNewRecurrence((r) => cycleRecurrence(r))}
+            className="rounded-xl px-3 py-3 border-2 flex items-center gap-1.5 hover:opacity-85 flex-shrink-0"
+            style={{
+              borderColor: newRecurrence ? "var(--primary)" : "var(--border)",
+              backgroundColor: newRecurrence ? "var(--green-bg)" : "transparent",
+              color: newRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
+              fontWeight: 700,
+              fontSize: "0.8rem",
+              transition: "all 0.15s",
+            }}
+            aria-label={recurrenceLabel(newRecurrence)}
+            title={recurrenceLabel(newRecurrence)}
+          >
+            <Repeat size={16} aria-hidden="true" />
+            {newRecurrence && <span className="hidden sm:inline">{recurrenceBadge(newRecurrence)}</span>}
+          </button>
+          <button
+            onClick={add}
+            className="rounded-xl px-4 py-3 bg-primary text-primary-foreground flex items-center gap-2 hover:opacity-90 flex-shrink-0"
+            style={{
+              fontWeight: 700,
+              transition: "opacity 0.15s",
+            }}
+          >
+            <Plus size={18} />
+            <span className="hidden sm:inline">{t.tasks.add}</span>
+          </button>
+        </div>
+        {newRecurrence === "weekly" && (
+          <div className="pl-1">
+            <WeekdayPicker value={newWeekday} onChange={setNewWeekday} />
+          </div>
+        )}
       </div>
     </div>
   );

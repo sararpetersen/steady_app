@@ -16,10 +16,10 @@ export interface Task {
   // task is never removed at day rollover — it just resets to undone on its cadence
   // instead (see App.tsx's rollover effect).
   recurrence?: TaskRecurrence;
-  // Which weekday (0 = Sunday ... 6 = Saturday) a "weekly" task resets on — defaults to
-  // the day it was created, but can be moved to any other day (e.g. skip today, just
-  // reschedule instead of leaving it undone).
-  weeklyWeekday?: number;
+  // Which weekday(s) (0 = Sunday ... 6 = Saturday) a "weekly" task resets on — defaults to
+  // the day it was created, but can include any combination (e.g. a task due Mon+Wed+Fri
+  // resets — and needs doing again — on each of those days).
+  weeklyWeekdays?: number[];
 }
 
 interface Props {
@@ -44,11 +44,18 @@ export function TaskList({
   const todayWeekday = new Date(`${today}T00:00:00`).getDay();
   const [newText, setNewText] = useState("");
   const [newRecurrence, setNewRecurrence] = useState<TaskRecurrence | undefined>(undefined);
-  const [newWeekday, setNewWeekday] = useState(todayWeekday);
+  const [newWeekdays, setNewWeekdays] = useState<number[]>([todayWeekday]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [editRecurrence, setEditRecurrence] = useState<TaskRecurrence | undefined>(undefined);
-  const [editWeekday, setEditWeekday] = useState(todayWeekday);
+  const [editWeekdays, setEditWeekdays] = useState<number[]>([todayWeekday]);
+
+  const toggleWeekday = (days: number[], day: number): number[] => {
+    const without = days.filter((d) => d !== day);
+    // Keep at least one day selected — an empty set would never reset.
+    if (without.length === days.length) return [...days, day].sort();
+    return without.length > 0 ? without : days;
+  };
 
   const cycleRecurrence = (current: TaskRecurrence | undefined): TaskRecurrence | undefined => {
     if (current === undefined) return "daily";
@@ -68,14 +75,14 @@ export function TaskList({
     return null;
   };
 
-  const WeekdayPicker = ({ value, onChange }: { value: number; onChange: (day: number) => void }) => (
+  const WeekdayPicker = ({ value, onChange }: { value: number[]; onChange: (days: number[]) => void }) => (
     <div className="flex items-center gap-1 flex-wrap" role="group" aria-label={t.tasks.repeatWeekly}>
       {t.tasks.weekdaysShort.map((label, day) => (
         <button
           key={day}
           type="button"
-          onClick={() => onChange(day)}
-          aria-pressed={value === day}
+          onClick={() => onChange(toggleWeekday(value, day))}
+          aria-pressed={value.includes(day)}
           aria-label={t.tasks.weekdaysFull[day]}
           className="rounded-full flex items-center justify-center hover:opacity-85 flex-shrink-0"
           style={{
@@ -83,8 +90,8 @@ export function TaskList({
             height: 36,
             fontSize: "0.75rem",
             fontWeight: 700,
-            backgroundColor: value === day ? "var(--primary)" : "var(--surface-1)",
-            color: value === day ? "var(--primary-foreground)" : "var(--muted-foreground)",
+            backgroundColor: value.includes(day) ? "var(--primary)" : "var(--surface-1)",
+            color: value.includes(day) ? "var(--primary-foreground)" : "var(--muted-foreground)",
             transition: "all 0.15s",
           }}
         >
@@ -108,7 +115,7 @@ export function TaskList({
     setEditingId(task.id);
     setEditText(task.text);
     setEditRecurrence(task.recurrence);
-    setEditWeekday(task.weeklyWeekday ?? todayWeekday);
+    setEditWeekdays(task.weeklyWeekdays && task.weeklyWeekdays.length > 0 ? task.weeklyWeekdays : [todayWeekday]);
   };
 
   const saveEdit = (id: number) => {
@@ -121,7 +128,7 @@ export function TaskList({
               ...task,
               text,
               recurrence: editRecurrence,
-              weeklyWeekday: editRecurrence === "weekly" ? editWeekday : undefined,
+              weeklyWeekdays: editRecurrence === "weekly" ? editWeekdays : undefined,
             }
           : task,
       ),
@@ -139,13 +146,13 @@ export function TaskList({
         text: trimmed,
         done: false,
         recurrence: newRecurrence,
-        weeklyWeekday: newRecurrence === "weekly" ? newWeekday : undefined,
+        weeklyWeekdays: newRecurrence === "weekly" ? newWeekdays : undefined,
       },
     ]);
     setNextId((n) => n + 1);
     setNewText("");
     setNewRecurrence(undefined);
-    setNewWeekday(todayWeekday);
+    setNewWeekdays([todayWeekday]);
   };
 
   const remaining = tasks.filter((task) => !task.done).length;
@@ -276,7 +283,7 @@ export function TaskList({
                     <Repeat size={14} aria-hidden="true" />
                   </button>
                 </div>
-                {editRecurrence === "weekly" && <WeekdayPicker value={editWeekday} onChange={setEditWeekday} />}
+                {editRecurrence === "weekly" && <WeekdayPicker value={editWeekdays} onChange={setEditWeekdays} />}
               </div>
             ) : (
               <span className="flex-1 min-w-0 flex items-center gap-1.5" style={{ wordBreak: "break-word" }}>
@@ -392,7 +399,7 @@ export function TaskList({
         </div>
         {newRecurrence === "weekly" && (
           <div className="pl-1">
-            <WeekdayPicker value={newWeekday} onChange={setNewWeekday} />
+            <WeekdayPicker value={newWeekdays} onChange={setNewWeekdays} />
           </div>
         )}
       </div>

@@ -84,8 +84,8 @@ export default function App() {
   // Completed one-off tasks clear at rollover so the list doesn't grow forever, but
   // unfinished ones carry over — nothing gets silently forgotten just because the day
   // changed before you got to it. Recurring tasks are never removed: "daily" ones reset
-  // to undone every rollover, "weekly" ones only reset on their chosen weekday (editable
-  // per-task, so a task doesn't have to be done on the exact day it happens to fall on).
+  // to undone every rollover, "weekly" ones only reset on their chosen weekday(s) — a
+  // task can recur on several days a week, not just one.
   useEffect(() => {
     if (tasksDate !== today) {
       const todayWeekday = new Date(`${today}T00:00:00`).getDay();
@@ -95,7 +95,7 @@ export default function App() {
           .map((task) => {
             if (!task.recurrence || !task.done) return task;
             if (task.recurrence === "daily") return { ...task, done: false };
-            return task.weeklyWeekday === todayWeekday ? { ...task, done: false } : task;
+            return task.weeklyWeekdays?.includes(todayWeekday) ? { ...task, done: false } : task;
           }),
       );
       setTasksDate(today);

@@ -333,6 +333,12 @@ const en = {
     dayOfMonthLabel: (day: number) => `Day ${day}`,
     repeatModalTitle: "Repeat",
     repeatModalDone: "Done",
+    repeatEveryLabel: "Every",
+    weekSingular: "week",
+    weeksPlural: "weeks",
+    everyNWeeks: (n: number) => `every ${n} weeks`,
+    decreaseInterval: "Repeat less often",
+    increaseInterval: "Repeat more often",
   },
 
   routines: {
@@ -947,6 +953,12 @@ const da: typeof en = {
     dayOfMonthLabel: (day: number) => `Dag ${day}`,
     repeatModalTitle: "Gentag",
     repeatModalDone: "Færdig",
+    repeatEveryLabel: "Hver",
+    weekSingular: "uge",
+    weeksPlural: "uger",
+    everyNWeeks: (n: number) => `hver ${n}. uge`,
+    decreaseInterval: "Gentag sjældnere",
+    increaseInterval: "Gentag oftere",
   },
 
   routines: {

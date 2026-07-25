@@ -3,7 +3,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { Reorder } from "motion/react";
-import { Plus, X, Check } from "lucide-react";
+import { Plus, X, Check, Pencil } from "lucide-react";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 
@@ -150,12 +150,16 @@ export function ImportantDates() {
           const status = getDateStatus(entry, today);
           return (
             <ReorderRow key={entry.id} value={entry} dragDisabled={editingId === entry.id}>
-              <div className="relative flex-1 min-w-0">
+              <div className="flex-1 min-w-0">
                 {editingId === entry.id ? (
-                  <div className="flex flex-col gap-2 p-3 pr-20 rounded-xl border-2 border-primary bg-input-background">
+                  <div className="flex flex-col gap-2 p-3 rounded-xl border-2 border-primary bg-input-background">
                     <div className="flex items-center gap-2">
-                      <input aria-label={d.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
+                      <input aria-label={d.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 flex-shrink-0 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
                       <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(entry.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
+                      <div className="flex items-center gap-0.5 flex-shrink-0">
+                        <IconButton size="pill" tone="primary" onClick={() => saveEdit(entry.id)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${d.saveEdit}: ${entry.name}`}><Check size={15} /></IconButton>
+                        <IconButton tone="destructive" onClick={() => deleteDate(entry.id)} aria-label={`${d.deleteDate}: ${entry.name}`}><X size={15} /></IconButton>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <input
@@ -182,7 +186,7 @@ export function ImportantDates() {
                   </div>
                 ) : (
                   <div
-                    className="w-full flex items-center gap-3 p-3 pr-24 rounded-xl"
+                    className="w-full flex items-center gap-2 p-3 rounded-xl flex-wrap sm:flex-nowrap"
                     style={{ backgroundColor: "var(--surface-1)" }}
                   >
                     <span style={{ fontSize: "1.7rem", flexShrink: 0 }}>{entry.emoji}</span>
@@ -195,13 +199,15 @@ export function ImportantDates() {
                     >
                       {formatStatus(status, d)}
                     </span>
+                    <div className="flex items-center gap-0.5 flex-shrink-0">
+                      <IconButton size="pill" tone="primary" onClick={() => startEditing(entry)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${d.edit}: ${entry.name}`}>
+                        <Pencil size={14} className="sm:hidden" />
+                        <span className="hidden sm:inline">{d.editLabel}</span>
+                      </IconButton>
+                      <IconButton tone="destructive" onClick={() => deleteDate(entry.id)} aria-label={`${d.deleteDate}: ${entry.name}`}><X size={15} /></IconButton>
+                    </div>
                   </div>
                 )}
-
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-                  <IconButton size="pill" tone="primary" onClick={() => editingId === entry.id ? saveEdit(entry.id) : startEditing(entry)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === entry.id ? d.saveEdit : d.edit}: ${entry.name}`}>{editingId === entry.id ? <Check size={15} /> : d.editLabel}</IconButton>
-                  <IconButton tone="destructive" onClick={() => deleteDate(entry.id)} aria-label={`${d.deleteDate}: ${entry.name}`}><X size={15} /></IconButton>
-                </div>
               </div>
             </ReorderRow>
           );

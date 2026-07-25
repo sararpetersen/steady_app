@@ -324,6 +324,10 @@ const en = {
     repeatWeeklyBadge: "Weekly",
     weekdaysShort: ["S", "M", "T", "W", "T", "F", "S"],
     weekdaysFull: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    weekdaysAbbr: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    noneToday: "Nothing due today.",
+    otherRecurringHeading: "Other recurring tasks",
+    otherRecurringDue: "Due",
   },
 
   routines: {
@@ -929,6 +933,10 @@ const da: typeof en = {
     repeatWeeklyBadge: "Ugentligt",
     weekdaysShort: ["S", "M", "T", "O", "T", "F", "L"],
     weekdaysFull: ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"],
+    weekdaysAbbr: ["Søn", "Man", "Tir", "Ons", "Tor", "Fre", "Lør"],
+    noneToday: "Intet på programmet i dag.",
+    otherRecurringHeading: "Andre gentagne opgaver",
+    otherRecurringDue: "Sker",
   },
 
   routines: {

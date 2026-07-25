@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MoodCheck } from "./components/MoodCheck";
-import { TaskList, type Task } from "./components/TaskList";
+import { TaskList, type Task, isTaskScheduledToday } from "./components/TaskList";
 import { Routines } from "./components/Routines";
 import { HabitTracker, type Habit } from "./components/HabitTracker";
 import { DailyNote } from "./components/DailyNote";
@@ -392,7 +392,8 @@ export default function App() {
     );
   }
 
-  const tasksLeft = tasks.filter((t) => !t.done).length;
+  const todayWeekdayNum = new Date(`${today}T00:00:00`).getDay();
+  const tasksLeft = tasks.filter((task) => isTaskScheduledToday(task, todayWeekdayNum) && !task.done).length;
 
   const growthStageKey = getTodaysGrowthStageKey(habitsDone, habitsTotal);
 

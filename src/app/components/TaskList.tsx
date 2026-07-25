@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useLang } from "../i18n/LangContext";
 import { useToday } from "../hooks/useToday";
 import { Reorder } from "motion/react";
-import { Plus, X, CheckCircle2, Check, Pencil, Repeat } from "lucide-react";
+import { Plus, X, CheckCircle2, Check, Pencil, Repeat, ChevronDown, ChevronUp } from "lucide-react";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
+import { AnimatedCollapse } from "./AnimatedCollapse";
 
 export type TaskRecurrence = "daily" | "weekly";
 
@@ -20,6 +21,14 @@ export interface Task {
   // the day it was created, but can include any combination (e.g. a task due Mon+Wed+Fri
   // resets — and needs doing again — on each of those days).
   weeklyWeekdays?: number[];
+}
+
+// A one-off or "daily" task is always today's business. A "weekly" task only is on the
+// day(s) it's scheduled for — otherwise it'd sit in the list looking like it's due today
+// when it's really due, say, tomorrow.
+export function isTaskScheduledToday(task: Task, todayWeekday: number): boolean {
+  if (!task.recurrence || task.recurrence === "daily") return true;
+  return task.weeklyWeekdays?.includes(todayWeekday) ?? false;
 }
 
 interface Props {
@@ -49,6 +58,7 @@ export function TaskList({
   const [editText, setEditText] = useState("");
   const [editRecurrence, setEditRecurrence] = useState<TaskRecurrence | undefined>(undefined);
   const [editWeekdays, setEditWeekdays] = useState<number[]>([todayWeekday]);
+  const [otherOpen, setOtherOpen] = useState(false);
 
   const toggleWeekday = (days: number[], day: number): number[] => {
     const without = days.filter((d) => d !== day);
@@ -155,18 +165,26 @@ export function TaskList({
     setNewWeekdays([todayWeekday]);
   };
 
-  const remaining = tasks.filter((task) => !task.done).length;
+  // Split off weekly tasks that aren't scheduled for today — they stay in storage (and
+  // stay editable/deletable below) but don't clutter today's list looking like they're due.
+  const todayTasks = tasks.filter((task) => isTaskScheduledToday(task, todayWeekday));
+  const otherRecurringTasks = tasks.filter((task) => !isTaskScheduledToday(task, todayWeekday));
+
+  const remaining = todayTasks.filter((task) => !task.done).length;
 
   // Completed tasks sink to the bottom instead of staying scattered wherever
   // they were checked off — sort is stable, so drag order within each group holds.
-  const sortedTasks = [...tasks].sort((a, b) => Number(a.done) - Number(b.done));
+  const sortedTasks = [...todayTasks].sort((a, b) => Number(a.done) - Number(b.done));
   const firstCompletedIndex = sortedTasks.findIndex((task) => task.done);
+
+  const weekdaysBadge = (days: number[] | undefined) =>
+    (days ?? []).map((d) => t.tasks.weekdaysAbbr[d]).join(", ");
 
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-foreground">{t.tasks.heading}</h3>
-        {tasks.length > 0 && (
+        {todayTasks.length > 0 && (
           remaining === 0 ? (
             <span
               className="rounded-full px-3 py-1 flex items-center gap-1.5"
@@ -199,6 +217,10 @@ export function TaskList({
             <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{t.tasks.emptySubtitle}</p>
           </div>
         </div>
+      )}
+
+      {tasks.length > 0 && todayTasks.length === 0 && (
+        <p className="text-muted-foreground text-center py-4" style={{ fontSize: "0.88rem" }}>{t.tasks.noneToday}</p>
       )}
 
       <Reorder.Group axis="y" values={sortedTasks} onReorder={setTasks} className="space-y-2 mb-4">
@@ -333,7 +355,7 @@ export function TaskList({
         ))}
       </Reorder.Group>
 
-      {tasks.length > 0 && remaining === 0 && (
+      {todayTasks.length > 0 && remaining === 0 && (
         <div
           className="rounded-xl px-4 py-3 flex items-center gap-3 mb-4"
           style={{ backgroundColor: "var(--orange-bg)" }}
@@ -354,6 +376,76 @@ export function TaskList({
           >
             {t.tasks.allDoneMessage}
           </p>
+        </div>
+      )}
+
+      {otherRecurringTasks.length > 0 && (
+        <div className="rounded-xl border border-border overflow-hidden mb-4">
+          <button
+            onClick={() => setOtherOpen((o) => !o)}
+            className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-muted text-left"
+            style={{ transition: "background-color 0.15s" }}
+          >
+            <span className="text-muted-foreground" style={{ fontSize: "0.82rem", fontWeight: 700 }}>
+              {t.tasks.otherRecurringHeading} ({otherRecurringTasks.length})
+            </span>
+            {otherOpen ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
+          </button>
+          <AnimatedCollapse open={otherOpen}>
+            <div className="px-3 pb-3 space-y-1.5">
+              {otherRecurringTasks.map((task) => (
+                <div key={task.id} className="flex items-center gap-2 rounded-lg px-2 py-2" style={{ backgroundColor: "var(--surface-1)" }}>
+                  {editingId === task.id ? (
+                    <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
+                        <button
+                          onClick={() => setEditRecurrence((r) => cycleRecurrence(r))}
+                          className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
+                          style={{
+                            borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
+                            backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
+                            color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
+                            transition: "all 0.15s",
+                          }}
+                          aria-label={recurrenceLabel(editRecurrence)}
+                          title={recurrenceLabel(editRecurrence)}
+                        >
+                          <Repeat size={14} aria-hidden="true" />
+                        </button>
+                      </div>
+                      {editRecurrence === "weekly" && <WeekdayPicker value={editWeekdays} onChange={setEditWeekdays} />}
+                    </div>
+                  ) : (
+                    <span className="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap" style={{ wordBreak: "break-word" }}>
+                      <span className="text-foreground" style={{ opacity: 0.85 }}>{task.text}</span>
+                      <span
+                        className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 flex-shrink-0"
+                        style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
+                      >
+                        {t.tasks.otherRecurringDue} {weekdaysBadge(task.weeklyWeekdays)}
+                      </span>
+                    </span>
+                  )}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
+                      {editingId === task.id ? (
+                        <Check size={16} />
+                      ) : (
+                        <>
+                          <Pencil size={14} className="sm:hidden" />
+                          <span className="hidden sm:inline">{t.tasks.editLabel}</span>
+                        </>
+                      )}
+                    </IconButton>
+                    <IconButton size="md" tone="destructive" onClick={() => remove(task.id)} aria-label={`${t.tasks.remove}: ${task.text}`}>
+                      <X size={16} />
+                    </IconButton>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </AnimatedCollapse>
         </div>
       )}
 

@@ -326,7 +326,7 @@ const en = {
     weekdaysFull: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     weekdaysAbbr: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     noneToday: "Nothing due today.",
-    otherRecurringHeading: "Other recurring tasks",
+    otherRecurringHeading: "Recurring tasks",
     otherRecurringDue: "Due",
   },
 
@@ -935,7 +935,7 @@ const da: typeof en = {
     weekdaysFull: ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"],
     weekdaysAbbr: ["Søn", "Man", "Tir", "Ons", "Tor", "Fre", "Lør"],
     noneToday: "Intet på programmet i dag.",
-    otherRecurringHeading: "Andre gentagne opgaver",
+    otherRecurringHeading: "Gentagne opgaver",
     otherRecurringDue: "Sker",
   },
 

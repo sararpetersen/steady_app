@@ -84,18 +84,23 @@ export default function App() {
   // Completed one-off tasks clear at rollover so the list doesn't grow forever, but
   // unfinished ones carry over — nothing gets silently forgotten just because the day
   // changed before you got to it. Recurring tasks are never removed: "daily" ones reset
-  // to undone every rollover, "weekly" ones only reset on their chosen weekday(s) — a
-  // task can recur on several days a week, not just one.
+  // to undone every rollover, "weekly" ones only reset on their chosen weekday(s), and
+  // "monthly" ones only reset on their chosen day(s)-of-month.
   useEffect(() => {
     if (tasksDate !== today) {
-      const todayWeekday = new Date(`${today}T00:00:00`).getDay();
+      const todayDate = new Date(`${today}T00:00:00`);
+      const todayWeekday = todayDate.getDay();
+      const todayDayOfMonth = todayDate.getDate();
       setTasks((prev) =>
         prev
           .filter((task) => !task.done || task.recurrence)
           .map((task) => {
             if (!task.recurrence || !task.done) return task;
             if (task.recurrence === "daily") return { ...task, done: false };
-            return task.weeklyWeekdays?.includes(todayWeekday) ? { ...task, done: false } : task;
+            if (task.recurrence === "weekly") {
+              return task.weeklyWeekdays?.includes(todayWeekday) ? { ...task, done: false } : task;
+            }
+            return task.monthlyDays?.includes(todayDayOfMonth) ? { ...task, done: false } : task;
           }),
       );
       setTasksDate(today);
@@ -392,8 +397,8 @@ export default function App() {
     );
   }
 
-  const todayWeekdayNum = new Date(`${today}T00:00:00`).getDay();
-  const tasksLeft = tasks.filter((task) => isTaskScheduledToday(task, todayWeekdayNum) && !task.done).length;
+  const todayForTasks = new Date(`${today}T00:00:00`);
+  const tasksLeft = tasks.filter((task) => isTaskScheduledToday(task, todayForTasks.getDay(), todayForTasks.getDate()) && !task.done).length;
 
   const growthStageKey = getTodaysGrowthStageKey(habitsDone, habitsTotal);
 

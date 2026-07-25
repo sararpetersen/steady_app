@@ -7,7 +7,7 @@ import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 import { AnimatedCollapse } from "./AnimatedCollapse";
 
-export type TaskRecurrence = "daily" | "weekly";
+export type TaskRecurrence = "daily" | "weekly" | "monthly";
 
 export interface Task {
   id: number;
@@ -21,14 +21,19 @@ export interface Task {
   // the day it was created, but can include any combination (e.g. a task due Mon+Wed+Fri
   // resets — and needs doing again — on each of those days).
   weeklyWeekdays?: number[];
+  // Which day(s)-of-month (1-31) a "monthly" task resets on — e.g. rent on the 1st,
+  // a bill on the 15th. A day that doesn't exist in a given month (31 in April) just
+  // doesn't fire that month rather than shifting to another date.
+  monthlyDays?: number[];
 }
 
-// A one-off or "daily" task is always today's business. A "weekly" task only is on the
-// day(s) it's scheduled for — otherwise it'd sit in the list looking like it's due today
-// when it's really due, say, tomorrow.
-export function isTaskScheduledToday(task: Task, todayWeekday: number): boolean {
+// A one-off or "daily" task is always today's business. A "weekly"/"monthly" task only is
+// on the day(s) it's scheduled for — otherwise it'd sit in the list looking like it's due
+// today when it's really due some other day/date.
+export function isTaskScheduledToday(task: Task, todayWeekday: number, todayDayOfMonth: number): boolean {
   if (!task.recurrence || task.recurrence === "daily") return true;
-  return task.weeklyWeekdays?.includes(todayWeekday) ?? false;
+  if (task.recurrence === "weekly") return task.weeklyWeekdays?.includes(todayWeekday) ?? false;
+  return task.monthlyDays?.includes(todayDayOfMonth) ?? false;
 }
 
 interface Props {
@@ -50,38 +55,45 @@ export function TaskList({
 }: Props) {
   const t = useLang();
   const today = useToday();
-  const todayWeekday = new Date(`${today}T00:00:00`).getDay();
+  const todayDate = new Date(`${today}T00:00:00`);
+  const todayWeekday = todayDate.getDay();
+  const todayDayOfMonth = todayDate.getDate();
   const [newText, setNewText] = useState("");
   const [newRecurrence, setNewRecurrence] = useState<TaskRecurrence | undefined>(undefined);
   const [newWeekdays, setNewWeekdays] = useState<number[]>([todayWeekday]);
+  const [newMonthlyDays, setNewMonthlyDays] = useState<number[]>([todayDayOfMonth]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [editRecurrence, setEditRecurrence] = useState<TaskRecurrence | undefined>(undefined);
   const [editWeekdays, setEditWeekdays] = useState<number[]>([todayWeekday]);
+  const [editMonthlyDays, setEditMonthlyDays] = useState<number[]>([todayDayOfMonth]);
   const [otherOpen, setOtherOpen] = useState(false);
 
-  const toggleWeekday = (days: number[], day: number): number[] => {
+  const toggleDay = (days: number[], day: number): number[] => {
     const without = days.filter((d) => d !== day);
     // Keep at least one day selected — an empty set would never reset.
-    if (without.length === days.length) return [...days, day].sort();
+    if (without.length === days.length) return [...days, day].sort((a, b) => a - b);
     return without.length > 0 ? without : days;
   };
 
   const cycleRecurrence = (current: TaskRecurrence | undefined): TaskRecurrence | undefined => {
     if (current === undefined) return "daily";
     if (current === "daily") return "weekly";
+    if (current === "weekly") return "monthly";
     return undefined;
   };
 
   const recurrenceLabel = (recurrence: TaskRecurrence | undefined) => {
     if (recurrence === "daily") return t.tasks.repeatDaily;
     if (recurrence === "weekly") return t.tasks.repeatWeekly;
+    if (recurrence === "monthly") return t.tasks.repeatMonthly;
     return t.tasks.repeatNone;
   };
 
   const recurrenceBadge = (recurrence: TaskRecurrence | undefined) => {
     if (recurrence === "daily") return t.tasks.repeatDailyBadge;
     if (recurrence === "weekly") return t.tasks.repeatWeeklyBadge;
+    if (recurrence === "monthly") return t.tasks.repeatMonthlyBadge;
     return null;
   };
 
@@ -91,7 +103,7 @@ export function TaskList({
         <button
           key={day}
           type="button"
-          onClick={() => onChange(toggleWeekday(value, day))}
+          onClick={() => onChange(toggleDay(value, day))}
           aria-pressed={value.includes(day)}
           aria-label={t.tasks.weekdaysFull[day]}
           className="rounded-full flex items-center justify-center hover:opacity-85 flex-shrink-0"
@@ -106,6 +118,37 @@ export function TaskList({
           }}
         >
           {label}
+        </button>
+      ))}
+    </div>
+  );
+
+  const MonthDayPicker = ({ value, onChange }: { value: number[]; onChange: (days: number[]) => void }) => (
+    <div
+      className="grid gap-1"
+      style={{ gridTemplateColumns: "repeat(7, minmax(0, 1fr))", maxWidth: 280 }}
+      role="group"
+      aria-label={t.tasks.repeatMonthly}
+    >
+      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+        <button
+          key={day}
+          type="button"
+          onClick={() => onChange(toggleDay(value, day))}
+          aria-pressed={value.includes(day)}
+          aria-label={t.tasks.dayOfMonthLabel(day)}
+          className="rounded-lg flex items-center justify-center hover:opacity-85"
+          style={{
+            width: 32,
+            height: 32,
+            fontSize: "0.7rem",
+            fontWeight: 700,
+            backgroundColor: value.includes(day) ? "var(--primary)" : "var(--surface-1)",
+            color: value.includes(day) ? "var(--primary-foreground)" : "var(--muted-foreground)",
+            transition: "all 0.15s",
+          }}
+        >
+          {day}
         </button>
       ))}
     </div>
@@ -126,6 +169,7 @@ export function TaskList({
     setEditText(task.text);
     setEditRecurrence(task.recurrence);
     setEditWeekdays(task.weeklyWeekdays && task.weeklyWeekdays.length > 0 ? task.weeklyWeekdays : [todayWeekday]);
+    setEditMonthlyDays(task.monthlyDays && task.monthlyDays.length > 0 ? task.monthlyDays : [todayDayOfMonth]);
   };
 
   const saveEdit = (id: number) => {
@@ -139,6 +183,7 @@ export function TaskList({
               text,
               recurrence: editRecurrence,
               weeklyWeekdays: editRecurrence === "weekly" ? editWeekdays : undefined,
+              monthlyDays: editRecurrence === "monthly" ? editMonthlyDays : undefined,
             }
           : task,
       ),
@@ -157,18 +202,20 @@ export function TaskList({
         done: false,
         recurrence: newRecurrence,
         weeklyWeekdays: newRecurrence === "weekly" ? newWeekdays : undefined,
+        monthlyDays: newRecurrence === "monthly" ? newMonthlyDays : undefined,
       },
     ]);
     setNextId((n) => n + 1);
     setNewText("");
     setNewRecurrence(undefined);
     setNewWeekdays([todayWeekday]);
+    setNewMonthlyDays([todayDayOfMonth]);
   };
 
-  // Split off weekly tasks that aren't scheduled for today — they stay in storage (and
-  // stay editable/deletable below) but don't clutter today's list looking like they're due.
-  const todayTasks = tasks.filter((task) => isTaskScheduledToday(task, todayWeekday));
-  const otherRecurringTasks = tasks.filter((task) => !isTaskScheduledToday(task, todayWeekday));
+  // Split off weekly/monthly tasks that aren't scheduled for today — they stay in storage
+  // (and stay editable/deletable below) but don't clutter today's list looking like they're due.
+  const todayTasks = tasks.filter((task) => isTaskScheduledToday(task, todayWeekday, todayDayOfMonth));
+  const otherRecurringTasks = tasks.filter((task) => !isTaskScheduledToday(task, todayWeekday, todayDayOfMonth));
 
   const remaining = todayTasks.filter((task) => !task.done).length;
 
@@ -179,6 +226,9 @@ export function TaskList({
 
   const weekdaysBadge = (days: number[] | undefined) =>
     (days ?? []).map((d) => t.tasks.weekdaysAbbr[d]).join(", ");
+
+  const dueBadge = (task: Task) =>
+    task.recurrence === "monthly" ? (task.monthlyDays ?? []).join(", ") : weekdaysBadge(task.weeklyWeekdays);
 
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
@@ -306,6 +356,7 @@ export function TaskList({
                   </button>
                 </div>
                 {editRecurrence === "weekly" && <WeekdayPicker value={editWeekdays} onChange={setEditWeekdays} />}
+                {editRecurrence === "monthly" && <MonthDayPicker value={editMonthlyDays} onChange={setEditMonthlyDays} />}
               </div>
             ) : (
               <span className="flex-1 min-w-0 flex items-center gap-1.5" style={{ wordBreak: "break-word" }}>
@@ -415,6 +466,7 @@ export function TaskList({
                         </button>
                       </div>
                       {editRecurrence === "weekly" && <WeekdayPicker value={editWeekdays} onChange={setEditWeekdays} />}
+                      {editRecurrence === "monthly" && <MonthDayPicker value={editMonthlyDays} onChange={setEditMonthlyDays} />}
                     </div>
                   ) : (
                     <span className="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap" style={{ wordBreak: "break-word" }}>
@@ -423,7 +475,7 @@ export function TaskList({
                         className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 flex-shrink-0"
                         style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
                       >
-                        {t.tasks.otherRecurringDue} {weekdaysBadge(task.weeklyWeekdays)}
+                        {t.tasks.otherRecurringDue} {dueBadge(task)}
                       </span>
                     </span>
                   )}
@@ -492,6 +544,11 @@ export function TaskList({
         {newRecurrence === "weekly" && (
           <div className="pl-1">
             <WeekdayPicker value={newWeekdays} onChange={setNewWeekdays} />
+          </div>
+        )}
+        {newRecurrence === "monthly" && (
+          <div className="pl-1">
+            <MonthDayPicker value={newMonthlyDays} onChange={setNewMonthlyDays} />
           </div>
         )}
       </div>

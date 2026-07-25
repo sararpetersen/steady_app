@@ -454,8 +454,9 @@ export function TaskList({
                 </button>
               </div>
             ) : (
-              <span className="flex-1 min-w-0 flex items-center gap-1.5" style={{ wordBreak: "break-word" }}>
+              <span className="flex-1 min-w-0 flex items-center gap-1.5">
                 <span
+                  className="flex-1 min-w-0 truncate"
                   style={{
                     color: task.done ? "var(--green-text)" : "var(--foreground)",
                     textDecoration: task.done ? "line-through" : "none",
@@ -560,8 +561,8 @@ export function TaskList({
                       </button>
                     </div>
                   ) : (
-                    <span className="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap" style={{ wordBreak: "break-word" }}>
-                      <span className="text-foreground" style={{ opacity: 0.85 }}>{task.text}</span>
+                    <span className="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
+                      <span className="flex-1 min-w-0 truncate text-foreground" style={{ opacity: 0.85 }}>{task.text}</span>
                       <span
                         className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 flex-shrink-0"
                         style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}

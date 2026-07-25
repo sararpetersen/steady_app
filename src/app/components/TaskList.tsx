@@ -21,6 +21,10 @@ export interface Task {
   // the day it was created, but can include any combination (e.g. a task due Mon+Wed+Fri
   // resets — and needs doing again — on each of those days).
   weeklyWeekdays?: number[];
+  // The first date on which a recurring task may be due. For weekly tasks this is also
+  // the cadence anchor, so "every 5 weeks starting 24 August" stays on that sequence.
+  // Older saved tasks omit this and retain their original scheduling behaviour.
+  recurrenceStartDate?: string;
   // How many weeks between occurrences — 1 (or absent) = every week, 2 = every other
   // week, etc. Measured from weeklyAnchorDate so editing other fields later doesn't
   // shift the cadence.
@@ -49,17 +53,32 @@ function weeksBetween(fromStr: string, toStr: string): number {
 // on the day(s) it's scheduled for — otherwise it'd sit in the list looking like it's due
 // today when it's really due some other day/date.
 export function isTaskScheduledToday(task: Task, todayStr: string): boolean {
-  if (!task.recurrence || task.recurrence === "daily") return true;
+  if (!task.recurrence) return true;
+  if (task.recurrenceStartDate && todayStr < task.recurrenceStartDate) return false;
+  if (task.recurrence === "daily") return true;
   const today = new Date(`${todayStr}T00:00:00`);
   if (task.recurrence === "weekly") {
     if (!task.weeklyWeekdays?.includes(today.getDay())) return false;
     const interval = task.weeklyIntervalWeeks ?? 1;
     if (interval <= 1) return true;
-    const anchor = task.weeklyAnchorDate ?? todayStr;
+    const anchor = task.recurrenceStartDate ?? task.weeklyAnchorDate ?? todayStr;
     const diff = weeksBetween(anchor, todayStr);
     return ((diff % interval) + interval) % interval === 0;
   }
   return task.monthlyDays?.includes(today.getDate()) ?? false;
+}
+
+function nextScheduledDate(task: Task, fromDate: string): string | null {
+  if (!task.recurrence) return null;
+  const cursor = new Date(`${fromDate}T00:00:00`);
+  // Five years covers even the sparsest supported combination (31st + long intervals)
+  // without risking an unbounded loop if saved data is malformed.
+  for (let i = 0; i < 366 * 5; i += 1) {
+    const key = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}-${String(cursor.getDate()).padStart(2, "0")}`;
+    if (isTaskScheduledToday(task, key)) return key;
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return null;
 }
 
 interface Props {
@@ -89,13 +108,14 @@ export function TaskList({
   const [newWeekdays, setNewWeekdays] = useState<number[]>([todayWeekday]);
   const [newWeeklyInterval, setNewWeeklyInterval] = useState(1);
   const [newMonthlyDays, setNewMonthlyDays] = useState<number[]>([todayDayOfMonth]);
+  const [newStartDate, setNewStartDate] = useState(today);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [editRecurrence, setEditRecurrence] = useState<TaskRecurrence | undefined>(undefined);
   const [editWeekdays, setEditWeekdays] = useState<number[]>([todayWeekday]);
   const [editWeeklyInterval, setEditWeeklyInterval] = useState(1);
-  const [editWeeklyAnchor, setEditWeeklyAnchor] = useState(today);
   const [editMonthlyDays, setEditMonthlyDays] = useState<number[]>([todayDayOfMonth]);
+  const [editStartDate, setEditStartDate] = useState(today);
   const [otherOpen, setOtherOpen] = useState(false);
   // The weekday/day-of-month picker used to expand inline inside the row it belonged to,
   // which fought with the row's own flex layout (drag handle, checkbox, edit/delete
@@ -111,6 +131,8 @@ export function TaskList({
   const setModalWeeklyInterval = recurrenceModalOpen === "new" ? setNewWeeklyInterval : setEditWeeklyInterval;
   const modalMonthlyDays = recurrenceModalOpen === "new" ? newMonthlyDays : editMonthlyDays;
   const setModalMonthlyDays = recurrenceModalOpen === "new" ? setNewMonthlyDays : setEditMonthlyDays;
+  const modalStartDate = recurrenceModalOpen === "new" ? newStartDate : editStartDate;
+  const setModalStartDate = recurrenceModalOpen === "new" ? setNewStartDate : setEditStartDate;
 
   const toggleDay = (days: number[], day: number): number[] => {
     const without = days.filter((d) => d !== day);
@@ -206,8 +228,8 @@ export function TaskList({
     setEditRecurrence(task.recurrence);
     setEditWeekdays(task.weeklyWeekdays && task.weeklyWeekdays.length > 0 ? task.weeklyWeekdays : [todayWeekday]);
     setEditWeeklyInterval(task.weeklyIntervalWeeks ?? 1);
-    setEditWeeklyAnchor(task.weeklyAnchorDate ?? today);
     setEditMonthlyDays(task.monthlyDays && task.monthlyDays.length > 0 ? task.monthlyDays : [todayDayOfMonth]);
+    setEditStartDate(task.recurrenceStartDate ?? task.weeklyAnchorDate ?? today);
   };
 
   const saveEdit = (id: number) => {
@@ -220,9 +242,10 @@ export function TaskList({
               ...task,
               text,
               recurrence: editRecurrence,
+              recurrenceStartDate: editRecurrence ? editStartDate : undefined,
               weeklyWeekdays: editRecurrence === "weekly" ? editWeekdays : undefined,
               weeklyIntervalWeeks: editRecurrence === "weekly" ? editWeeklyInterval : undefined,
-              weeklyAnchorDate: editRecurrence === "weekly" ? editWeeklyAnchor : undefined,
+              weeklyAnchorDate: editRecurrence === "weekly" ? editStartDate : undefined,
               monthlyDays: editRecurrence === "monthly" ? editMonthlyDays : undefined,
             }
           : task,
@@ -241,9 +264,10 @@ export function TaskList({
         text: trimmed,
         done: false,
         recurrence: newRecurrence,
+        recurrenceStartDate: newRecurrence ? newStartDate : undefined,
         weeklyWeekdays: newRecurrence === "weekly" ? newWeekdays : undefined,
         weeklyIntervalWeeks: newRecurrence === "weekly" ? newWeeklyInterval : undefined,
-        weeklyAnchorDate: newRecurrence === "weekly" ? today : undefined,
+        weeklyAnchorDate: newRecurrence === "weekly" ? newStartDate : undefined,
         monthlyDays: newRecurrence === "monthly" ? newMonthlyDays : undefined,
       },
     ]);
@@ -253,7 +277,24 @@ export function TaskList({
     setNewWeekdays([todayWeekday]);
     setNewWeeklyInterval(1);
     setNewMonthlyDays([todayDayOfMonth]);
+    setNewStartDate(today);
   };
+
+  const modalTask: Task = {
+    id: -1,
+    text: "",
+    done: false,
+    recurrence: modalRecurrence,
+    recurrenceStartDate: modalRecurrence ? modalStartDate : undefined,
+    weeklyWeekdays: modalRecurrence === "weekly" ? modalWeekdays : undefined,
+    weeklyIntervalWeeks: modalRecurrence === "weekly" ? modalWeeklyInterval : undefined,
+    weeklyAnchorDate: modalRecurrence === "weekly" ? modalStartDate : undefined,
+    monthlyDays: modalRecurrence === "monthly" ? modalMonthlyDays : undefined,
+  };
+  const modalNextDate = nextScheduledDate(modalTask, today);
+  const formatDueDate = (date: string) =>
+    new Intl.DateTimeFormat(undefined, { day: "numeric", month: "long", year: "numeric" })
+      .format(new Date(`${date}T00:00:00`));
 
   // Split off weekly/monthly tasks that aren't scheduled for today — they stay in storage
   // (and stay editable/deletable below) but don't clutter today's list looking like they're due.
@@ -278,10 +319,14 @@ export function TaskList({
   };
 
   const dueBadge = (task: Task) => {
-    if (task.recurrence === "monthly") return (task.monthlyDays ?? []).join(", ");
+    const next = nextScheduledDate(task, today);
+    const nextLabel = next ? formatDueDate(next) : "";
+    if (task.recurrence === "daily") return `${nextLabel} · ${t.tasks.repeatDailyBadge}`;
+    if (task.recurrence === "monthly") return `${nextLabel} · ${t.tasks.repeatMonthlyBadge}`;
     const days = weekdaysBadge(task.weeklyWeekdays);
     const interval = task.weeklyIntervalWeeks ?? 1;
-    return interval > 1 ? `${days} (${t.tasks.everyNWeeks(interval)})` : days;
+    const cadence = interval > 1 ? t.tasks.everyNWeeks(interval) : days;
+    return `${nextLabel} · ${cadence}`;
   };
 
   return (
@@ -629,6 +674,36 @@ export function TaskList({
                   );
                 })}
               </div>
+              {modalRecurrence && (
+                <div className="pt-3 space-y-2">
+                  <label htmlFor="recurrence-start-date" className="block text-foreground" style={{ fontSize: "0.85rem", fontWeight: 700 }}>
+                    {t.tasks.firstDueLabel}
+                  </label>
+                  <input
+                    id="recurrence-start-date"
+                    type="date"
+                    value={modalStartDate}
+                    min={today}
+                    onChange={(e) => {
+                      const nextDate = e.target.value;
+                      if (!nextDate) return;
+                      setModalStartDate(nextDate);
+                      const date = new Date(`${nextDate}T00:00:00`);
+                      if (modalRecurrence === "weekly") {
+                        setModalWeekdays([date.getDay()]);
+                      } else if (modalRecurrence === "monthly") {
+                        setModalMonthlyDays([date.getDate()]);
+                      }
+                    }}
+                    className="w-full rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground outline-none focus:border-primary"
+                  />
+                  {modalNextDate && (
+                    <p className="rounded-lg px-3 py-2" style={{ backgroundColor: "var(--green-bg)", color: "var(--green-text)", fontSize: "0.85rem", fontWeight: 700 }}>
+                      {t.tasks.nextOccurrenceLabel}: {formatDueDate(modalNextDate)}
+                    </p>
+                  )}
+                </div>
+              )}
               {modalRecurrence === "weekly" && (
                 <div className="pt-3 space-y-3">
                   <WeekdayPicker value={modalWeekdays} onChange={setModalWeekdays} />
@@ -645,11 +720,23 @@ export function TaskList({
                       >
                         −
                       </button>
-                      <span className="text-foreground" style={{ minWidth: 24, textAlign: "center", fontWeight: 700 }}>{modalWeeklyInterval}</span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={52}
+                        value={modalWeeklyInterval}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          if (Number.isFinite(value)) setModalWeeklyInterval(Math.min(52, Math.max(1, value)));
+                        }}
+                        aria-label={t.tasks.intervalWeeksLabel}
+                        className="rounded-lg border border-border bg-input-background text-foreground"
+                        style={{ width: 52, height: 32, textAlign: "center", fontWeight: 700 }}
+                      />
                       <button
                         type="button"
-                        onClick={() => setModalWeeklyInterval((n) => Math.min(8, n + 1))}
-                        disabled={modalWeeklyInterval >= 8}
+                        onClick={() => setModalWeeklyInterval((n) => Math.min(52, n + 1))}
+                        disabled={modalWeeklyInterval >= 52}
                         aria-label={t.tasks.increaseInterval}
                         className="rounded-lg flex items-center justify-center hover:opacity-85 disabled:opacity-40"
                         style={{ width: 32, height: 32, fontSize: "1rem", fontWeight: 700, backgroundColor: "var(--surface-1)", color: "var(--foreground)" }}

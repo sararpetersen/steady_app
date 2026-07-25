@@ -339,6 +339,9 @@ const en = {
     everyNWeeks: (n: number) => `every ${n} weeks`,
     decreaseInterval: "Repeat less often",
     increaseInterval: "Repeat more often",
+    firstDueLabel: "First due date",
+    nextOccurrenceLabel: "Next",
+    intervalWeeksLabel: "Number of weeks",
   },
 
   routines: {
@@ -959,6 +962,9 @@ const da: typeof en = {
     everyNWeeks: (n: number) => `hver ${n}. uge`,
     decreaseInterval: "Gentag sjældnere",
     increaseInterval: "Gentag oftere",
+    firstDueLabel: "Første forfaldsdato",
+    nextOccurrenceLabel: "Næste",
+    intervalWeeksLabel: "Antal uger",
   },
 
   routines: {

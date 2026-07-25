@@ -331,6 +331,8 @@ const en = {
     otherRecurringHeading: "Recurring tasks",
     otherRecurringDue: "Due",
     dayOfMonthLabel: (day: number) => `Day ${day}`,
+    repeatModalTitle: "Repeat",
+    repeatModalDone: "Done",
   },
 
   routines: {
@@ -943,6 +945,8 @@ const da: typeof en = {
     otherRecurringHeading: "Gentagne opgaver",
     otherRecurringDue: "Sker",
     dayOfMonthLabel: (day: number) => `Dag ${day}`,
+    repeatModalTitle: "Gentag",
+    repeatModalDone: "Færdig",
   },
 
   routines: {

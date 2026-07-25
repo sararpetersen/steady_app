@@ -68,19 +68,24 @@ export function TaskList({
   const [editWeekdays, setEditWeekdays] = useState<number[]>([todayWeekday]);
   const [editMonthlyDays, setEditMonthlyDays] = useState<number[]>([todayDayOfMonth]);
   const [otherOpen, setOtherOpen] = useState(false);
+  // The weekday/day-of-month picker used to expand inline inside the row it belonged to,
+  // which fought with the row's own flex layout (drag handle, checkbox, edit/delete
+  // buttons) and produced broken-looking spacing once the picker grew wide. Moving it into
+  // its own modal — like Reminders' "Repeat" screen — sidesteps that entirely: the picker
+  // now lives in a fixed-width dialog with no relationship to any row's layout.
+  const [recurrenceModalOpen, setRecurrenceModalOpen] = useState<"new" | "edit" | null>(null);
+  const modalRecurrence = recurrenceModalOpen === "new" ? newRecurrence : editRecurrence;
+  const setModalRecurrence = recurrenceModalOpen === "new" ? setNewRecurrence : setEditRecurrence;
+  const modalWeekdays = recurrenceModalOpen === "new" ? newWeekdays : editWeekdays;
+  const setModalWeekdays = recurrenceModalOpen === "new" ? setNewWeekdays : setEditWeekdays;
+  const modalMonthlyDays = recurrenceModalOpen === "new" ? newMonthlyDays : editMonthlyDays;
+  const setModalMonthlyDays = recurrenceModalOpen === "new" ? setNewMonthlyDays : setEditMonthlyDays;
 
   const toggleDay = (days: number[], day: number): number[] => {
     const without = days.filter((d) => d !== day);
     // Keep at least one day selected — an empty set would never reset.
     if (without.length === days.length) return [...days, day].sort((a, b) => a - b);
     return without.length > 0 ? without : days;
-  };
-
-  const cycleRecurrence = (current: TaskRecurrence | undefined): TaskRecurrence | undefined => {
-    if (current === undefined) return "daily";
-    if (current === "daily") return "weekly";
-    if (current === "weekly") return "monthly";
-    return undefined;
   };
 
   const recurrenceLabel = (recurrence: TaskRecurrence | undefined) => {
@@ -337,26 +342,22 @@ export function TaskList({
               </span>
             </button>
             {editingId === task.id ? (
-              <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-                <div className="flex items-center gap-1.5">
-                  <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
-                  <button
-                    onClick={() => setEditRecurrence((r) => cycleRecurrence(r))}
-                    className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
-                    style={{
-                      borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
-                      backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
-                      color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
-                      transition: "all 0.15s",
-                    }}
-                    aria-label={recurrenceLabel(editRecurrence)}
-                    title={recurrenceLabel(editRecurrence)}
-                  >
-                    <Repeat size={14} aria-hidden="true" />
-                  </button>
-                </div>
-                {editRecurrence === "weekly" && <WeekdayPicker value={editWeekdays} onChange={setEditWeekdays} />}
-                {editRecurrence === "monthly" && <MonthDayPicker value={editMonthlyDays} onChange={setEditMonthlyDays} />}
+              <div className="flex-1 min-w-0 flex items-center gap-1.5">
+                <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
+                <button
+                  onClick={() => setRecurrenceModalOpen("edit")}
+                  className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
+                  style={{
+                    borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
+                    backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
+                    color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
+                    transition: "all 0.15s",
+                  }}
+                  aria-label={recurrenceLabel(editRecurrence)}
+                  title={recurrenceLabel(editRecurrence)}
+                >
+                  <Repeat size={14} aria-hidden="true" />
+                </button>
               </div>
             ) : (
               <span className="flex-1 min-w-0 flex items-center gap-1.5" style={{ wordBreak: "break-word" }}>
@@ -447,26 +448,22 @@ export function TaskList({
               {otherRecurringTasks.map((task) => (
                 <div key={task.id} className="flex items-center gap-2 rounded-lg px-2 py-2" style={{ backgroundColor: "var(--surface-1)" }}>
                   {editingId === task.id ? (
-                    <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-                      <div className="flex items-center gap-1.5">
-                        <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
-                        <button
-                          onClick={() => setEditRecurrence((r) => cycleRecurrence(r))}
-                          className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
-                          style={{
-                            borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
-                            backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
-                            color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
-                            transition: "all 0.15s",
-                          }}
-                          aria-label={recurrenceLabel(editRecurrence)}
-                          title={recurrenceLabel(editRecurrence)}
-                        >
-                          <Repeat size={14} aria-hidden="true" />
-                        </button>
-                      </div>
-                      {editRecurrence === "weekly" && <WeekdayPicker value={editWeekdays} onChange={setEditWeekdays} />}
-                      {editRecurrence === "monthly" && <MonthDayPicker value={editMonthlyDays} onChange={setEditMonthlyDays} />}
+                    <div className="flex-1 min-w-0 flex items-center gap-1.5">
+                      <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
+                      <button
+                        onClick={() => setRecurrenceModalOpen("edit")}
+                        className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
+                        style={{
+                          borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
+                          backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
+                          color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
+                          transition: "all 0.15s",
+                        }}
+                        aria-label={recurrenceLabel(editRecurrence)}
+                        title={recurrenceLabel(editRecurrence)}
+                      >
+                        <Repeat size={14} aria-hidden="true" />
+                      </button>
                     </div>
                   ) : (
                     <span className="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap" style={{ wordBreak: "break-word" }}>
@@ -501,57 +498,111 @@ export function TaskList({
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={newText}
-            onChange={(e) => setNewText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && add()}
-            placeholder={t.tasks.placeholder}
-            className="flex-1 min-w-0 rounded-xl px-4 py-3 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
-            style={{ transition: "border-color 0.15s" }}
-          />
-          <button
-            onClick={() => setNewRecurrence((r) => cycleRecurrence(r))}
-            className="rounded-xl px-3 py-3 border-2 flex items-center gap-1.5 hover:opacity-85 flex-shrink-0"
-            style={{
-              borderColor: newRecurrence ? "var(--primary)" : "var(--border)",
-              backgroundColor: newRecurrence ? "var(--green-bg)" : "transparent",
-              color: newRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
-              fontWeight: 700,
-              fontSize: "0.8rem",
-              transition: "all 0.15s",
-            }}
-            aria-label={recurrenceLabel(newRecurrence)}
-            title={recurrenceLabel(newRecurrence)}
-          >
-            <Repeat size={16} aria-hidden="true" />
-            {newRecurrence && <span className="hidden sm:inline">{recurrenceBadge(newRecurrence)}</span>}
-          </button>
-          <button
-            onClick={add}
-            className="rounded-xl px-4 py-3 bg-primary text-primary-foreground flex items-center gap-2 hover:opacity-90 flex-shrink-0"
-            style={{
-              fontWeight: 700,
-              transition: "opacity 0.15s",
-            }}
-          >
-            <Plus size={18} />
-            <span className="hidden sm:inline">{t.tasks.add}</span>
-          </button>
-        </div>
-        {newRecurrence === "weekly" && (
-          <div className="pl-1">
-            <WeekdayPicker value={newWeekdays} onChange={setNewWeekdays} />
-          </div>
-        )}
-        {newRecurrence === "monthly" && (
-          <div className="pl-1">
-            <MonthDayPicker value={newMonthlyDays} onChange={setNewMonthlyDays} />
-          </div>
-        )}
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={newText}
+          onChange={(e) => setNewText(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && add()}
+          placeholder={t.tasks.placeholder}
+          className="flex-1 min-w-0 rounded-xl px-4 py-3 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+          style={{ transition: "border-color 0.15s" }}
+        />
+        <button
+          onClick={() => setRecurrenceModalOpen("new")}
+          className="rounded-xl px-3 py-3 border-2 flex items-center gap-1.5 hover:opacity-85 flex-shrink-0"
+          style={{
+            borderColor: newRecurrence ? "var(--primary)" : "var(--border)",
+            backgroundColor: newRecurrence ? "var(--green-bg)" : "transparent",
+            color: newRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
+            fontWeight: 700,
+            fontSize: "0.8rem",
+            transition: "all 0.15s",
+          }}
+          aria-label={recurrenceLabel(newRecurrence)}
+          title={recurrenceLabel(newRecurrence)}
+        >
+          <Repeat size={16} aria-hidden="true" />
+          {newRecurrence && <span className="hidden sm:inline">{recurrenceBadge(newRecurrence)}</span>}
+        </button>
+        <button
+          onClick={add}
+          className="rounded-xl px-4 py-3 bg-primary text-primary-foreground flex items-center gap-2 hover:opacity-90 flex-shrink-0"
+          style={{
+            fontWeight: 700,
+            transition: "opacity 0.15s",
+          }}
+        >
+          <Plus size={18} />
+          <span className="hidden sm:inline">{t.tasks.add}</span>
+        </button>
       </div>
+
+      {recurrenceModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
+          onClick={(e) => { if (e.target === e.currentTarget) setRecurrenceModalOpen(null); }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="repeat-dialog-title"
+            className="w-full max-w-sm rounded-2xl border border-border flex flex-col"
+            style={{ backgroundColor: "var(--card)", maxHeight: "85vh" }}
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
+              <h3 id="repeat-dialog-title" className="text-foreground" style={{ fontFamily: "var(--app-font-heading, Nunito)" }}>
+                {t.tasks.repeatModalTitle}
+              </h3>
+              <IconButton size="md" onClick={() => setRecurrenceModalOpen(null)} aria-label={t.tasks.repeatModalDone}>
+                <X size={18} />
+              </IconButton>
+            </div>
+            <div className="overflow-y-auto px-5 py-4 space-y-1">
+              <div role="radiogroup" aria-label={t.tasks.repeatModalTitle} className="space-y-1">
+                {([undefined, "daily", "weekly", "monthly"] as const).map((option) => {
+                  const active = modalRecurrence === option;
+                  return (
+                    <button
+                      key={option ?? "none"}
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => setModalRecurrence(option)}
+                      className="w-full flex items-center justify-between rounded-xl px-3 py-3 hover:bg-muted text-left"
+                      style={{ backgroundColor: active ? "var(--green-bg)" : "transparent", transition: "background-color 0.15s" }}
+                    >
+                      <span style={{ color: active ? "var(--green-text)" : "var(--foreground)", fontWeight: active ? 700 : 500 }}>
+                        {recurrenceLabel(option)}
+                      </span>
+                      {active && <Check size={16} style={{ color: "var(--green-text)" }} aria-hidden="true" />}
+                    </button>
+                  );
+                })}
+              </div>
+              {modalRecurrence === "weekly" && (
+                <div className="pt-3">
+                  <WeekdayPicker value={modalWeekdays} onChange={setModalWeekdays} />
+                </div>
+              )}
+              {modalRecurrence === "monthly" && (
+                <div className="pt-3">
+                  <MonthDayPicker value={modalMonthlyDays} onChange={setModalMonthlyDays} />
+                </div>
+              )}
+            </div>
+            <div className="px-5 py-4 border-t border-border flex-shrink-0">
+              <button
+                onClick={() => setRecurrenceModalOpen(null)}
+                className="w-full rounded-xl py-3 bg-primary text-primary-foreground hover:opacity-90"
+                style={{ fontWeight: 700, transition: "opacity 0.15s" }}
+              >
+                {t.tasks.repeatModalDone}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

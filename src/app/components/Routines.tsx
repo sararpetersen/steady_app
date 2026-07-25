@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil } from "lucide-react";
 import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
@@ -117,7 +117,7 @@ function SectionPanel({
           <button
             onClick={() => onToggle(id)}
             aria-pressed={done}
-            className="flex-1 flex items-center gap-3 rounded-xl p-3 text-left hover:bg-muted"
+            className="flex-1 min-w-0 flex items-center gap-3 rounded-xl p-3 text-left hover:bg-muted"
             style={{ backgroundColor: done ? "var(--surface-2)" : "transparent", transition: "background-color 0.15s" }}
           >
             <span
@@ -130,7 +130,7 @@ function SectionPanel({
             >
               {done && <Check size={13} color="white" />}
             </span>
-            <span className="text-foreground" style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1 }}>
+            <span className="flex-1 min-w-0 text-foreground" style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1, wordBreak: "break-word" }}>
               {text}
             </span>
           </button>
@@ -142,7 +142,14 @@ function SectionPanel({
             onClick={() => editingId === id ? saveEdit(id) : startEditing(item)}
             aria-label={`${editingId === id ? t.routines.saveStep : t.routines.editStep}: ${text}`}
           >
-            {editingId === id ? <Check size={15} /> : <span style={{ fontSize: "0.75rem", fontWeight: 700 }}>{t.routines.editLabel}</span>}
+            {editingId === id ? (
+              <Check size={15} />
+            ) : (
+              <>
+                <Pencil size={14} className="sm:hidden" />
+                <span className="hidden sm:inline" style={{ fontSize: "0.75rem", fontWeight: 700 }}>{t.routines.editLabel}</span>
+              </>
+            )}
           </IconButton>
           <IconButton
             size="md"

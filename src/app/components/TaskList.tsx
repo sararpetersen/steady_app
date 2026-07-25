@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLang } from "../i18n/LangContext";
 import { Reorder } from "motion/react";
-import { Plus, X, CheckCircle2, Check } from "lucide-react";
+import { Plus, X, CheckCircle2, Check, Pencil } from "lucide-react";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 
@@ -179,18 +179,28 @@ export function TaskList({
               <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
             ) : (
               <span
-                className="flex-1"
+                className="flex-1 min-w-0"
                 style={{
                   color: task.done ? "var(--green-text)" : "var(--foreground)",
                   textDecoration: task.done ? "line-through" : "none",
                   opacity: task.done ? 0.75 : 1,
+                  wordBreak: "break-word",
                 }}
               >
                 {task.text}
               </span>
             )}
             <div className="flex items-center gap-1 flex-shrink-0 pr-1">
-              <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>{editingId === task.id ? <Check size={16} /> : t.tasks.editLabel}</IconButton>
+              <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
+                {editingId === task.id ? (
+                  <Check size={16} />
+                ) : (
+                  <>
+                    <Pencil size={14} className="sm:hidden" />
+                    <span className="hidden sm:inline">{t.tasks.editLabel}</span>
+                  </>
+                )}
+              </IconButton>
             <IconButton
               size="md"
               tone="destructive"

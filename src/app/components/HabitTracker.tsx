@@ -3,7 +3,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { Reorder, motion } from "motion/react";
-import { Sprout, Plus, X, Check, StickyNote } from "lucide-react";
+import { Sprout, Plus, X, Check, StickyNote, Pencil } from "lucide-react";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 
@@ -170,24 +170,24 @@ export function HabitTracker() {
                 transition: "background-color 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s cubic-bezier(0.34,1.56,0.64,1)",
               }}
             >
-            <div className="relative">
-            {/* Main tap area — full width */}
+            <div className="flex items-center gap-1 p-2">
+            {/* Main tap area */}
             {editingId === habit.id ? (
-              <div className="flex items-center gap-2 p-3 pr-20">
-                <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
+              <div className="flex-1 min-w-0 flex items-center gap-2 p-1">
+                <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 flex-shrink-0 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
                 <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) saveEdit(habit.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
               </div>
             ) : (
             <button
               onClick={() => toggle(habit.id)}
-              className="w-full flex items-center gap-3 p-3 pr-24 hover:opacity-90 text-left"
+              className="flex-1 min-w-0 flex items-center gap-2 p-1 hover:opacity-90 text-left"
               style={{ transform: habit.doneToday ? "scale(1.01)" : "scale(1)", transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1)" }}
             >
               <span style={{ fontSize: "1.7rem", flexShrink: 0 }}>{habit.emoji}</span>
-              <span className="flex-1 text-foreground" style={{ fontWeight: 600 }}>
+              <span className="flex-1 min-w-0 text-foreground" style={{ fontWeight: 600, wordBreak: "break-word" }}>
                 {habit.name}
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 <Sprout size={15} style={{ color: "var(--primary)" }} aria-hidden="true" />
                 <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--primary)" }}>
                   {totalCompletions}
@@ -213,11 +213,14 @@ export function HabitTracker() {
             </button>
             )}
 
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+            <div className="flex items-center gap-0.5 flex-shrink-0">
               {editingId === habit.id ? (
                 <IconButton size="pill" tone="primary" onClick={() => saveEdit(habit.id)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${t.habits.saveEdit}: ${habit.name}`}><Check size={15} /></IconButton>
               ) : (
-                <IconButton size="pill" tone="primary" onClick={() => startEditing(habit)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${t.habits.edit}: ${habit.name}`}>{t.habits.editLabel}</IconButton>
+                <IconButton size="pill" tone="primary" onClick={() => startEditing(habit)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${t.habits.edit}: ${habit.name}`}>
+                  <Pencil size={14} className="sm:hidden" />
+                  <span className="hidden sm:inline">{t.habits.editLabel}</span>
+                </IconButton>
               )}
               <IconButton tone="destructive" onClick={() => deleteHabit(habit.id)} aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></IconButton>
             </div>

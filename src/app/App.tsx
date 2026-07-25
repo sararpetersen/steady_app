@@ -539,8 +539,13 @@ export default function App() {
 
         {/* ── Content area (offset on lg) ──────────────────────────── */}
         <div className="lg:pl-60 flex flex-col min-h-screen">
-          {/* Mobile / tablet header — hidden on lg */}
-          <header className="sticky top-0 z-10 border-b border-border px-5 py-3 lg:hidden" style={{ backgroundColor: "var(--card)" }}>
+          {/* Mobile / tablet header + tab nav — hidden on lg. Both live inside one sticky
+              wrapper so they always stick together as a unit; giving each its own sticky
+              offset (a hardcoded top-[61px] for the nav) broke as soon as the header's real
+              height differed from that guess — e.g. with a profile photo avatar or larger
+              accessibility font sizes — letting the nav bar scroll up and cover the header. */}
+          <div className="sticky top-0 z-10 lg:hidden">
+          <header className="border-b border-border px-5 py-3" style={{ backgroundColor: "var(--card)" }}>
             <div className="max-w-xl mx-auto flex items-center justify-between gap-4">
               {/* Logo — clickable, goes to Overview */}
               <button
@@ -578,10 +583,10 @@ export default function App() {
             </div>
           </header>
 
-          {/* Mobile / tablet tab navigation — hidden on lg */}
+          {/* Mobile / tablet tab navigation */}
           <nav
             aria-label="Tab navigation"
-            className="sticky top-[61px] z-10 border-b border-border lg:hidden"
+            className="border-b border-border"
             style={{ backgroundColor: "var(--card)" }}
           >
             <div className="nav-scroll overflow-x-auto">
@@ -618,6 +623,7 @@ export default function App() {
               </div>
             </div>
           </nav>
+          </div>
 
           {/* Main content */}
           <main className="flex-1 w-full max-w-xl lg:max-w-2xl mx-auto px-4 pt-5 pb-8">

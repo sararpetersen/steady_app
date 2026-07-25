@@ -272,17 +272,17 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
           </p>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <button
             onClick={registerFromGuest}
-            className="flex-1 rounded-xl px-4 py-3 bg-primary text-primary-foreground hover:opacity-90 text-center"
+            className="flex-1 rounded-xl px-4 py-3 bg-primary text-primary-foreground hover:opacity-90 text-center whitespace-nowrap"
             style={{ fontWeight: 700, transition: "opacity 0.15s" }}
           >
             {a.createAccount}
           </button>
           <button
             onClick={onSignOut}
-            className="flex-1 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
+            className="flex-1 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center whitespace-nowrap"
             style={{ fontWeight: 600, transition: "background-color 0.15s" }}
           >
             {a.signOut}
@@ -553,10 +553,10 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
           {s.resetOnboarding}
         </button>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <button
             onClick={exportData}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center whitespace-nowrap"
             style={{ fontWeight: 600, transition: "background-color 0.15s" }}
           >
             <Download size={16} />
@@ -564,7 +564,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
           </button>
           <button
             onClick={() => importInputRef.current?.click()}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 border border-border text-foreground hover:bg-muted text-center whitespace-nowrap"
             style={{ fontWeight: 600, transition: "background-color 0.15s" }}
           >
             <Upload size={16} />

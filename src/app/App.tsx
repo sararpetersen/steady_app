@@ -172,6 +172,22 @@ export default function App() {
   // above catch up — depending on `today` here fired this effect on that stale render and
   // wrongly re-celebrated. Habit toggles already change habitsDone/habitsTotal directly,
   // so this still re-checks correctly once those settle.
+  // One-time startup check: celebratedDate can only legitimately equal today if today's
+  // habits were genuinely all completed at some point. A past version of the rollover logic
+  // could write celebratedDate = today without that ever being true, permanently blocking
+  // the real celebration for the rest of the day. Heal that once at load — but only once,
+  // and never in response to a later same-day uncheck, so intentionally unchecking a habit
+  // after celebrating doesn't re-arm the celebration for a second same-day fire.
+  const staleCelebrationCheckedRef = useRef(false);
+  useEffect(() => {
+    if (staleCelebrationCheckedRef.current || habitsTotal === 0) return;
+    staleCelebrationCheckedRef.current = true;
+    if (celebratedDate === today && habitsDone !== habitsTotal) {
+      setCelebratedDate(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [habitsTotal, habitsDone, celebratedDate, today, setCelebratedDate]);
+
   useEffect(() => {
     if (habitsTotal > 0 && habitsDone === habitsTotal && celebratedDate !== today) {
       setCelebratedDate(today);

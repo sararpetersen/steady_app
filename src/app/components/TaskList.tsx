@@ -541,51 +541,53 @@ export function TaskList({
           <AnimatedCollapse open={otherOpen}>
             <div className="px-3 pb-3 space-y-1.5">
               {otherRecurringTasks.map((task) => (
-                <div key={task.id} className="flex items-center gap-2 rounded-lg px-2 py-2" style={{ backgroundColor: "var(--surface-1)" }}>
-                  {editingId === task.id ? (
-                    <div className="flex-1 min-w-0 flex items-center gap-1.5">
-                      <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
-                      <button
-                        onClick={() => setRecurrenceModalOpen("edit")}
-                        className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
-                        style={{
-                          borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
-                          backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
-                          color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
-                          transition: "all 0.15s",
-                        }}
-                        aria-label={recurrenceLabel(editRecurrence)}
-                        title={recurrenceLabel(editRecurrence)}
-                      >
-                        <Repeat size={14} aria-hidden="true" />
-                      </button>
-                    </div>
-                  ) : (
-                    <span className="flex-1 min-w-0 flex items-center gap-1.5 flex-wrap">
+                <div key={task.id} className="flex flex-col gap-1 rounded-lg px-2 py-2" style={{ backgroundColor: "var(--surface-1)" }}>
+                  <div className="flex items-center gap-2">
+                    {editingId === task.id ? (
+                      <div className="flex-1 min-w-0 flex items-center gap-1.5">
+                        <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
+                        <button
+                          onClick={() => setRecurrenceModalOpen("edit")}
+                          className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
+                          style={{
+                            borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
+                            backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
+                            color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
+                            transition: "all 0.15s",
+                          }}
+                          aria-label={recurrenceLabel(editRecurrence)}
+                          title={recurrenceLabel(editRecurrence)}
+                        >
+                          <Repeat size={14} aria-hidden="true" />
+                        </button>
+                      </div>
+                    ) : (
                       <span className="flex-1 min-w-0 truncate text-foreground" style={{ opacity: 0.85 }}>{task.text}</span>
-                      <span
-                        className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 flex-shrink-0"
-                        style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
-                      >
-                        {t.tasks.otherRecurringDue} {dueBadge(task)}
-                      </span>
+                    )}
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
+                        {editingId === task.id ? (
+                          <Check size={16} />
+                        ) : (
+                          <>
+                            <Pencil size={14} className="sm:hidden" />
+                            <span className="hidden sm:inline">{t.tasks.editLabel}</span>
+                          </>
+                        )}
+                      </IconButton>
+                      <IconButton size="md" tone="destructive" onClick={() => remove(task.id)} aria-label={`${t.tasks.remove}: ${task.text}`}>
+                        <X size={16} />
+                      </IconButton>
+                    </div>
+                  </div>
+                  {editingId !== task.id && (
+                    <span
+                      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 self-start max-w-full"
+                      style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
+                    >
+                      <span className="truncate">{t.tasks.otherRecurringDue} {dueBadge(task)}</span>
                     </span>
                   )}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
-                      {editingId === task.id ? (
-                        <Check size={16} />
-                      ) : (
-                        <>
-                          <Pencil size={14} className="sm:hidden" />
-                          <span className="hidden sm:inline">{t.tasks.editLabel}</span>
-                        </>
-                      )}
-                    </IconButton>
-                    <IconButton size="md" tone="destructive" onClick={() => remove(task.id)} aria-label={`${t.tasks.remove}: ${task.text}`}>
-                      <X size={16} />
-                    </IconButton>
-                  </div>
                 </div>
               ))}
             </div>

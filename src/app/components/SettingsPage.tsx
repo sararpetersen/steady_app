@@ -592,8 +592,8 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
             role="dialog"
             aria-modal="true"
             aria-labelledby="privacy-dialog-title"
-            className="w-full max-w-lg rounded-2xl border border-border flex flex-col"
-            style={{ backgroundColor: "var(--card)", maxHeight: "85vh" }}
+            className="w-full max-w-lg rounded-2xl border border-border flex flex-col steady-modal-dialog"
+            style={{ backgroundColor: "var(--card)" }}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
               <div>

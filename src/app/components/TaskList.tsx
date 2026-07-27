@@ -643,8 +643,8 @@ export function TaskList({
             role="dialog"
             aria-modal="true"
             aria-labelledby="repeat-dialog-title"
-            className="w-full max-w-sm rounded-2xl border border-border flex flex-col"
-            style={{ backgroundColor: "var(--card)", maxHeight: "85vh" }}
+            className="w-full max-w-sm rounded-2xl border border-border flex flex-col steady-modal-dialog"
+            style={{ backgroundColor: "var(--card)" }}
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
               <h3 id="repeat-dialog-title" className="text-foreground" style={{ fontFamily: "var(--app-font-heading, Nunito)" }}>
@@ -654,7 +654,7 @@ export function TaskList({
                 <X size={18} />
               </IconButton>
             </div>
-            <div className="overflow-y-auto px-5 py-4 space-y-1">
+            <div className="overflow-y-auto px-5 py-4 space-y-1" style={{ overflowX: "hidden", WebkitOverflowScrolling: "touch" }}>
               <div role="radiogroup" aria-label={t.tasks.repeatModalTitle} className="space-y-1">
                 {([undefined, "daily", "weekly", "monthly"] as const).map((option) => {
                   const active = modalRecurrence === option;
@@ -664,7 +664,7 @@ export function TaskList({
                       role="radio"
                       aria-checked={active}
                       onClick={() => setModalRecurrence(option)}
-                      className="w-full flex items-center justify-between rounded-xl px-3 py-3 hover:bg-muted text-left"
+                      className="w-full flex items-center justify-between rounded-xl px-3 py-2.5 hover:bg-muted text-left"
                       style={{ backgroundColor: active ? "var(--green-bg)" : "transparent", transition: "background-color 0.15s" }}
                     >
                       <span style={{ color: active ? "var(--green-text)" : "var(--foreground)", fontWeight: active ? 700 : 500 }}>
@@ -697,6 +697,7 @@ export function TaskList({
                       }
                     }}
                     className="w-full rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground outline-none focus:border-primary"
+                    style={{ boxSizing: "border-box", maxWidth: "100%", WebkitAppearance: "none" }}
                   />
                   {modalNextDate && (
                     <p className="rounded-lg px-3 py-2" style={{ backgroundColor: "var(--green-bg)", color: "var(--green-text)", fontSize: "0.85rem", fontWeight: 700 }}>
@@ -731,8 +732,8 @@ export function TaskList({
                           if (Number.isFinite(value)) setModalWeeklyInterval(Math.min(52, Math.max(1, value)));
                         }}
                         aria-label={t.tasks.intervalWeeksLabel}
-                        className="rounded-lg border border-border bg-input-background text-foreground"
-                        style={{ width: 52, height: 32, textAlign: "center", fontWeight: 700 }}
+                        className="rounded-lg border border-border bg-input-background text-foreground no-spinner"
+                        style={{ width: 52, height: 32, textAlign: "center", fontWeight: 700, boxSizing: "border-box", MozAppearance: "textfield" }}
                       />
                       <button
                         type="button"

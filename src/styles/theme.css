@@ -273,3 +273,30 @@
     font-family: "Nunito Sans", sans-serif;
   }
 }
+
+/* Hides the native number-input spin buttons — inside the tiny 52px "every N weeks"
+   box they can visually crowd/overlap the digit on mobile browsers, since the
+   arrows sit inside the box's own width rather than beside it. */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* iOS Safari computes `vh` against the viewport as if its address bar and bottom
+   toolbar were both hidden, so `85vh` renders taller than what's actually visible on
+   screen — a modal sized this way can have its footer (e.g. a "Done" button) sit
+   behind the browser's own UI, forcing a scroll that a screenshot won't show since
+   screenshots capture the full page, chrome included. `dvh` accounts for the real
+   visible area. Using @supports (rather than two plain `max-height` declarations)
+   because the build's CSS minifier collapses duplicate properties on one selector
+   down to just the last one, silently deleting the vh fallback for browsers that
+   don't understand dvh — @supports is its own rule, so it survives minification. */
+.steady-modal-dialog {
+  max-height: 85vh;
+}
+@supports (max-height: 85dvh) {
+  .steady-modal-dialog {
+    max-height: 85dvh;
+  }
+}

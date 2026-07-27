@@ -59,8 +59,8 @@ export function FeedbackForm({ open, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="feedback-dialog-title"
-        className="w-full max-w-md rounded-2xl border border-border flex flex-col"
-        style={{ backgroundColor: "var(--card)", maxHeight: "85vh" }}
+        className="w-full max-w-md rounded-2xl border border-border flex flex-col steady-modal-dialog"
+        style={{ backgroundColor: "var(--card)" }}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
           <h3 id="feedback-dialog-title" className="text-foreground" style={{ fontFamily: "var(--app-font-heading, Nunito)" }}>

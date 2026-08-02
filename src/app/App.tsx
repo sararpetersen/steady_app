@@ -172,16 +172,19 @@ export default function App() {
   // above catch up — depending on `today` here fired this effect on that stale render and
   // wrongly re-celebrated. Habit toggles already change habitsDone/habitsTotal directly,
   // so this still re-checks correctly once those settle.
-  // One-time startup check: celebratedDate can only legitimately equal today if today's
+  // Startup/day-boundary check: celebratedDate can only legitimately equal today if today's
   // habits were genuinely all completed at some point. A past version of the rollover logic
   // could write celebratedDate = today without that ever being true, permanently blocking
-  // the real celebration for the rest of the day. Heal that once at load — but only once,
-  // and never in response to a later same-day uncheck, so intentionally unchecking a habit
-  // after celebrating doesn't re-arm the celebration for a second same-day fire.
-  const staleCelebrationCheckedRef = useRef(false);
+  // the real celebration for the rest of the day. Heal that — but only once per calendar day
+  // (tracked by `today`, not "ever"), so intentionally unchecking a habit after a genuine
+  // celebration doesn't re-arm it for a second same-day fire. Re-arming per-day (rather than
+  // once per app lifetime) matters because the day can roll over without a fresh page load —
+  // e.g. a laptop asleep with the tab already open — so a fresh mount isn't the only moment
+  // this needs to run.
+  const lastHealedForDateRef = useRef<string | null>(null);
   useEffect(() => {
-    if (staleCelebrationCheckedRef.current || habitsTotal === 0) return;
-    staleCelebrationCheckedRef.current = true;
+    if (lastHealedForDateRef.current === today || habitsTotal === 0) return;
+    lastHealedForDateRef.current = today;
     if (celebratedDate === today && habitsDone !== habitsTotal) {
       setCelebratedDate(null);
     }

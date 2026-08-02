@@ -212,10 +212,13 @@ export function TaskList({
     </div>
   );
 
+  // Completing a task is one-way — once checked off, tapping it again does nothing.
+  // Undoing a mistake means deleting the task (or, for recurring ones, waiting for the
+  // next cycle to reset it), rather than freely toggling done/undone back and forth.
   const toggle = (id: number) =>
     setTasks((prev) =>
       prev.map((task) =>
-        task.id === id ? { ...task, done: !task.done } : task,
+        task.id === id && !task.done ? { ...task, done: true } : task,
       ),
     );
 
@@ -395,13 +398,10 @@ export function TaskList({
           >
             <button
               onClick={() => toggle(task.id)}
-              className="flex-shrink-0 rounded-full flex items-center justify-center"
+              disabled={task.done}
+              className="flex-shrink-0 rounded-full flex items-center justify-center disabled:cursor-default"
               style={{ width: 44, height: 44 }}
-              aria-label={
-                task.done
-                  ? t.tasks.markIncomplete
-                  : t.tasks.markComplete
-              }
+              aria-label={task.done ? t.tasks.completedHeading : t.tasks.markComplete}
             >
               <span
                 className="rounded-full border-2 flex items-center justify-center"

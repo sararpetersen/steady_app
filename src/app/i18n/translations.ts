@@ -361,6 +361,9 @@ const en = {
     noSteps: "No steps yet. Tap below to add your first one.",
     alsoAddToTasks: "Also add to Tasks",
     linkedToTasks: "Also tracked in Tasks",
+    emojiLabel: "Pictogram (optional)",
+    subtasksLabel: "Sub-steps",
+    addSubtaskPlaceholder: "Add a sub-step…",
     sections: {
       morning: { label: "Morning", time: "7:00 - 9:00 AM" },
       afternoon: {
@@ -992,6 +995,9 @@ const da: typeof en = {
     noSteps: "Ingen trin endnu. Tryk nedenfor for at tilføje det første.",
     alsoAddToTasks: "Tilføj også til Opgaver",
     linkedToTasks: "Følges også i Opgaver",
+    emojiLabel: "Piktogram (valgfrit)",
+    subtasksLabel: "Undertrin",
+    addSubtaskPlaceholder: "Tilføj et undertrin…",
     sections: {
       morning: { label: "Morgen", time: "7:00 - 9:00" },
       afternoon: {

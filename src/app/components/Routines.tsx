@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree } from "lucide-react";
 import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
@@ -24,6 +24,12 @@ const SECTION_COLOR_VARS: Record<SectionKey, string> = {
   late: "var(--late-bg)",
 };
 
+interface SubTask {
+  id: number;
+  text: string;
+  done: boolean;
+}
+
 interface CustomItem {
   id: number;
   text: string;
@@ -33,6 +39,14 @@ interface CustomItem {
   // if the task is later deleted from the Tasks side, this just self-heals back into a
   // normal, independently-toggleable step (see resolveLink below).
   linkedTaskId?: number;
+  // Optional pictogram shown before the step name — same free-text emoji-input pattern
+  // already used for habits and important dates, for visual consistency across the app.
+  emoji?: string;
+  // Optional breakdown for a step that needs more specificity than one checkbox covers
+  // (e.g. "Get dressed" -> socks, shirt, shoes). Deliberately independent of the parent
+  // step's own done state — checking sub-steps doesn't auto-complete the parent, so
+  // there's no surprise side effect from ticking the last one.
+  subtasks?: SubTask[];
 }
 
 type CustomMap = Record<SectionKey, CustomItem[]>;
@@ -49,25 +63,35 @@ function SectionPanel({
   onEditCustom,
   onReorderCustom,
   onDeleteCustom,
+  onAddSubtask,
+  onToggleSubtask,
+  onDeleteSubtask,
 }: {
   sectionKey: SectionKey;
   doneIds: number[];
   onToggle: (id: number) => void;
   customItems: CustomItem[];
   tasks: Task[];
-  onAddCustom: (text: string, linkToTasks: boolean) => void;
-  onEditCustom: (id: number, text: string) => void;
+  onAddCustom: (text: string, linkToTasks: boolean, emoji: string) => void;
+  onEditCustom: (id: number, text: string, emoji: string) => void;
   onReorderCustom: (items: CustomItem[]) => void;
   onDeleteCustom: (id: number) => void;
+  onAddSubtask: (id: number, text: string) => void;
+  onToggleSubtask: (id: number, subtaskId: number) => void;
+  onDeleteSubtask: (id: number, subtaskId: number) => void;
 }) {
   const t = useLang();
   const section = t.routines.sections[sectionKey];
   const [open, setOpen] = useState(false);
   const [addingStep, setAddingStep] = useState(false);
   const [stepDraft, setStepDraft] = useState("");
+  const [stepEmojiDraft, setStepEmojiDraft] = useState("");
   const [linkToTasks, setLinkToTasks] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editDraft, setEditDraft] = useState("");
+  const [editEmojiDraft, setEditEmojiDraft] = useState("");
+  const [newSubtaskDraft, setNewSubtaskDraft] = useState("");
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
 
   // A step only counts as "linked" while its task still exists — if that task was deleted
   // from the Tasks tab, it self-heals back into a plain, locally-tracked step rather than
@@ -79,11 +103,20 @@ function SectionPanel({
   const allIds = customItems.map((c) => c.id);
   const doneCount = customItems.filter(isDone).length;
 
+  const toggleExpanded = (id: number) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
   const submitStep = () => {
     const trimmed = stepDraft.trim();
     if (!trimmed) return;
-    onAddCustom(trimmed, linkToTasks);
+    onAddCustom(trimmed, linkToTasks, stepEmojiDraft.trim());
     setStepDraft("");
+    setStepEmojiDraft("");
     setLinkToTasks(false);
     setAddingStep(false);
   };
@@ -91,14 +124,16 @@ function SectionPanel({
   const startEditing = (item: CustomItem) => {
     setEditingId(item.id);
     setEditDraft(linkedTask(item)?.text ?? item.text);
+    setEditEmojiDraft(item.emoji ?? "");
   };
 
   const saveEdit = (id: number) => {
     const trimmed = editDraft.trim();
     if (!trimmed) return;
-    onEditCustom(id, trimmed);
+    onEditCustom(id, trimmed, editEmojiDraft.trim());
     setEditingId(null);
     setEditDraft("");
+    setEditEmojiDraft("");
   };
 
   const renderItem = (item: CustomItem) => {
@@ -106,10 +141,13 @@ function SectionPanel({
     const linked = linkedTask(item);
     const text = linked?.text ?? item.text;
     const done = isDone(item);
+    const subtasks = item.subtasks ?? [];
+    const subtaskDoneCount = subtasks.filter((s) => s.done).length;
+    const expanded = expandedIds.has(id);
     return (
       <ReorderRow key={id} value={item} dragDisabled={editingId === id} className="flex items-center flex-wrap gap-2 group relative" handleSize={18}>
         {editingId === id ? (
-          <div className="flex-1 min-w-0 flex items-center gap-3 rounded-xl p-3 bg-muted" style={{ flexBasis: 140 }}>
+          <div className="flex-1 min-w-0 flex items-center gap-2 rounded-xl p-3 bg-muted" style={{ flexBasis: 140 }}>
             <span
               className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
               style={{
@@ -121,6 +159,14 @@ function SectionPanel({
             >
               {done && <Check size={13} color="white" />}
             </span>
+            <input
+              aria-label={t.routines.emojiLabel}
+              value={editEmojiDraft}
+              onChange={(event) => setEditEmojiDraft(event.target.value)}
+              className="w-9 flex-shrink-0 bg-transparent text-center outline-none"
+              style={{ fontSize: "1.3rem" }}
+              maxLength={2}
+            />
             <input
               autoFocus
               aria-label={`${t.routines.editStep}: ${text}`}
@@ -151,6 +197,7 @@ function SectionPanel({
             >
               {done && <Check size={13} color="white" />}
             </span>
+            {item.emoji && <span style={{ fontSize: "1.3rem", flexShrink: 0 }} aria-hidden="true">{item.emoji}</span>}
             <span
               className="flex-1 min-w-0 text-foreground truncate"
               style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1 }}
@@ -169,6 +216,19 @@ function SectionPanel({
         )}
         {linked && <span className="sr-only">{t.routines.linkedToTasks}</span>}
         <div className="flex items-center gap-0.5 flex-shrink-0">
+          {editingId !== id && subtasks.length > 0 && (
+            <IconButton
+              size="pill"
+              tone="default"
+              onClick={() => toggleExpanded(id)}
+              aria-label={`${t.routines.subtasksLabel}: ${subtaskDoneCount}/${subtasks.length}`}
+              aria-expanded={expanded}
+              style={{ fontSize: "0.75rem", fontWeight: 700 }}
+            >
+              <ListTree size={13} aria-hidden="true" />
+              {subtaskDoneCount}/{subtasks.length}
+            </IconButton>
+          )}
           <IconButton
             size="md"
             tone="primary"
@@ -193,6 +253,97 @@ function SectionPanel({
             <X size={14} />
           </IconButton>
         </div>
+        {/* flexBasis 100% forces this onto its own row within the flex-wrap parent,
+            regardless of how much width the row above happened to use. */}
+        {editingId === id && (
+          <div className="space-y-1.5" style={{ flexBasis: "100%" }}>
+            <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--muted-foreground)" }}>
+              {t.routines.subtasksLabel}
+            </p>
+            {subtasks.map((sub) => (
+              <div key={sub.id} className="flex items-center gap-2 pl-1">
+                <button
+                  onClick={() => onToggleSubtask(id, sub.id)}
+                  aria-pressed={sub.done}
+                  aria-label={`${sub.done ? t.routines.saveStep : t.routines.editStep}: ${sub.text}`}
+                  className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
+                  style={{
+                    width: 18, height: 18,
+                    borderColor: sub.done ? "var(--primary)" : "var(--muted-foreground)",
+                    backgroundColor: sub.done ? "var(--primary)" : "transparent",
+                  }}
+                >
+                  {sub.done && <Check size={11} color="white" />}
+                </button>
+                <span
+                  className="flex-1 min-w-0 truncate"
+                  style={{ fontSize: "0.88rem", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? 0.6 : 1 }}
+                >
+                  {sub.text}
+                </span>
+                <IconButton size="sm" tone="destructive" onClick={() => onDeleteSubtask(id, sub.id)} aria-label={`${t.routines.deleteStep}: ${sub.text}`}>
+                  <X size={12} />
+                </IconButton>
+              </div>
+            ))}
+            <div className="flex gap-1.5 pl-1">
+              <input
+                type="text"
+                value={newSubtaskDraft}
+                onChange={(e) => setNewSubtaskDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key !== "Enter") return;
+                  const trimmed = newSubtaskDraft.trim();
+                  if (!trimmed) return;
+                  onAddSubtask(id, trimmed);
+                  setNewSubtaskDraft("");
+                }}
+                placeholder={t.routines.addSubtaskPlaceholder}
+                className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                style={{ fontSize: "0.85rem" }}
+              />
+              <button
+                onClick={() => {
+                  const trimmed = newSubtaskDraft.trim();
+                  if (!trimmed) return;
+                  onAddSubtask(id, trimmed);
+                  setNewSubtaskDraft("");
+                }}
+                className="rounded-lg px-2.5 border border-border text-muted-foreground hover:bg-muted flex-shrink-0"
+                aria-label={t.routines.addSubtaskPlaceholder.replace("…", "")}
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+          </div>
+        )}
+        {editingId !== id && expanded && subtasks.length > 0 && (
+          <div className="space-y-1.5 pl-9" style={{ flexBasis: "100%" }}>
+            {subtasks.map((sub) => (
+              <div key={sub.id} className="flex items-center gap-2">
+                <button
+                  onClick={() => onToggleSubtask(id, sub.id)}
+                  aria-pressed={sub.done}
+                  aria-label={sub.text}
+                  className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
+                  style={{
+                    width: 18, height: 18,
+                    borderColor: sub.done ? "var(--primary)" : "var(--muted-foreground)",
+                    backgroundColor: sub.done ? "var(--primary)" : "transparent",
+                  }}
+                >
+                  {sub.done && <Check size={11} color="white" />}
+                </button>
+                <span
+                  className="flex-1 min-w-0 truncate"
+                  style={{ fontSize: "0.88rem", color: "var(--muted-foreground)", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? 0.6 : 1 }}
+                >
+                  {sub.text}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </ReorderRow>
     );
   };
@@ -241,7 +392,18 @@ function SectionPanel({
           {/* Add step */}
           {addingStep ? (
             <div className="space-y-2 mt-2">
+              {/* Inputs and buttons split into their own rows — cramming an emoji box, the
+                  text field, and two buttons onto one line left the text field a useless
+                  sliver on narrow phones. */}
               <div className="flex gap-2">
+                <input
+                  aria-label={t.routines.emojiLabel}
+                  value={stepEmojiDraft}
+                  onChange={(e) => setStepEmojiDraft(e.target.value)}
+                  className="w-11 flex-shrink-0 rounded-xl border border-border bg-input-background text-center outline-none focus:border-primary"
+                  style={{ fontSize: "1.3rem" }}
+                  maxLength={2}
+                />
                 <input
                   type="text"
                   value={stepDraft}
@@ -252,16 +414,18 @@ function SectionPanel({
                   className="flex-1 min-w-0 rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
                   style={{ fontSize: "0.9rem", transition: "border-color 0.15s" }}
                 />
+              </div>
+              <div className="flex gap-2">
                 <button
                   onClick={submitStep}
-                  className="rounded-xl px-4 py-2.5 bg-primary text-primary-foreground hover:opacity-90"
+                  className="flex-1 rounded-xl px-4 py-2.5 bg-primary text-primary-foreground hover:opacity-90"
                   style={{ fontWeight: 700, fontSize: "0.9rem", transition: "opacity 0.15s" }}
                 >
                   {t.routines.addStepButton}
                 </button>
                 <button
-                  onClick={() => { setAddingStep(false); setStepDraft(""); setLinkToTasks(false); }}
-                  className="rounded-xl px-3 py-2.5 border border-border text-muted-foreground hover:bg-muted"
+                  onClick={() => { setAddingStep(false); setStepDraft(""); setStepEmojiDraft(""); setLinkToTasks(false); }}
+                  className="rounded-xl px-4 py-2.5 border border-border text-muted-foreground hover:bg-muted flex-shrink-0"
                   style={{ transition: "background-color 0.15s" }}
                   aria-label="Cancel"
                 >
@@ -314,11 +478,21 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
 
   // Reset checked-off steps when the day rolls over, so routines start fresh each day.
   // Linked steps don't need their own reset: their completion lives on the task, and that
-  // task already resets itself (it's "daily") via the Tasks rollover in App.tsx.
+  // task already resets itself (it's "daily") via the Tasks rollover in App.tsx. Sub-tasks
+  // live inside `custom` rather than the doneIds array, so they need their own reset pass.
   useEffect(() => {
     if (doneDate !== today) {
       setDoneIds([]);
       setDoneDate(today);
+      setCustom((prev) => {
+        const next: CustomMap = { morning: [], afternoon: [], late: [] };
+        for (const key of SECTION_KEYS) {
+          next[key] = (prev[key] ?? []).map((item) =>
+            item.subtasks ? { ...item, subtasks: item.subtasks.map((s) => ({ ...s, done: false })) } : item
+          );
+        }
+        return next;
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [today]);
@@ -342,7 +516,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     setDoneIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
-  const addCustom = (section: SectionKey, text: string, linkToTasks: boolean) => {
+  const addCustom = (section: SectionKey, text: string, linkToTasks: boolean, emoji: string) => {
     const id = nextId;
     setNextId((n) => n + 1);
     let linkedTaskId: number | undefined;
@@ -353,7 +527,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     }
     setCustom((prev) => ({
       ...prev,
-      [section]: [...(prev[section] ?? []), { id, text, linkedTaskId }],
+      [section]: [...(prev[section] ?? []), { id, text, linkedTaskId, emoji: emoji || undefined }],
     }));
   };
 
@@ -369,19 +543,63 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     setDoneIds((prev) => prev.filter((x) => x !== id));
   };
 
-  const editCustom = (section: SectionKey, id: number, text: string) => {
+  const editCustom = (section: SectionKey, id: number, text: string, emoji: string) => {
     const item = (custom[section] ?? []).find((i) => i.id === id);
     if (item?.linkedTaskId != null) {
       setTasks((prev) => prev.map((tsk) => (tsk.id === item.linkedTaskId ? { ...tsk, text } : tsk)));
     }
     setCustom((prev) => ({
       ...prev,
-      [section]: (prev[section] ?? []).map((i) => i.id === id ? { ...i, text } : i),
+      [section]: (prev[section] ?? []).map((i) => i.id === id ? { ...i, text, emoji: emoji || undefined } : i),
     }));
   };
 
   const reorderCustom = (section: SectionKey, items: CustomItem[]) => {
     setCustom((prev) => ({ ...prev, [section]: items }));
+  };
+
+  const addSubtask = (id: number, text: string) => {
+    const subId = nextId;
+    setNextId((n) => n + 1);
+    setCustom((prev) => {
+      const next = { ...prev };
+      for (const key of SECTION_KEYS) {
+        next[key] = (prev[key] ?? []).map((item) =>
+          item.id === id
+            ? { ...item, subtasks: [...(item.subtasks ?? []), { id: subId, text, done: false }] }
+            : item
+        );
+      }
+      return next;
+    });
+  };
+
+  const toggleSubtask = (id: number, subtaskId: number) => {
+    setCustom((prev) => {
+      const next = { ...prev };
+      for (const key of SECTION_KEYS) {
+        next[key] = (prev[key] ?? []).map((item) =>
+          item.id === id
+            ? { ...item, subtasks: (item.subtasks ?? []).map((s) => s.id === subtaskId ? { ...s, done: !s.done } : s) }
+            : item
+        );
+      }
+      return next;
+    });
+  };
+
+  const deleteSubtask = (id: number, subtaskId: number) => {
+    setCustom((prev) => {
+      const next = { ...prev };
+      for (const key of SECTION_KEYS) {
+        next[key] = (prev[key] ?? []).map((item) =>
+          item.id === id
+            ? { ...item, subtasks: (item.subtasks ?? []).filter((s) => s.id !== subtaskId) }
+            : item
+        );
+      }
+      return next;
+    });
   };
 
   return (
@@ -397,10 +615,13 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
             onToggle={toggleDone}
             customItems={custom[key] ?? []}
             tasks={tasks}
-            onAddCustom={(text, linkToTasks) => addCustom(key, text, linkToTasks)}
-            onEditCustom={(id, text) => editCustom(key, id, text)}
+            onAddCustom={(text, linkToTasks, emoji) => addCustom(key, text, linkToTasks, emoji)}
+            onEditCustom={(id, text, emoji) => editCustom(key, id, text, emoji)}
             onReorderCustom={(items) => reorderCustom(key, items)}
             onDeleteCustom={(id) => deleteCustom(key, id)}
+            onAddSubtask={addSubtask}
+            onToggleSubtask={toggleSubtask}
+            onDeleteSubtask={deleteSubtask}
           />
         ))}
       </div>

@@ -15,7 +15,11 @@ export function EmojiPicker({ value, onChange, layout = "wrap", groupLabel }: Em
       role="group"
       aria-label={groupLabel}
       className={isGrid ? "grid gap-3" : "flex flex-wrap gap-2"}
-      style={isGrid ? { gridTemplateColumns: "repeat(6, 1fr)" } : undefined}
+      // minmax(0, 1fr) rather than plain 1fr — grid tracks otherwise grow to fit each
+      // button's intrinsic content size (min-width:auto is the grid default), which pushed
+      // the grid wider than its container and clipped the last column off-screen on
+      // narrow phones instead of wrapping evenly.
+      style={isGrid ? { gridTemplateColumns: "repeat(6, minmax(0, 1fr))" } : undefined}
     >
       {AVATAR_EMOJIS.map((emoji) => (
         <button

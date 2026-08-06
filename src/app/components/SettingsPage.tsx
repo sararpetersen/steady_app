@@ -476,7 +476,6 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
           options={[
             { value: "normal", label: s.fontSize.normal },
             { value: "large", label: s.fontSize.large },
-            { value: "xlarge", label: s.fontSize.xlarge },
           ]}
         />
       </div>

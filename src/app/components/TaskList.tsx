@@ -454,54 +454,56 @@ export function TaskList({
           <ReorderRow
             value={task}
             dragDisabled={editingId === task.id}
-            className="flex items-center gap-1 rounded-xl hover:brightness-95"
+            className="flex items-center flex-wrap gap-1 rounded-xl hover:brightness-95"
             style={{
               backgroundColor: task.done
                 ? "var(--green-bg)"
                 : "var(--surface-1)",
             }}
           >
-            <button
-              onClick={() => toggle(task.id)}
-              disabled={task.done}
-              className="flex-shrink-0 rounded-full flex items-center justify-center disabled:cursor-default"
-              style={{ width: 44, height: 44 }}
-              aria-label={task.done ? t.tasks.completedHeading : t.tasks.markComplete}
-            >
-              <span
-                className="rounded-full border-2 flex items-center justify-center"
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderColor: task.done
-                    ? "var(--primary)"
-                    : "var(--muted-foreground)",
-                  backgroundColor: task.done
-                    ? "var(--primary)"
-                    : "transparent",
-                  transition: "background-color 0.2s, border-color 0.2s",
-                }}
+            {pendingDeleteId !== task.id && (
+              <button
+                onClick={() => toggle(task.id)}
+                disabled={task.done}
+                className="flex-shrink-0 rounded-full flex items-center justify-center disabled:cursor-default"
+                style={{ width: 44, height: 44 }}
+                aria-label={task.done ? t.tasks.completedHeading : t.tasks.markComplete}
               >
-                {task.done && (
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                  >
-                    <path
-                      d="M2.5 7L5.5 10L11.5 4"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
-              </span>
-            </button>
-            {editingId === task.id ? (
-              <div className="flex-1 min-w-0 flex items-center gap-1.5">
+                <span
+                  className="rounded-full border-2 flex items-center justify-center"
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderColor: task.done
+                      ? "var(--primary)"
+                      : "var(--muted-foreground)",
+                    backgroundColor: task.done
+                      ? "var(--primary)"
+                      : "transparent",
+                    transition: "background-color 0.2s, border-color 0.2s",
+                  }}
+                >
+                  {task.done && (
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                    >
+                      <path
+                        d="M2.5 7L5.5 10L11.5 4"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
+                </span>
+              </button>
+            )}
+            {pendingDeleteId === task.id ? null : editingId === task.id ? (
+              <div className="flex-1 min-w-0 flex items-center gap-1.5" style={{ flexBasis: 140 }}>
                 <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
                 <button
                   onClick={() => setRecurrenceModalOpen("edit")}
@@ -519,20 +521,24 @@ export function TaskList({
                 </button>
               </div>
             ) : (
-              <span className="flex-1 min-w-0 flex items-center gap-1.5">
+              // Name and recurrence badge stack instead of sharing a row — on narrow phones,
+              // splitting the width between them left almost nothing for the name itself
+              // (a short "Vacuum floor" was truncating to "Vacuu…"). Stacking gives the name
+              // the row's full width and only asks for extra height when there's a badge.
+              <div className="flex-1 min-w-0 flex flex-col gap-0.5" style={{ flexBasis: 140 }}>
                 <span
-                  className="flex-1 min-w-0 truncate"
                   style={{
                     color: task.done ? "var(--green-text)" : "var(--foreground)",
                     textDecoration: task.done ? "line-through" : "none",
                     opacity: task.done ? 0.75 : 1,
+                    overflowWrap: "anywhere",
                   }}
                 >
                   {task.text}
                 </span>
                 {task.recurrence && (
                   <span
-                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 flex-shrink-0"
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 flex-shrink-0 self-start max-w-full"
                     style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
                     title={recurrenceTitle(task)}
                   >
@@ -540,7 +546,7 @@ export function TaskList({
                     {recurrenceBadge(task.recurrence)}
                   </span>
                 )}
-              </span>
+              </div>
             )}
             {pendingDeleteId === task.id ? (
               <div className="flex-1 min-w-0">
@@ -618,9 +624,9 @@ export function TaskList({
                   {pendingDeleteId === task.id ? (
                     <DeleteConfirm task={task} />
                   ) : (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center flex-wrap gap-2">
                     {editingId === task.id ? (
-                      <div className="flex-1 min-w-0 flex items-center gap-1.5">
+                      <div className="flex-1 min-w-0 flex items-center gap-1.5" style={{ flexBasis: 140 }}>
                         <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
                         <button
                           onClick={() => setRecurrenceModalOpen("edit")}
@@ -638,7 +644,7 @@ export function TaskList({
                         </button>
                       </div>
                     ) : (
-                      <span className="flex-1 min-w-0 truncate text-foreground" style={{ opacity: 0.85 }}>{task.text}</span>
+                      <span className="flex-1 min-w-0 text-foreground" style={{ opacity: 0.85, overflowWrap: "anywhere", flexBasis: 140 }}>{task.text}</span>
                     )}
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
@@ -662,7 +668,7 @@ export function TaskList({
                       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 self-start max-w-full"
                       style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
                     >
-                      <span className="truncate">{t.tasks.otherRecurringDue} {dueBadge(task)}</span>
+                      <span style={{ overflowWrap: "anywhere" }}>{t.tasks.otherRecurringDue} {dueBadge(task)}</span>
                     </span>
                   )}
                 </div>

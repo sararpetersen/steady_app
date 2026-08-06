@@ -34,8 +34,8 @@ export function MorePage() {
           >
             <span className="flex-shrink-0" style={{ color: "var(--primary)" }} aria-hidden="true">{item.icon}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-foreground truncate" style={{ fontWeight: 700 }}>{item.label}</p>
-              <p className="text-muted-foreground truncate" style={{ fontSize: "0.82rem" }}>{item.description}</p>
+              <p className="text-foreground" style={{ fontWeight: 700 }}>{item.label}</p>
+              <p className="text-muted-foreground" style={{ fontSize: "0.82rem" }}>{item.description}</p>
             </div>
             <ChevronRight size={18} className="text-muted-foreground flex-shrink-0" aria-hidden="true" />
           </button>

@@ -87,9 +87,9 @@ function SectionPanel({
     const { id, text } = item;
     const done = doneIds.includes(id);
     return (
-      <ReorderRow key={id} value={item} dragDisabled={editingId === id} className="flex items-center gap-2 group relative" handleSize={18}>
+      <ReorderRow key={id} value={item} dragDisabled={editingId === id} className="flex items-center flex-wrap gap-2 group relative" handleSize={18}>
         {editingId === id ? (
-          <div className="flex-1 min-w-0 flex items-center gap-3 rounded-xl p-3 bg-muted">
+          <div className="flex-1 min-w-0 flex items-center gap-3 rounded-xl p-3 bg-muted" style={{ flexBasis: 140 }}>
             <span
               className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
               style={{
@@ -117,8 +117,8 @@ function SectionPanel({
           <button
             onClick={() => onToggle(id)}
             aria-pressed={done}
-            className="flex-1 min-w-0 flex items-center gap-3 rounded-xl p-3 text-left hover:bg-muted"
-            style={{ backgroundColor: done ? "var(--surface-2)" : "transparent", transition: "background-color 0.15s" }}
+            className="flex-1 min-w-0 flex items-center gap-2 rounded-xl p-2.5 text-left hover:bg-muted"
+            style={{ backgroundColor: done ? "var(--surface-2)" : "transparent", transition: "background-color 0.15s", flexBasis: 140 }}
           >
             <span
               className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
@@ -130,7 +130,14 @@ function SectionPanel({
             >
               {done && <Check size={13} color="white" />}
             </span>
-            <span className="flex-1 min-w-0 text-foreground truncate" style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1 }}>
+            {/* Wraps instead of truncating — a step's checkbox + edit/delete icons leave very
+                little width on narrow phones, and a step name is exactly the kind of thing
+                that shouldn't silently lose words ("Take morning med..." isn't safe to guess
+                the rest of). */}
+            <span
+              className="flex-1 min-w-0 text-foreground"
+              style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1, overflowWrap: "anywhere" }}
+            >
               {text}
             </span>
           </button>
@@ -179,12 +186,12 @@ function SectionPanel({
         {allIds.length > 0 && doneCount === allIds.length ? (
           <CheckCircle2
             size={22}
-            className="mr-2 flex-shrink-0"
+            className="flex-shrink-0"
             style={{ color: "var(--primary)" }}
           />
         ) : (
           <span
-            className="rounded-full px-2.5 py-0.5 mr-2 text-foreground"
+            className="rounded-full px-2.5 py-0.5 flex-shrink-0 text-foreground"
             style={{ backgroundColor: "rgba(128,128,128,0.25)", fontSize: "0.8rem", fontWeight: 700 }}
           >
             {doneCount}/{allIds.length}
@@ -215,7 +222,7 @@ function SectionPanel({
                 onKeyDown={(e) => e.key === "Enter" && submitStep()}
                 placeholder={t.routines.addStepPlaceholder}
                 autoFocus
-                className="flex-1 rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                className="flex-1 min-w-0 rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
                 style={{ fontSize: "0.9rem", transition: "border-color 0.15s" }}
               />
               <button

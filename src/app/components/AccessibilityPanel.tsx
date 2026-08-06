@@ -92,7 +92,6 @@ export function AccessibilityPanel({ settings, onChange }: Props) {
         options={[
           { value: "normal", label: a.fontSize.normal, hint: a.fontSize.normalHint },
           { value: "large", label: a.fontSize.large, hint: a.fontSize.largeHint },
-          { value: "xlarge", label: a.fontSize.xlarge, hint: a.fontSize.xlargeHint },
         ]}
       />
 

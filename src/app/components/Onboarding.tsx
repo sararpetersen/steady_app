@@ -461,8 +461,8 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                       {t.onboarding.setup.textSize}
                     </p>
                     <div className="flex gap-2">
-                      {(["normal", "large", "xlarge"] as const).map((size) => {
-                        const labels = { normal: t.a11y.fontSize.normal, large: t.a11y.fontSize.large, xlarge: t.a11y.fontSize.xlarge };
+                      {(["normal", "large"] as const).map((size) => {
+                        const labels = { normal: t.a11y.fontSize.normal, large: t.a11y.fontSize.large };
                         return (
                           <button
                             key={size}

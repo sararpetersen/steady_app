@@ -190,7 +190,14 @@ export function ImportantDates() {
                     style={{ backgroundColor: "var(--surface-1)" }}
                   >
                     <span style={{ fontSize: "1.7rem", flexShrink: 0 }}>{entry.emoji}</span>
-                    <span className="flex-1 text-foreground min-w-0 truncate" style={{ fontWeight: 600 }}>
+                    {/* flexBasis reserves enough room that the badge/edit/delete wrap below
+                        instead of squeezing the name down to a couple of characters, and
+                        overflowWrap is a last-resort safety net rather than truncate — a
+                        date's name is exactly the kind of thing that shouldn't get cut off. */}
+                    <span
+                      className="flex-1 text-foreground min-w-0"
+                      style={{ fontWeight: 600, flexBasis: 140, overflowWrap: "anywhere" }}
+                    >
                       {entry.name}
                     </span>
                     <span

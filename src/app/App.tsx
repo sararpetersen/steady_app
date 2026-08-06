@@ -232,8 +232,12 @@ export default function App() {
   useEffect(() => {
     const root = document.documentElement;
     const a11y = profile.a11y;
-    const fontSizes = { normal: "17px", large: "20px", xlarge: "24px" };
-    root.style.setProperty("--font-size", fontSizes[a11y.fontSize]);
+    // "Extra large" was removed as a pickable option — its 24px root size broke enough
+    // fixed-size layout (icon buttons, badges, nav labels) across the app that it did more
+    // harm than good. Clamp it to "large" here so anyone who already had it saved self-heals
+    // instead of silently keeping the broken size forever.
+    const fontSizes = { normal: "17px", large: "20px" };
+    root.style.setProperty("--font-size", fontSizes[a11y.fontSize as "normal" | "large"] ?? fontSizes.large);
     const readable = a11y.font === "readable";
     root.style.setProperty("--app-font-body", readable ? "'Atkinson Hyperlegible', sans-serif" : "'Nunito Sans', 'Nunito', sans-serif");
     root.style.setProperty("--app-font-heading", readable ? "'Atkinson Hyperlegible', sans-serif" : "'Nunito', sans-serif");
@@ -480,7 +484,6 @@ export default function App() {
           .mood-label { display: none; }
         }
         @media (max-width: 320px) {
-          .nav-tab-label { display: none; }
           .nav-tabs-row { padding-left: 4px; padding-right: 4px; gap: 0; }
         }
       `}</style>
@@ -503,7 +506,7 @@ export default function App() {
               aria-label="Go to Overview"
             >
               <SteadyWordmark height={26} className="transition-transform hover:scale-[1.04] cursor-pointer" />
-              <p className="text-muted-foreground truncate" style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>
+              <p className="text-muted-foreground truncate w-full" style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>
                 {greeting}
               </p>
             </button>
@@ -629,7 +632,12 @@ export default function App() {
                 aria-label="Go to Overview"
               >
                 <SteadyWordmark height={24} className="flex-shrink-0 transition-transform hover:scale-[1.04] cursor-pointer" />
-                <p className="text-muted-foreground truncate" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
+                {/* items-start on the button (so the logo doesn't stretch full-width) means
+                    this paragraph never gets a cross-axis width to truncate against on its
+                    own — w-full gives it one explicitly, so truncate has a box to clip to
+                    instead of rendering at its full natural width and overlapping the avatar
+                    button next to it. */}
+                <p className="text-muted-foreground truncate w-full" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
                   {greeting}
                 </p>
               </button>
@@ -662,7 +670,7 @@ export default function App() {
             style={{ backgroundColor: "var(--card)" }}
           >
             <div className="nav-scroll overflow-x-auto">
-              <div className="nav-tabs-row flex px-3 py-2 gap-1 max-w-xl mx-auto">
+              <div className="nav-tabs-row flex px-2 py-2 gap-0.5 max-w-xl mx-auto">
                 {TABS.map((tab) => {
                   const Icon = tab.icon;
                   const active = activeTab === tab.key && !settingsOpen;
@@ -673,7 +681,7 @@ export default function App() {
                         setActiveTab(tab.key);
                         setSettingsOpen(false);
                       }}
-                      className="flex-1 flex flex-col items-center gap-0.5 py-2 px-1 min-w-[44px] max-w-full"
+                      className="flex-1 flex flex-col items-center gap-0.5 py-2 px-0 min-w-[44px] max-w-full"
                       aria-current={active ? "page" : undefined}
                     >
                       <Icon size={18} style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }} strokeWidth={active ? 2.5 : 1.8} />
@@ -681,7 +689,12 @@ export default function App() {
                         className="nav-tab-label"
                         style={{
                           fontSize: "0.65rem",
-                          fontWeight: active ? 700 : 500,
+                          // Fixed weight (not bolder when active) so a label's rendered width
+                          // never changes between tabs — active state reads from color and the
+                          // icon's strokeWidth alone. A width change here was tipping "Routines"
+                          // over into wrapping only when it became active, making the whole nav
+                          // bar's height jump depending on which tab was selected.
+                          fontWeight: 600,
                           color: active ? "var(--primary)" : "var(--muted-foreground)",
                           fontFamily: "var(--app-font-heading, Nunito)",
                           whiteSpace: "nowrap",

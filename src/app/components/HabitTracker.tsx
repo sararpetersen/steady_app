@@ -170,10 +170,10 @@ export function HabitTracker() {
                 transition: "background-color 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s cubic-bezier(0.34,1.56,0.64,1)",
               }}
             >
-            <div className="flex items-center gap-1 p-2">
+            <div className="flex items-center flex-wrap gap-1 p-2">
             {/* Main tap area */}
             {editingId === habit.id ? (
-              <div className="flex-1 min-w-0 flex items-center gap-2 p-1">
+              <div className="flex-1 min-w-0 flex items-center gap-2 p-1" style={{ flexBasis: 140 }}>
                 <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 flex-shrink-0 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
                 <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) saveEdit(habit.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
               </div>
@@ -181,18 +181,23 @@ export function HabitTracker() {
             <button
               onClick={() => toggle(habit.id)}
               className="flex-1 min-w-0 flex items-center gap-2 p-1 hover:opacity-90 text-left"
-              style={{ transform: habit.doneToday ? "scale(1.01)" : "scale(1)", transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1)" }}
+              style={{ transform: habit.doneToday ? "scale(1.01)" : "scale(1)", transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1)", flexBasis: 140 }}
             >
               <span style={{ fontSize: "1.7rem", flexShrink: 0 }}>{habit.emoji}</span>
-              <span className="flex-1 min-w-0 text-foreground truncate" style={{ fontWeight: 600 }}>
-                {habit.name}
-              </span>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <Sprout size={15} style={{ color: "var(--primary)" }} aria-hidden="true" />
-                <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--primary)" }}>
-                  {totalCompletions}
+              {/* Growth counter moved below the name instead of sharing its row — on narrow
+                  phones the emoji + counter + checkbox left almost nothing for the name
+                  itself (a name could shrink to a single visible letter). */}
+              <div className="flex-1 min-w-0 flex flex-col gap-0.5 items-start">
+                <span className="text-foreground max-w-full" style={{ fontWeight: 600, overflowWrap: "anywhere" }}>
+                  {habit.name}
                 </span>
-                <span className="sr-only">{totalCompletions} total completions</span>
+                <div className="flex items-center gap-1">
+                  <Sprout size={13} style={{ color: "var(--primary)" }} aria-hidden="true" />
+                  <span style={{ fontWeight: 700, fontSize: "0.78rem", color: "var(--primary)" }}>
+                    {totalCompletions}
+                  </span>
+                  <span className="sr-only">{totalCompletions} total completions</span>
+                </div>
               </div>
               <div
                 className="rounded-full border-2 flex items-center justify-center flex-shrink-0"

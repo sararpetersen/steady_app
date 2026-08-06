@@ -153,6 +153,18 @@ const en = {
     days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   },
 
+  insights: {
+    heading: "Insights",
+    description: "Patterns from your own data – never predictions, never rules.",
+    notEnoughData: "Keep checking in. Once there are a few more mood and habit days to look at, a small, quiet pattern might show up here.",
+    habitDaysLabel: "Habit days",
+    otherDaysLabel: "Other days",
+    higher: "Your mood check-ins tend to run a little higher on days you complete at least one habit.",
+    lower: "Your mood check-ins tend to run a little lower on days you complete a habit – that's just information, not a rule to follow.",
+    similar: "Your mood looks about the same either way. Habits and mood aren't tightly linked for you right now, and that's completely fine.",
+    sampleSize: (n: number) => `Based on ${n} days of your own check-ins.`,
+  },
+
   strengths: {
     heading: "My Strengths",
     description: "Things that tend to come naturally to you.",
@@ -264,6 +276,11 @@ const en = {
     personalizeButton: "Personalise my tips",
     personalizeDismiss: "Dismiss",
     syncingData: "Loading your data…",
+    nowNext: {
+      nowLabel: "Right now",
+      nextLabel: "Up next",
+      allDone: "Nothing left on your routines for now – however you spend this moment is okay.",
+    },
   },
 
   supportTips: {
@@ -362,6 +379,7 @@ const en = {
     alsoAddToTasks: "Also add to Tasks",
     linkedToTasks: "Also tracked in Tasks",
     emojiLabel: "Pictogram (optional)",
+    orTypeOwn: "or type your own:",
     subtasksLabel: "Sub-steps",
     addSubtaskPlaceholder: "Add a sub-step…",
     sections: {
@@ -789,6 +807,20 @@ const da: typeof en = {
     days: ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"],
   },
 
+  insights: {
+    heading: "Indsigter",
+    description: "Mønstre fra dine egne data – aldrig forudsigelser, aldrig regler.",
+    notEnoughData:
+      "Bliv ved med at tjekke ind. Når der er lidt flere humør- og vanedage at kigge på, dukker der måske et lille, stille mønster op her.",
+    habitDaysLabel: "Vanedage",
+    otherDaysLabel: "Andre dage",
+    higher: "Dine humør-check-ins ligger typisk lidt højere på dage, hvor du har lavet mindst én vane.",
+    lower:
+      "Dine humør-check-ins ligger typisk lidt lavere på dage, hvor du har lavet en vane – det er bare information, ikke en regel du skal følge.",
+    similar: "Dit humør ser nogenlunde ens ud begge veje. Vaner og humør hænger ikke tæt sammen for dig lige nu, og det er helt fint.",
+    sampleSize: (n: number) => `Baseret på ${n} dage af dine egne check-ins.`,
+  },
+
   strengths: {
     heading: "Mine styrker",
     description: "Ting der ofte falder dig naturligt.",
@@ -900,6 +932,11 @@ const da: typeof en = {
     personalizeButton: "Personalisér mine tips",
     personalizeDismiss: "Afvis",
     syncingData: "Indlæser dine data…",
+    nowNext: {
+      nowLabel: "Lige nu",
+      nextLabel: "Det næste",
+      allDone: "Intet tilbage på dine rutiner lige nu – hvordan end du bruger dette øjeblik, er okay.",
+    },
   },
 
   supportTips: {
@@ -999,6 +1036,7 @@ const da: typeof en = {
     alsoAddToTasks: "Tilføj også til Opgaver",
     linkedToTasks: "Følges også i Opgaver",
     emojiLabel: "Piktogram (valgfrit)",
+    orTypeOwn: "eller skriv din egen:",
     subtasksLabel: "Undertrin",
     addSubtaskPlaceholder: "Tilføj et undertrin…",
     sections: {

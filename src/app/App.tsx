@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { MotionConfig } from "motion/react";
 import { MoodCheck } from "./components/MoodCheck";
 import { TaskList, type Task, isTaskScheduledToday } from "./components/TaskList";
 import { Routines } from "./components/Routines";
+import { NowNextBanner } from "./components/NowNextBanner";
 import { HabitTracker, type Habit } from "./components/HabitTracker";
 import { DailyNote } from "./components/DailyNote";
 import { MorePage } from "./components/MorePage";
@@ -406,16 +408,18 @@ export default function App() {
     return (
       <LangContext.Provider value={t}>
         <style>{`.reduce-motion * { transition: none !important; animation: none !important; } body { line-height: var(--app-line-height, 1.5); }`}</style>
-        <Onboarding
-          onComplete={handleOnboardingComplete}
-          onSkip={() => setOnboarded(true)}
-          isGuest={authState.isGuest}
-          onRegister={(email, userId) => {
-            justConvertedRef.current = true;
-            setAuthState({ email, isGuest: false, userId });
-          }}
-          onPhotoChange={setProfilePhoto}
-        />
+        <MotionConfig reducedMotion={profile.a11y.reduceMotion ? "always" : "never"}>
+          <Onboarding
+            onComplete={handleOnboardingComplete}
+            onSkip={() => setOnboarded(true)}
+            isGuest={authState.isGuest}
+            onRegister={(email, userId) => {
+              justConvertedRef.current = true;
+              setAuthState({ email, isGuest: false, userId });
+            }}
+            onPhotoChange={setProfilePhoto}
+          />
+        </MotionConfig>
       </LangContext.Provider>
     );
   }
@@ -488,6 +492,7 @@ export default function App() {
         }
       `}</style>
 
+      <MotionConfig reducedMotion={profile.a11y.reduceMotion ? "always" : "never"}>
       <div className="min-h-screen bg-background" style={{ fontFamily: "var(--app-font-body, 'Nunito Sans', sans-serif)" }}>
         {/* ── Desktop sidebar (lg+) ─────────────────────────────────── */}
         <aside
@@ -788,6 +793,7 @@ export default function App() {
                         </div>
                       ))}
                     </div>
+                    <NowNextBanner tasks={tasks} />
                     <MoodCheck />
                     <PersonalizedTip support={profile.support} sensory={profile.sensory} onPersonalize={() => setActiveTab("profile")} />
                     <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
@@ -819,6 +825,7 @@ export default function App() {
 
         <FeedbackForm open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
       </div>
+      </MotionConfig>
     </LangContext.Provider>
   );
 }

@@ -51,8 +51,8 @@ export function MoodCheck() {
               padding: "10px 4px",
               borderColor: selected === i ? "var(--primary)" : "transparent",
               backgroundColor: selected === i ? MOOD_COLOR_VARS[i] : "var(--surface-1)",
-              transform: selected === i ? "scale(1.06)" : "scale(1)",
-              transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)",
+              transform: selected === i ? "scale(1.04)" : "scale(1)",
+              transition: "all 0.2s ease-out",
             }}
             aria-label={mood.label}
             aria-pressed={selected === i}

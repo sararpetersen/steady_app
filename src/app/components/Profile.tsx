@@ -6,6 +6,7 @@ import { resizeImageToBase64 } from "../lib/image";
 import type { MoodEntry } from "./MoodCheck";
 import { normalizePronoun, type ProfileData } from "./profileTypes";
 import { EmojiPicker } from "./ui/EmojiPicker";
+import { GentleInsights } from "./GentleInsights";
 
 interface ProfileProps {
   profile: ProfileData;
@@ -236,6 +237,8 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           </div>
         )}
       </div>
+
+      <GentleInsights />
 
       {/* Strengths */}
       <div className="steady-card bg-card rounded-2xl p-5 border border-border">

@@ -9,10 +9,10 @@ import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 import type { Task } from "./TaskList";
 
-const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
-type SectionKey = typeof SECTION_KEYS[number];
+export const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
+export type SectionKey = typeof SECTION_KEYS[number];
 
-const SECTION_ICONS: Record<SectionKey, React.ReactNode> = {
+export const SECTION_ICONS: Record<SectionKey, React.ReactNode> = {
   morning: <Sun size={20} />,
   afternoon: <Sunset size={20} />,
   late: <MoonStar size={20} />,
@@ -24,13 +24,13 @@ const SECTION_COLOR_VARS: Record<SectionKey, string> = {
   late: "var(--late-bg)",
 };
 
-interface SubTask {
+export interface SubTask {
   id: number;
   text: string;
   done: boolean;
 }
 
-interface CustomItem {
+export interface CustomItem {
   id: number;
   text: string;
   // When set, this step is the same item as a "daily" task in the Tasks tab — added to
@@ -49,9 +49,24 @@ interface CustomItem {
   subtasks?: SubTask[];
 }
 
-type CustomMap = Record<SectionKey, CustomItem[]>;
+export type CustomMap = Record<SectionKey, CustomItem[]>;
 
 const CUSTOM_NEXT_ID_START = 100;
+
+// Same pick-or-type pattern as the Habit tracker's "Add habit" form, tailored to
+// routine-step-shaped things (self-care, morning/evening tasks) instead of habit-shaped ones.
+const EMOJI_SUGGESTIONS = [
+  "🌅", "🛏️", "🪥", "🚿", "👕", "🍽️", "💊", "📵",
+  "🎵", "📚", "🧘", "🚶", "☀️", "🌙", "✅", "🎯",
+  "🧹", "🪴", "✍️", "🫧",
+];
+
+const EMOJI_LABELS: Record<string, string> = {
+  "🌅": "Sunrise", "🛏️": "Bed", "🪥": "Toothbrush", "🚿": "Shower", "👕": "Shirt",
+  "🍽️": "Plate", "💊": "Medication", "📵": "No phone", "🎵": "Music", "📚": "Books",
+  "🧘": "Meditating", "🚶": "Walking", "☀️": "Sun", "🌙": "Moon", "✅": "Check",
+  "🎯": "Target", "🧹": "Cleaning", "🪴": "Plant", "✍️": "Writing", "🫧": "Bubbles",
+};
 
 function SectionPanel({
   sectionKey,
@@ -392,29 +407,58 @@ function SectionPanel({
           {/* Add step */}
           {addingStep ? (
             <div className="space-y-2 mt-2">
-              {/* Inputs and buttons split into their own rows — cramming an emoji box, the
-                  text field, and two buttons onto one line left the text field a useless
-                  sliver on narrow phones. */}
-              <div className="flex gap-2">
-                <input
-                  aria-label={t.routines.emojiLabel}
-                  value={stepEmojiDraft}
-                  onChange={(e) => setStepEmojiDraft(e.target.value)}
-                  className="w-11 flex-shrink-0 rounded-xl border border-border bg-input-background text-center outline-none focus:border-primary"
-                  style={{ fontSize: "1.3rem" }}
-                  maxLength={2}
-                />
-                <input
-                  type="text"
-                  value={stepDraft}
-                  onChange={(e) => setStepDraft(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && submitStep()}
-                  placeholder={t.routines.addStepPlaceholder}
-                  autoFocus
-                  className="flex-1 min-w-0 rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
-                  style={{ fontSize: "0.9rem", transition: "border-color 0.15s" }}
-                />
+              {/* Pick-or-type pictogram, same pattern as the Habit tracker's "Add habit" form. */}
+              <div>
+                <p className="text-muted-foreground mb-2" style={{ fontSize: "0.82rem", fontWeight: 600 }}>
+                  {t.routines.emojiLabel}
+                </p>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {EMOJI_SUGGESTIONS.map((e) => (
+                    <button
+                      key={e}
+                      onClick={() => setStepEmojiDraft(e)}
+                      className="rounded-lg hover:scale-110"
+                      style={{
+                        width: 40,
+                        height: 40,
+                        fontSize: "1.2rem",
+                        backgroundColor: stepEmojiDraft === e ? "var(--green-bg)" : "transparent",
+                        border: stepEmojiDraft === e ? "2px solid var(--primary)" : "2px solid transparent",
+                        transition: "all 0.15s",
+                      }}
+                      aria-label={EMOJI_LABELS[e] ?? e}
+                      aria-pressed={stepEmojiDraft === e}
+                    >
+                      {e}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span style={{ fontSize: "1.5rem" }}>{stepEmojiDraft || "—"}</span>
+                  <span className="text-muted-foreground" style={{ fontSize: "0.82rem" }}>
+                    {t.routines.orTypeOwn}
+                  </span>
+                  <input
+                    type="text"
+                    aria-label={t.routines.emojiLabel}
+                    value={stepEmojiDraft}
+                    onChange={(e) => setStepEmojiDraft(e.target.value.slice(-2) || e.target.value)}
+                    className="rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary text-center"
+                    style={{ width: 48, height: 36, fontSize: "1.1rem" }}
+                    maxLength={2}
+                  />
+                </div>
               </div>
+              <input
+                type="text"
+                value={stepDraft}
+                onChange={(e) => setStepDraft(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && submitStep()}
+                placeholder={t.routines.addStepPlaceholder}
+                autoFocus
+                className="w-full rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                style={{ fontSize: "0.9rem", transition: "border-color 0.15s" }}
+              />
               <div className="flex gap-2">
                 <button
                   onClick={submitStep}

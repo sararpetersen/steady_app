@@ -183,12 +183,13 @@ export function HabitTracker() {
           <ReorderRow key={habit.id} value={habit} dragDisabled={editingId === habit.id}>
             <motion.div
               layout
+              transition={{ duration: 0.2, ease: "easeOut" }}
               className="flex-1 min-w-0 rounded-xl"
               style={{
                 overflow: "hidden",
                 backgroundColor: editingId === habit.id ? "var(--input-background)" : habit.doneToday ? getDoneColor(index) : "var(--surface-1)",
                 border: editingId === habit.id || habit.doneToday ? "2px solid var(--primary)" : "2px solid transparent",
-                transition: "background-color 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s cubic-bezier(0.34,1.56,0.64,1)",
+                transition: "background-color 0.2s ease-out, border-color 0.2s ease-out",
               }}
             >
             <div className="flex items-center flex-wrap gap-1 p-2">
@@ -202,42 +203,13 @@ export function HabitTracker() {
             <button
               onClick={() => toggle(habit.id)}
               className="flex-1 min-w-0 flex items-center gap-2 p-1 hover:opacity-90 text-left"
-              style={{ transform: habit.doneToday ? "scale(1.01)" : "scale(1)", transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1)", flexBasis: 140 }}
+              style={{ transform: habit.doneToday ? "scale(1.01)" : "scale(1)", transition: "transform 0.2s ease-out", flexBasis: 140 }}
             >
               <span style={{ fontSize: "1.7rem", flexShrink: 0 }}>{habit.emoji}</span>
-              {/* Growth counter moved below the name instead of sharing its row — on narrow
-                  phones the emoji + counter + checkbox left almost nothing for the name
-                  itself (a name could shrink to a single visible letter). */}
               <div className="flex-1 min-w-0 flex flex-col gap-0.5 items-start">
                 <span className="text-foreground max-w-full truncate" style={{ fontWeight: 600 }}>
                   {habit.name}
                 </span>
-                <div className="flex items-center gap-1">
-                  <Sprout size={13} style={{ color: "var(--primary)" }} aria-hidden="true" />
-                  <span style={{ fontWeight: 700, fontSize: "0.78rem", color: "var(--primary)" }}>
-                    {totalCompletions}
-                  </span>
-                  <span className="sr-only">{totalCompletions} total completions</span>
-                </div>
-                <div className="flex items-center gap-1" role="group" aria-label={t.habits.historyLabel}>
-                  {last7DateKeys(today).map((dateKey) => {
-                    const done = (habit.completedDates ?? []).includes(dateKey);
-                    const dayAbbr = t.tasks.weekdaysAbbr[weekdayIndex(dateKey)];
-                    return (
-                      <span
-                        key={dateKey}
-                        aria-label={done ? t.habits.historyDone(dayAbbr) : t.habits.historyResting(dayAbbr)}
-                        title={done ? t.habits.historyDone(dayAbbr) : t.habits.historyResting(dayAbbr)}
-                        className="rounded-full flex-shrink-0"
-                        style={{
-                          width: 7,
-                          height: 7,
-                          backgroundColor: done ? "var(--primary)" : "var(--border)",
-                        }}
-                      />
-                    );
-                  })}
-                </div>
               </div>
               <div
                 className="rounded-full border-2 flex items-center justify-center flex-shrink-0"
@@ -246,7 +218,7 @@ export function HabitTracker() {
                   height: 24,
                   borderColor: habit.doneToday ? "var(--primary)" : "var(--muted-foreground)",
                   backgroundColor: habit.doneToday ? "var(--primary)" : "transparent",
-                  transition: "all 0.25s cubic-bezier(0.34,1.56,0.64,1)",
+                  transition: "all 0.2s ease-out",
                 }}
               >
                 {habit.doneToday && (
@@ -268,6 +240,41 @@ export function HabitTracker() {
                 </IconButton>
               )}
               <IconButton tone="destructive" onClick={() => deleteHabit(habit.id)} aria-label={`${t.habits.deleteHabit}: ${habit.name}`}><X size={15} /></IconButton>
+            </div>
+
+            {/* Kept visible in edit mode too — hiding it while editing made the row's height
+                jump sharply on entering/exiting edit, which read as a layout glitch rather
+                than an animation. flexBasis 100% forces its own row within the flex-wrap parent.
+                pl-1 (plus the row's own p-2) lines this up with the note block below, which
+                sits outside this padded row and only has its own px-3 — mismatched indents
+                here read as a jagged left edge once both are visible together in edit mode. */}
+            <div className="flex flex-col gap-1 pl-1 pb-1.5" style={{ flexBasis: "100%" }}>
+              <div className="flex items-center gap-1">
+                <Sprout size={13} style={{ color: "var(--primary)" }} aria-hidden="true" />
+                <span style={{ fontWeight: 700, fontSize: "0.78rem", color: "var(--primary)" }}>
+                  {totalCompletions}
+                </span>
+                <span className="sr-only">{totalCompletions} total completions</span>
+              </div>
+              <div className="flex items-center gap-1" role="group" aria-label={t.habits.historyLabel}>
+                {last7DateKeys(today).map((dateKey) => {
+                  const done = (habit.completedDates ?? []).includes(dateKey);
+                  const dayAbbr = t.tasks.weekdaysAbbr[weekdayIndex(dateKey)];
+                  return (
+                    <span
+                      key={dateKey}
+                      aria-label={done ? t.habits.historyDone(dayAbbr) : t.habits.historyResting(dayAbbr)}
+                      title={done ? t.habits.historyDone(dayAbbr) : t.habits.historyResting(dayAbbr)}
+                      className="rounded-full flex-shrink-0"
+                      style={{
+                        width: 7,
+                        height: 7,
+                        backgroundColor: done ? "var(--primary)" : "var(--border)",
+                      }}
+                    />
+                  );
+                })}
+              </div>
             </div>
             </div>
 

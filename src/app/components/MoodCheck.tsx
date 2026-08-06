@@ -34,7 +34,7 @@ export function MoodCheck() {
 
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
-      <h3 className="mb-1.5 text-foreground">{t.mood.heading}</h3>
+      <h2 className="mb-1.5 text-foreground text-lg">{t.mood.heading}</h2>
       <p className="text-muted-foreground mb-3" style={{ fontSize: "0.95rem" }}>
         {t.mood.description}
         {" "}
@@ -70,7 +70,7 @@ export function MoodCheck() {
         ))}
       </div>
       {selected !== null && (
-        <p className="mt-4" style={{ fontWeight: 600, color: "var(--primary)" }}>
+        <p className="mt-4" style={{ fontWeight: 600, color: "var(--green-text)" }}>
           {moods[selected].result}
         </p>
       )}

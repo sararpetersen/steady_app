@@ -58,7 +58,7 @@ export function FocusTimer() {
         }}
       >
         <div className="flex items-center justify-between mb-1">
-          <h3 className="text-foreground">{t.focus.heading}</h3>
+          <h2 className="text-foreground text-lg">{t.focus.heading}</h2>
           {running && (
             <span
               className="flex items-center gap-1.5 rounded-full px-3 py-1"
@@ -131,7 +131,7 @@ export function FocusTimer() {
                 {mm}:{ss}
               </span>
               {running && (
-                <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--primary)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--green-text)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                   {t.lang === "en" ? "running" : "kører"}
                 </span>
               )}

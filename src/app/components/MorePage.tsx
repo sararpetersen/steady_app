@@ -20,7 +20,7 @@ export function MorePage() {
 
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
-      <h3 className="mb-1 text-foreground">{t.more.heading}</h3>
+      <h2 className="mb-1 text-foreground text-lg">{t.more.heading}</h2>
       <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>
         {t.more.description}
       </p>

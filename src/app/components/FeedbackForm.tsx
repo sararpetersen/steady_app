@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Check } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import { IconButton } from "./ui/IconButton";
 
 interface Props {
@@ -19,6 +20,7 @@ export function FeedbackForm({ open, onClose }: Props) {
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const trapRef = useFocusTrap<HTMLDivElement>(open);
 
   if (!open) return null;
 
@@ -56,6 +58,7 @@ export function FeedbackForm({ open, onClose }: Props) {
       onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
     >
       <div
+        ref={trapRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="feedback-dialog-title"
@@ -73,7 +76,7 @@ export function FeedbackForm({ open, onClose }: Props) {
 
         <div className="overflow-y-auto px-6 py-5">
           {status === "sent" ? (
-            <div className="text-center py-6 space-y-2">
+            <div role="status" className="text-center py-6 space-y-2">
               <div
                 className="mx-auto rounded-full flex items-center justify-center"
                 style={{ width: 44, height: 44, backgroundColor: "var(--green-bg)" }}

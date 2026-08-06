@@ -133,7 +133,7 @@ export function ImportantDates() {
 
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
-      <h3 className="mb-1 text-foreground">{d.heading}</h3>
+      <h2 className="mb-1 text-foreground text-lg">{d.heading}</h2>
       <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>
         {d.description}
       </p>
@@ -149,13 +149,13 @@ export function ImportantDates() {
         {dates.map((entry) => {
           const status = getDateStatus(entry, today);
           return (
-            <ReorderRow key={entry.id} value={entry} dragDisabled={editingId === entry.id}>
+            <ReorderRow key={entry.id} value={entry} values={dates} onReorder={setDates} moveUpLabel={t.common.moveUp} moveDownLabel={t.common.moveDown} dragDisabled={editingId === entry.id}>
               <div className="flex-1 min-w-0">
                 {editingId === entry.id ? (
                   <div className="flex flex-col gap-2 p-3 rounded-xl border-2 border-primary bg-input-background">
                     <div className="flex items-center gap-2">
-                      <input aria-label={d.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 flex-shrink-0 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
-                      <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(entry.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
+                      <input aria-label={d.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 flex-shrink-0 bg-transparent text-center outline-none focus:ring-2 focus:ring-inset focus:ring-primary rounded-lg" style={{ fontSize: "1.5rem" }} maxLength={2} />
+                      <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(entry.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary rounded-lg" />
                       <div className="flex items-center gap-0.5 flex-shrink-0">
                         <IconButton size="pill" tone="primary" onClick={() => saveEdit(entry.id)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${d.saveEdit}: ${entry.name}`}><Check size={15} /></IconButton>
                         <IconButton tone="destructive" onClick={() => deleteDate(entry.id)} aria-label={`${d.deleteDate}: ${entry.name}`}><X size={15} /></IconButton>
@@ -166,7 +166,7 @@ export function ImportantDates() {
                         type="date"
                         value={editDate}
                         onChange={(e) => setEditDate(e.target.value)}
-                        className="rounded-lg px-2 py-1.5 border border-border bg-input-background text-foreground outline-none"
+                        className="rounded-lg px-2 py-1.5 border border-border bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                         style={{ fontSize: "0.85rem" }}
                       />
                       <button

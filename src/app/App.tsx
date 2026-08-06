@@ -24,6 +24,7 @@ import { DEFAULT_A11Y } from "./components/a11yTypes";
 import { LayoutDashboard, ClipboardList, Repeat2, Sprout, UserCircle2, NotebookPen, Settings, CalendarDays, MoreHorizontal, Sun, Moon, MessageCircle } from "lucide-react";
 import { SteadyWordmark } from "./components/SteadyWordmark";
 import { IconButton } from "./components/ui/IconButton";
+import { APP_NAME } from "./version";
 
 {
   /* MARKER-MAKE-KIT-INVOKED */
@@ -720,6 +721,11 @@ export default function App() {
 
           {/* Main content */}
           <main className="flex-1 w-full max-w-xl lg:max-w-2xl mx-auto px-4 pt-5 pb-8">
+            {/* Visually hidden — gives screen readers a real page-level heading to navigate
+                by, since the visible "Steady" wordmark is a decorative logo, not text. */}
+            <h1 className="sr-only">
+              {APP_NAME} – {settingsOpen ? t.settings.title : TABS.find((tab) => tab.key === activeTab)?.label}
+            </h1>
             {settingsOpen ? (
               <SettingsPage
                 settings={profile.a11y}

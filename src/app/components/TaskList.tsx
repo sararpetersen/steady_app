@@ -400,7 +400,7 @@ export function TaskList({
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-foreground">{t.tasks.heading}</h3>
+        <h2 className="text-foreground text-lg">{t.tasks.heading}</h2>
         {todayTasks.length > 0 && (
           remaining === 0 ? (
             <span
@@ -453,6 +453,10 @@ export function TaskList({
             )}
           <ReorderRow
             value={task}
+            values={sortedTasks}
+            onReorder={setTasks}
+            moveUpLabel={t.common.moveUp}
+            moveDownLabel={t.common.moveDown}
             dragDisabled={editingId === task.id}
             className="flex items-center flex-wrap gap-1 rounded-xl hover:brightness-95 py-2"
             style={{
@@ -465,6 +469,7 @@ export function TaskList({
               <button
                 onClick={() => toggle(task.id)}
                 disabled={task.done}
+                aria-pressed={task.done}
                 className="flex-shrink-0 rounded-full flex items-center justify-center disabled:cursor-default"
                 style={{ width: 44, height: 44 }}
                 aria-label={task.done ? t.tasks.completedHeading : t.tasks.markComplete}
@@ -504,7 +509,7 @@ export function TaskList({
             )}
             {pendingDeleteId === task.id ? null : editingId === task.id ? (
               <div className="flex-1 min-w-0 flex items-center gap-1.5" style={{ flexBasis: 140 }}>
-                <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
+                <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary" />
                 <button
                   onClick={() => setRecurrenceModalOpen("edit")}
                   className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
@@ -628,7 +633,7 @@ export function TaskList({
                   <div className="flex items-center flex-wrap gap-2">
                     {editingId === task.id ? (
                       <div className="flex-1 min-w-0 flex items-center gap-1.5" style={{ flexBasis: 140 }}>
-                        <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none" />
+                        <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary" />
                         <button
                           onClick={() => setRecurrenceModalOpen("edit")}
                           className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"

@@ -67,7 +67,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
       <div className="steady-card bg-card rounded-2xl p-5 border border-border">
         <div className="flex items-center gap-1 mb-1">
           <img src="/sprout5.webp" alt="" aria-hidden="true" style={{ width: 40, height: 40, objectFit: "contain", flexShrink: 0 }} />
-          <h3 className="text-foreground">{p.heading}</h3>
+          <h2 className="text-foreground text-lg">{p.heading}</h2>
         </div>
         <p className="text-muted-foreground mb-5" style={{ fontSize: "0.95rem" }}>
           {p.description}
@@ -335,6 +335,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
 
       <button
         onClick={save}
+        aria-live="polite"
         className="w-full flex items-center justify-center gap-2 rounded-2xl py-4 bg-primary text-primary-foreground hover:opacity-90"
         style={{ fontWeight: 700, fontSize: "1rem", transition: "opacity 0.15s" }}
       >

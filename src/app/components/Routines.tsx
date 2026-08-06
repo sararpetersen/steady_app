@@ -160,7 +160,7 @@ function SectionPanel({
     const subtaskDoneCount = subtasks.filter((s) => s.done).length;
     const expanded = expandedIds.has(id);
     return (
-      <ReorderRow key={id} value={item} dragDisabled={editingId === id} className="flex items-center flex-wrap gap-2 group relative py-1.5" handleSize={18}>
+      <ReorderRow key={id} value={item} values={customItems} onReorder={onReorderCustom} moveUpLabel={t.common.moveUp} moveDownLabel={t.common.moveDown} dragDisabled={editingId === id} className="flex items-center flex-wrap gap-2 group relative py-1.5" handleSize={18}>
         {editingId === id ? (
           <div className="flex-1 min-w-0 flex items-center gap-2 rounded-xl p-3 bg-muted" style={{ flexBasis: 140 }}>
             <span
@@ -178,7 +178,7 @@ function SectionPanel({
               aria-label={t.routines.emojiLabel}
               value={editEmojiDraft}
               onChange={(event) => setEditEmojiDraft(event.target.value)}
-              className="w-9 flex-shrink-0 bg-transparent text-center outline-none"
+              className="w-9 flex-shrink-0 bg-transparent text-center outline-none focus:ring-2 focus:ring-inset focus:ring-primary rounded-lg"
               style={{ fontSize: "1.3rem" }}
               maxLength={2}
             />
@@ -191,7 +191,7 @@ function SectionPanel({
                 if (event.key === "Enter") saveEdit(id);
                 if (event.key === "Escape") setEditingId(null);
               }}
-              className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none"
+              className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
             />
           </div>
         ) : (
@@ -648,7 +648,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
 
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
-      <h3 className="mb-1 text-foreground">{t.routines.heading}</h3>
+      <h2 className="mb-1 text-foreground text-lg">{t.routines.heading}</h2>
       <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>{t.routines.description}</p>
       <div className="space-y-3">
         {SECTION_KEYS.map((key) => (

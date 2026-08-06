@@ -4,6 +4,7 @@ import { X, ChevronDown, ChevronUp, Eye, EyeOff, LogOut, Trash2, Download, Uploa
 import { AnimatedCollapse } from "./AnimatedCollapse";
 import { IconButton } from "./ui/IconButton";
 import { useLang } from "../i18n/LangContext";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import type { A11ySettings } from "./a11yTypes";
 import type { Lang } from "../i18n/translations";
 import type { AuthState } from "./AuthPage";
@@ -41,7 +42,7 @@ const EXPORT_KEYS = [
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--primary)", marginBottom: 8 }}>
+    <p style={{ fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--green-text)", marginBottom: 8 }}>
       {children}
     </p>
   );
@@ -407,6 +408,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
   const t = useLang();
   const s = t.settings;
   const [privacyOpen, setPrivacyOpen] = useState(false);
+  const privacyTrapRef = useFocusTrap<HTMLDivElement>(privacyOpen);
   const [importError, setImportError] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
   const update = (patch: Partial<A11ySettings>) => onChange({ ...settings, ...patch });
@@ -539,7 +541,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
         <button
           onClick={() => setPrivacyOpen(true)}
           className="text-left hover:opacity-70"
-          style={{ color: "var(--primary)", fontSize: "0.85rem", fontWeight: 600, transition: "opacity 0.15s" }}
+          style={{ color: "var(--green-text)", fontSize: "0.85rem", fontWeight: 600, transition: "opacity 0.15s" }}
         >
           {s.privacyLink} →
         </button>
@@ -588,6 +590,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
           onClick={(e) => { if (e.target === e.currentTarget) setPrivacyOpen(false); }}
         >
           <div
+            ref={privacyTrapRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="privacy-dialog-title"

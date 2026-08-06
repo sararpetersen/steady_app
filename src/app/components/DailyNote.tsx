@@ -74,7 +74,7 @@ export function DailyNote() {
       {/* Compose — only shown until today's note has been written */}
       {!todayEntry && (
         <div className="steady-card bg-card rounded-2xl p-5 border border-border">
-          <h3 className="mb-1 text-foreground">{t.note.heading}</h3>
+          <h2 className="mb-1 text-foreground text-lg">{t.note.heading}</h2>
           <p className="text-muted-foreground mb-3" style={{ fontSize: "0.95rem" }}>
             {t.note.description}
           </p>
@@ -136,7 +136,7 @@ export function DailyNote() {
                 return (
                   <div key={entry.id} className="px-5 py-4 group">
                     <div className="flex items-center justify-between mb-1">
-                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--primary)" }}>
+                      <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--green-text)" }}>
                         {label}
                       </span>
                       <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100" style={{ transition: "opacity 0.15s" }}>
@@ -172,7 +172,7 @@ export function DailyNote() {
                         onChange={(e) => setEditDraft(e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Escape") setEditingId(null); }}
                         rows={3}
-                        className="w-full rounded-xl px-3 py-2 border border-primary bg-input-background text-foreground outline-none resize-none"
+                        className="w-full rounded-xl px-3 py-2 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary resize-none"
                         style={{ fontSize: "0.9rem", lineHeight: 1.6 }}
                       />
                     ) : (

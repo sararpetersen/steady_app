@@ -161,7 +161,7 @@ export function HabitTracker() {
 
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
-      <h3 className="mb-1 text-foreground">{t.habits.heading}</h3>
+      <h2 className="mb-1 text-foreground text-lg">{t.habits.heading}</h2>
       <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>
         {t.habits.description}
       </p>
@@ -180,7 +180,7 @@ export function HabitTracker() {
         {habits.map((habit, index) => {
           const totalCompletions = habit.totalCompletions ?? 0; // legacy entries may predate this field
           return (
-          <ReorderRow key={habit.id} value={habit} dragDisabled={editingId === habit.id}>
+          <ReorderRow key={habit.id} value={habit} values={habits} onReorder={setHabits} moveUpLabel={t.common.moveUp} moveDownLabel={t.common.moveDown} dragDisabled={editingId === habit.id}>
             <motion.div
               layout
               transition={{ duration: 0.2, ease: "easeOut" }}
@@ -196,12 +196,13 @@ export function HabitTracker() {
             {/* Main tap area */}
             {editingId === habit.id ? (
               <div className="flex-1 min-w-0 flex items-center gap-2 p-1" style={{ flexBasis: 140 }}>
-                <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 flex-shrink-0 bg-transparent text-center outline-none" style={{ fontSize: "1.5rem" }} maxLength={2} />
-                <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) saveEdit(habit.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none" />
+                <input aria-label={t.habits.emojiLabel} value={editEmoji} onChange={(e) => setEditEmoji(e.target.value)} className="w-10 flex-shrink-0 bg-transparent text-center outline-none focus:ring-2 focus:ring-inset focus:ring-primary rounded-lg" style={{ fontSize: "1.5rem" }} maxLength={2} />
+                <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) saveEdit(habit.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 bg-transparent text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary rounded-lg" />
               </div>
             ) : (
             <button
               onClick={() => toggle(habit.id)}
+              aria-pressed={habit.doneToday}
               className="flex-1 min-w-0 flex items-center gap-2 p-1 hover:opacity-90 text-left"
               style={{ transform: habit.doneToday ? "scale(1.01)" : "scale(1)", transition: "transform 0.2s ease-out", flexBasis: 140 }}
             >
@@ -251,7 +252,7 @@ export function HabitTracker() {
             <div className="flex flex-col gap-1 pl-1 pb-1.5" style={{ flexBasis: "100%" }}>
               <div className="flex items-center gap-1">
                 <Sprout size={13} style={{ color: "var(--primary)" }} aria-hidden="true" />
-                <span style={{ fontWeight: 700, fontSize: "0.78rem", color: "var(--primary)" }}>
+                <span style={{ fontWeight: 700, fontSize: "0.78rem", color: "var(--green-text)" }}>
                   {totalCompletions}
                 </span>
                 <span className="sr-only">{totalCompletions} total completions</span>
@@ -290,7 +291,7 @@ export function HabitTracker() {
                   onKeyDown={(e) => { if (e.key === "Escape") setEditingId(null); }}
                   placeholder={t.habits.notePlaceholder}
                   rows={2}
-                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none resize-none"
+                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary rounded-lg resize-none"
                   style={{ fontSize: "0.9rem", lineHeight: 1.5 }}
                 />
               </div>

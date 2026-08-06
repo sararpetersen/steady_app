@@ -13,8 +13,11 @@ interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const SIZE_CLASSES: Record<Size, string> = {
-  sm: "p-1.5 rounded-lg",
-  md: "p-2 rounded-lg",
+  // Nudged up slightly from p-1.5/p-2 — closer to a comfortable tap target for an audience
+  // where motor-coordination/tremor is a common co-occurring trait, without going all the
+  // way to 44px, which would reintroduce the row-squishing this session already fixed.
+  sm: "p-2 rounded-lg",
+  md: "p-2.5 rounded-lg",
   pill: "px-2.5 py-1.5 rounded-lg",
   lg: "rounded-full flex-shrink-0",
 };

@@ -51,7 +51,7 @@ export function ComponentGallery() {
         <Section title="ReorderRow" description="Drag-to-reorder wrapper used by Habits, Tasks, Routines, and Important Dates.">
           <Reorder.Group axis="y" values={items} onReorder={setItems} className="space-y-2">
             {items.map((item) => (
-              <ReorderRow key={item} value={item} className="flex items-center gap-1 rounded-xl" style={{ backgroundColor: "var(--surface-1)" }}>
+              <ReorderRow key={item} value={item} values={items} onReorder={setItems} moveUpLabel="Move up" moveDownLabel="Move down" className="flex items-center gap-1 rounded-xl" style={{ backgroundColor: "var(--surface-1)" }}>
                 <span className="flex-1 p-3 text-foreground">{item}</span>
               </ReorderRow>
             ))}

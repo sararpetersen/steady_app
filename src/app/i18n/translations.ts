@@ -4,6 +4,11 @@ const en = {
   lang: "en" as Lang,
   dateLocale: "en-GB",
 
+  common: {
+    moveUp: "Move up",
+    moveDown: "Move down",
+  },
+
   greeting: {
     morning: "Good morning",
     afternoon: "Good afternoon",
@@ -657,6 +662,11 @@ const en = {
 const da: typeof en = {
   lang: "da" as Lang,
   dateLocale: "da-DK",
+
+  common: {
+    moveUp: "Flyt op",
+    moveDown: "Flyt ned",
+  },
 
   greeting: {
     morning: "Godmorgen",

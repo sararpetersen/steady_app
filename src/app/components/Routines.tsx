@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2 } from "lucide-react";
 import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
@@ -7,6 +7,7 @@ import { useLang } from "../i18n/LangContext";
 import { AnimatedCollapse } from "./AnimatedCollapse";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
+import type { Task } from "./TaskList";
 
 const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
 type SectionKey = typeof SECTION_KEYS[number];
@@ -26,6 +27,12 @@ const SECTION_COLOR_VARS: Record<SectionKey, string> = {
 interface CustomItem {
   id: number;
   text: string;
+  // When set, this step is the same item as a "daily" task in the Tasks tab — added to
+  // solve the duplicate-entry complaint of having to type a thing twice to track it both
+  // places. Completion and text are mirrored from that task rather than tracked locally;
+  // if the task is later deleted from the Tasks side, this just self-heals back into a
+  // normal, independently-toggleable step (see resolveLink below).
+  linkedTaskId?: number;
 }
 
 type CustomMap = Record<SectionKey, CustomItem[]>;
@@ -37,6 +44,7 @@ function SectionPanel({
   doneIds,
   onToggle,
   customItems,
+  tasks,
   onAddCustom,
   onEditCustom,
   onReorderCustom,
@@ -46,7 +54,8 @@ function SectionPanel({
   doneIds: number[];
   onToggle: (id: number) => void;
   customItems: CustomItem[];
-  onAddCustom: (text: string) => void;
+  tasks: Task[];
+  onAddCustom: (text: string, linkToTasks: boolean) => void;
   onEditCustom: (id: number, text: string) => void;
   onReorderCustom: (items: CustomItem[]) => void;
   onDeleteCustom: (id: number) => void;
@@ -56,23 +65,32 @@ function SectionPanel({
   const [open, setOpen] = useState(false);
   const [addingStep, setAddingStep] = useState(false);
   const [stepDraft, setStepDraft] = useState("");
+  const [linkToTasks, setLinkToTasks] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editDraft, setEditDraft] = useState("");
 
+  // A step only counts as "linked" while its task still exists — if that task was deleted
+  // from the Tasks tab, it self-heals back into a plain, locally-tracked step rather than
+  // pointing at nothing.
+  const linkedTask = (item: CustomItem) =>
+    item.linkedTaskId != null ? tasks.find((tsk) => tsk.id === item.linkedTaskId) : undefined;
+  const isDone = (item: CustomItem) => linkedTask(item)?.done ?? doneIds.includes(item.id);
+
   const allIds = customItems.map((c) => c.id);
-  const doneCount = allIds.filter((id) => doneIds.includes(id)).length;
+  const doneCount = customItems.filter(isDone).length;
 
   const submitStep = () => {
     const trimmed = stepDraft.trim();
     if (!trimmed) return;
-    onAddCustom(trimmed);
+    onAddCustom(trimmed, linkToTasks);
     setStepDraft("");
+    setLinkToTasks(false);
     setAddingStep(false);
   };
 
   const startEditing = (item: CustomItem) => {
     setEditingId(item.id);
-    setEditDraft(item.text);
+    setEditDraft(linkedTask(item)?.text ?? item.text);
   };
 
   const saveEdit = (id: number) => {
@@ -84,8 +102,10 @@ function SectionPanel({
   };
 
   const renderItem = (item: CustomItem) => {
-    const { id, text } = item;
-    const done = doneIds.includes(id);
+    const { id } = item;
+    const linked = linkedTask(item);
+    const text = linked?.text ?? item.text;
+    const done = isDone(item);
     return (
       <ReorderRow key={id} value={item} dragDisabled={editingId === id} className="flex items-center flex-wrap gap-2 group relative" handleSize={18}>
         {editingId === id ? (
@@ -116,8 +136,9 @@ function SectionPanel({
         ) : (
           <button
             onClick={() => onToggle(id)}
+            disabled={!!linked && done}
             aria-pressed={done}
-            className="flex-1 min-w-0 flex items-center gap-2 rounded-xl p-2.5 text-left hover:bg-muted"
+            className="flex-1 min-w-0 flex items-center gap-2 rounded-xl p-2.5 text-left hover:bg-muted disabled:cursor-default"
             style={{ backgroundColor: done ? "var(--surface-2)" : "transparent", transition: "background-color 0.15s", flexBasis: 140 }}
           >
             <span
@@ -130,18 +151,23 @@ function SectionPanel({
             >
               {done && <Check size={13} color="white" />}
             </span>
-            {/* Wraps instead of truncating — a step's checkbox + edit/delete icons leave very
-                little width on narrow phones, and a step name is exactly the kind of thing
-                that shouldn't silently lose words ("Take morning med..." isn't safe to guess
-                the rest of). */}
             <span
-              className="flex-1 min-w-0 text-foreground"
-              style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1, overflowWrap: "anywhere" }}
+              className="flex-1 min-w-0 text-foreground truncate"
+              style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1 }}
             >
               {text}
             </span>
+            {linked && (
+              <Link2
+                size={13}
+                className="flex-shrink-0"
+                style={{ color: "var(--muted-foreground)" }}
+                aria-hidden="true"
+              />
+            )}
           </button>
         )}
+        {linked && <span className="sr-only">{t.routines.linkedToTasks}</span>}
         <div className="flex items-center gap-0.5 flex-shrink-0">
           <IconButton
             size="md"
@@ -214,32 +240,44 @@ function SectionPanel({
 
           {/* Add step */}
           {addingStep ? (
-            <div className="flex gap-2 mt-2">
-              <input
-                type="text"
-                value={stepDraft}
-                onChange={(e) => setStepDraft(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && submitStep()}
-                placeholder={t.routines.addStepPlaceholder}
-                autoFocus
-                className="flex-1 min-w-0 rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
-                style={{ fontSize: "0.9rem", transition: "border-color 0.15s" }}
-              />
-              <button
-                onClick={submitStep}
-                className="rounded-xl px-4 py-2.5 bg-primary text-primary-foreground hover:opacity-90"
-                style={{ fontWeight: 700, fontSize: "0.9rem", transition: "opacity 0.15s" }}
-              >
-                {t.routines.addStepButton}
-              </button>
-              <button
-                onClick={() => { setAddingStep(false); setStepDraft(""); }}
-                className="rounded-xl px-3 py-2.5 border border-border text-muted-foreground hover:bg-muted"
-                style={{ transition: "background-color 0.15s" }}
-                aria-label="Cancel"
-              >
-                <X size={16} />
-              </button>
+            <div className="space-y-2 mt-2">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={stepDraft}
+                  onChange={(e) => setStepDraft(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && submitStep()}
+                  placeholder={t.routines.addStepPlaceholder}
+                  autoFocus
+                  className="flex-1 min-w-0 rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                  style={{ fontSize: "0.9rem", transition: "border-color 0.15s" }}
+                />
+                <button
+                  onClick={submitStep}
+                  className="rounded-xl px-4 py-2.5 bg-primary text-primary-foreground hover:opacity-90"
+                  style={{ fontWeight: 700, fontSize: "0.9rem", transition: "opacity 0.15s" }}
+                >
+                  {t.routines.addStepButton}
+                </button>
+                <button
+                  onClick={() => { setAddingStep(false); setStepDraft(""); setLinkToTasks(false); }}
+                  className="rounded-xl px-3 py-2.5 border border-border text-muted-foreground hover:bg-muted"
+                  style={{ transition: "background-color 0.15s" }}
+                  aria-label="Cancel"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <label className="flex items-center gap-2 pl-1" style={{ fontSize: "0.85rem", color: "var(--muted-foreground)" }}>
+                <input
+                  type="checkbox"
+                  checked={linkToTasks}
+                  onChange={(e) => setLinkToTasks(e.target.checked)}
+                  className="rounded"
+                  style={{ width: 16, height: 16, accentColor: "var(--primary)" }}
+                />
+                {t.routines.alsoAddToTasks}
+              </label>
             </div>
           ) : (
             <button
@@ -257,7 +295,14 @@ function SectionPanel({
   );
 }
 
-export function Routines() {
+interface RoutinesProps {
+  tasks: Task[];
+  setTasks: (updater: Task[] | ((prev: Task[]) => Task[])) => void;
+  taskNextId: number;
+  setTaskNextId: (updater: number | ((prev: number) => number)) => void;
+}
+
+export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: RoutinesProps) {
   const t = useLang();
   const [doneIds, setDoneIds] = useLocalStorage<number[]>("steady-routines-done", []);
   const [doneDate, setDoneDate] = useLocalStorage<string | null>("steady-routines-done-date", null);
@@ -268,6 +313,8 @@ export function Routines() {
   const today = useToday();
 
   // Reset checked-off steps when the day rolls over, so routines start fresh each day.
+  // Linked steps don't need their own reset: their completion lives on the task, and that
+  // task already resets itself (it's "daily") via the Tasks rollover in App.tsx.
   useEffect(() => {
     if (doneDate !== today) {
       setDoneIds([]);
@@ -276,31 +323,60 @@ export function Routines() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [today]);
 
+  const findCustomItem = (id: number): CustomItem | undefined => {
+    for (const key of SECTION_KEYS) {
+      const found = (custom[key] ?? []).find((item) => item.id === id);
+      if (found) return found;
+    }
+    return undefined;
+  };
+
   const toggleDone = (id: number) => {
+    const item = findCustomItem(id);
+    if (item?.linkedTaskId != null) {
+      // One-way to match how standalone tasks behave — once checked off here or in Tasks,
+      // it locks for the day rather than being freely re-toggleable like a plain step.
+      setTasks((prev) => prev.map((tsk) => (tsk.id === item.linkedTaskId && !tsk.done ? { ...tsk, done: true } : tsk)));
+      return;
+    }
     setDoneIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
-  const addCustom = (section: SectionKey, text: string) => {
+  const addCustom = (section: SectionKey, text: string, linkToTasks: boolean) => {
     const id = nextId;
     setNextId((n) => n + 1);
+    let linkedTaskId: number | undefined;
+    if (linkToTasks) {
+      linkedTaskId = taskNextId;
+      setTaskNextId((n) => n + 1);
+      setTasks((prev) => [...prev, { id: linkedTaskId!, text, done: false, recurrence: "daily" }]);
+    }
     setCustom((prev) => ({
       ...prev,
-      [section]: [...(prev[section] ?? []), { id, text }],
+      [section]: [...(prev[section] ?? []), { id, text, linkedTaskId }],
     }));
   };
 
   const deleteCustom = (section: SectionKey, id: number) => {
+    const item = (custom[section] ?? []).find((i) => i.id === id);
+    if (item?.linkedTaskId != null) {
+      setTasks((prev) => prev.filter((tsk) => tsk.id !== item.linkedTaskId));
+    }
     setCustom((prev) => ({
       ...prev,
-      [section]: (prev[section] ?? []).filter((item) => item.id !== id),
+      [section]: (prev[section] ?? []).filter((i) => i.id !== id),
     }));
     setDoneIds((prev) => prev.filter((x) => x !== id));
   };
 
   const editCustom = (section: SectionKey, id: number, text: string) => {
+    const item = (custom[section] ?? []).find((i) => i.id === id);
+    if (item?.linkedTaskId != null) {
+      setTasks((prev) => prev.map((tsk) => (tsk.id === item.linkedTaskId ? { ...tsk, text } : tsk)));
+    }
     setCustom((prev) => ({
       ...prev,
-      [section]: (prev[section] ?? []).map((item) => item.id === id ? { ...item, text } : item),
+      [section]: (prev[section] ?? []).map((i) => i.id === id ? { ...i, text } : i),
     }));
   };
 
@@ -320,7 +396,8 @@ export function Routines() {
             doneIds={doneIds}
             onToggle={toggleDone}
             customItems={custom[key] ?? []}
-            onAddCustom={(text) => addCustom(key, text)}
+            tasks={tasks}
+            onAddCustom={(text, linkToTasks) => addCustom(key, text, linkToTasks)}
             onEditCustom={(id, text) => editCustom(key, id, text)}
             onReorderCustom={(items) => reorderCustom(key, items)}
             onDeleteCustom={(id) => deleteCustom(key, id)}

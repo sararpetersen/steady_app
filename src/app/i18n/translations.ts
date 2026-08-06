@@ -359,6 +359,8 @@ const en = {
     editLabel: "Edit",
     saveStep: "Save step",
     noSteps: "No steps yet. Tap below to add your first one.",
+    alsoAddToTasks: "Also add to Tasks",
+    linkedToTasks: "Also tracked in Tasks",
     sections: {
       morning: { label: "Morning", time: "7:00 - 9:00 AM" },
       afternoon: {
@@ -988,6 +990,8 @@ const da: typeof en = {
     editLabel: "Rediger",
     saveStep: "Gem trin",
     noSteps: "Ingen trin endnu. Tryk nedenfor for at tilføje det første.",
+    alsoAddToTasks: "Tilføj også til Opgaver",
+    linkedToTasks: "Følges også i Opgaver",
     sections: {
       morning: { label: "Morgen", time: "7:00 - 9:00" },
       afternoon: {

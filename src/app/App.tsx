@@ -794,7 +794,7 @@ export default function App() {
                   </>
                 )}
                 {activeTab === "tasks" && <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />}
-                {activeTab === "routines" && <Routines />}
+                {activeTab === "routines" && <Routines tasks={tasks} setTasks={setTasks} taskNextId={nextId} setTaskNextId={setNextId} />}
                 {activeTab === "habits" && <HabitTracker />}
                 {activeTab === "note" && <DailyNote />}
                 {activeTab === "more" && <MorePage />}

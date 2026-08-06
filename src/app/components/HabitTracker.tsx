@@ -188,7 +188,7 @@ export function HabitTracker() {
                   phones the emoji + counter + checkbox left almost nothing for the name
                   itself (a name could shrink to a single visible letter). */}
               <div className="flex-1 min-w-0 flex flex-col gap-0.5 items-start">
-                <span className="text-foreground max-w-full" style={{ fontWeight: 600, overflowWrap: "anywhere" }}>
+                <span className="text-foreground max-w-full truncate" style={{ fontWeight: 600 }}>
                   {habit.name}
                 </span>
                 <div className="flex items-center gap-1">

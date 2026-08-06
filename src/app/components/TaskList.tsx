@@ -454,7 +454,7 @@ export function TaskList({
           <ReorderRow
             value={task}
             dragDisabled={editingId === task.id}
-            className="flex items-center flex-wrap gap-1 rounded-xl hover:brightness-95"
+            className="flex items-center flex-wrap gap-1 rounded-xl hover:brightness-95 py-2"
             style={{
               backgroundColor: task.done
                 ? "var(--green-bg)"
@@ -522,16 +522,17 @@ export function TaskList({
               </div>
             ) : (
               // Name and recurrence badge stack instead of sharing a row — on narrow phones,
-              // splitting the width between them left almost nothing for the name itself
-              // (a short "Vacuum floor" was truncating to "Vacuu…"). Stacking gives the name
-              // the row's full width and only asks for extra height when there's a badge.
+              // splitting the width between them left almost nothing for the name itself.
+              // Stacking gives the name the row's full width, which it truncates within
+              // (rather than wrapping) — a single clean ellipsis line reads better here
+              // than the name growing to multiple lines.
               <div className="flex-1 min-w-0 flex flex-col gap-0.5" style={{ flexBasis: 140 }}>
                 <span
+                  className="truncate"
                   style={{
                     color: task.done ? "var(--green-text)" : "var(--foreground)",
                     textDecoration: task.done ? "line-through" : "none",
                     opacity: task.done ? 0.75 : 1,
-                    overflowWrap: "anywhere",
                   }}
                 >
                   {task.text}
@@ -644,7 +645,7 @@ export function TaskList({
                         </button>
                       </div>
                     ) : (
-                      <span className="flex-1 min-w-0 text-foreground" style={{ opacity: 0.85, overflowWrap: "anywhere", flexBasis: 140 }}>{task.text}</span>
+                      <span className="flex-1 min-w-0 text-foreground truncate" style={{ opacity: 0.85, flexBasis: 140 }}>{task.text}</span>
                     )}
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
@@ -665,10 +666,10 @@ export function TaskList({
                   )}
                   {editingId !== task.id && pendingDeleteId !== task.id && (
                     <span
-                      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 self-start max-w-full"
+                      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 self-start max-w-full min-w-0"
                       style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
                     >
-                      <span style={{ overflowWrap: "anywhere" }}>{t.tasks.otherRecurringDue} {dueBadge(task)}</span>
+                      <span className="truncate">{t.tasks.otherRecurringDue} {dueBadge(task)}</span>
                     </span>
                   )}
                 </div>

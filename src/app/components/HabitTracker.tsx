@@ -15,6 +15,25 @@ export interface Habit {
   doneToday: boolean;
   lastCompletedDate?: string; // "YYYY-MM-DD" — legacy entries may predate this field
   note?: string; // optional freeform context, e.g. "doctor said 2L a day" — mirrors Reminders' note field
+  completedDates?: string[]; // "YYYY-MM-DD" days marked done — legacy entries may predate this field
+}
+
+// A missed day is never shown as broken or red — just an unfilled "resting" dot, same
+// as a day before the habit existed. There's no streak to lose, so there's nothing to punish.
+function last7DateKeys(today: string): string[] {
+  const [y, m, d] = today.split("-").map(Number);
+  const keys: string[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const dt = new Date(y, (m - 1), d - i);
+    const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+    keys.push(key);
+  }
+  return keys;
+}
+
+function weekdayIndex(dateKey: string): number {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  return new Date(y, m - 1, d).getDay();
 }
 
 // Each habit is just a seed — the growth payoff lives in the Overview's daily tree, not here.
@@ -97,11 +116,13 @@ export function HabitTracker() {
         if (h.id !== id) return h;
         const current = h.totalCompletions ?? 0; // legacy entries may predate this field
         const nowDone = !h.doneToday;
+        const dates = h.completedDates ?? [];
         return {
           ...h,
           doneToday: nowDone,
           lastCompletedDate: nowDone ? today : h.lastCompletedDate,
           totalCompletions: nowDone ? current + 1 : Math.max(0, current - 1),
+          completedDates: nowDone ? [...dates.filter((d) => d !== today), today] : dates.filter((d) => d !== today),
         };
       })
     );
@@ -131,7 +152,7 @@ export function HabitTracker() {
     if (!name) return;
     setHabits((prev) => [
       ...prev,
-      { id: generateId(), name, emoji: newEmoji, totalCompletions: 0, doneToday: false },
+      { id: generateId(), name, emoji: newEmoji, totalCompletions: 0, doneToday: false, completedDates: [] },
     ]);
     setNewName("");
     setNewEmoji("🎯");
@@ -197,6 +218,25 @@ export function HabitTracker() {
                     {totalCompletions}
                   </span>
                   <span className="sr-only">{totalCompletions} total completions</span>
+                </div>
+                <div className="flex items-center gap-1" role="group" aria-label={t.habits.historyLabel}>
+                  {last7DateKeys(today).map((dateKey) => {
+                    const done = (habit.completedDates ?? []).includes(dateKey);
+                    const dayAbbr = t.tasks.weekdaysAbbr[weekdayIndex(dateKey)];
+                    return (
+                      <span
+                        key={dateKey}
+                        aria-label={done ? t.habits.historyDone(dayAbbr) : t.habits.historyResting(dayAbbr)}
+                        title={done ? t.habits.historyDone(dayAbbr) : t.habits.historyResting(dayAbbr)}
+                        className="rounded-full flex-shrink-0"
+                        style={{
+                          width: 7,
+                          height: 7,
+                          backgroundColor: done ? "var(--primary)" : "var(--border)",
+                        }}
+                      />
+                    );
+                  })}
                 </div>
               </div>
               <div

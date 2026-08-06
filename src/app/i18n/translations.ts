@@ -405,6 +405,9 @@ const en = {
     editNote: "Edit note",
     noteLabel: "Note",
     notePlaceholder: "Add context – a reason, a reminder, anything worth remembering…",
+    historyLabel: "Last 7 days",
+    historyDone: (day: string) => `${day}: done`,
+    historyResting: (day: string) => `${day}: resting`,
     items: [
       {
         key: "water",
@@ -1039,6 +1042,9 @@ const da: typeof en = {
     editNote: "Rediger note",
     noteLabel: "Note",
     notePlaceholder: "Tilføj kontekst – en grund, en påmindelse, alt der er værd at huske…",
+    historyLabel: "Sidste 7 dage",
+    historyDone: (day: string) => `${day}: gjort`,
+    historyResting: (day: string) => `${day}: hviler`,
     items: [
       { key: "water", name: "Drik 8 glas vand", emoji: "💧" },
       { key: "move", name: "Bevæg kroppen", emoji: "🚶" },

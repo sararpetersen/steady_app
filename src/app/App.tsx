@@ -92,8 +92,15 @@ export default function App() {
         prev
           .filter((task) => !task.done || task.recurrence)
           .map((task) => {
-            if (!task.recurrence || !task.done) return task;
-            return isTaskScheduledToday(task, today) ? { ...task, done: false } : task;
+            if (!task.recurrence) return task;
+            // Drop yesterday-or-earlier "delete just today" entries — only today's (if any)
+            // is ever meaningful, so this keeps the array from growing forever.
+            const prunedSkips = task.skippedDates?.filter((d) => d >= today);
+            const pruned = prunedSkips?.length !== task.skippedDates?.length
+              ? { ...task, skippedDates: prunedSkips }
+              : task;
+            if (!pruned.done) return pruned;
+            return isTaskScheduledToday(pruned, today) ? { ...pruned, done: false } : pruned;
           }),
       );
       setTasksDate(today);

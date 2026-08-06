@@ -341,6 +341,12 @@ const en = {
     firstDueLabel: "First due date",
     nextOccurrenceLabel: "Next",
     intervalWeeksLabel: "Number of weeks",
+    deleteRecurringConfirm: "This is a recurring task – deleting it removes the whole series, not just today's. Delete it forever?",
+    deleteRecurringYes: "Delete forever",
+    deleteRecurringNo: "Cancel",
+    deleteRecurringChoice: "This is a recurring task. Delete just today's, or the whole series?",
+    deleteOccurrenceOnly: "Delete just today",
+    deleteWholeSeries: "Delete whole series",
   },
 
   routines: {
@@ -963,6 +969,13 @@ const da: typeof en = {
     firstDueLabel: "Første forfaldsdato",
     nextOccurrenceLabel: "Næste",
     intervalWeeksLabel: "Antal uger",
+    deleteRecurringConfirm:
+      "Dette er en gentagen opgave – hvis du sletter den, forsvinder hele opgaven, ikke kun dagens. Vil du slette den permanent?",
+    deleteRecurringYes: "Slet for altid",
+    deleteRecurringNo: "Annullér",
+    deleteRecurringChoice: "Dette er en gentagen opgave. Vil du kun slette dagens, eller hele opgaven?",
+    deleteOccurrenceOnly: "Slet kun i dag",
+    deleteWholeSeries: "Slet hele opgaven",
   },
 
   routines: {

@@ -36,6 +36,10 @@ export interface Task {
   // a bill on the 15th. A day that doesn't exist in a given month (31 in April) just
   // doesn't fire that month rather than shifting to another date.
   monthlyDays?: number[];
+  // Individual occurrences dismissed via "Delete just today" (Reminders-style) — the
+  // series keeps recurring, but these specific dates are skipped as if never scheduled.
+  // Stale (past) entries are pruned at rollover in App.tsx so this can't grow forever.
+  skippedDates?: string[];
 }
 
 function startOfWeekMs(dateStr: string): number {
@@ -54,6 +58,7 @@ function weeksBetween(fromStr: string, toStr: string): number {
 // today when it's really due some other day/date.
 export function isTaskScheduledToday(task: Task, todayStr: string): boolean {
   if (!task.recurrence) return true;
+  if (task.skippedDates?.includes(todayStr)) return false;
   if (task.recurrenceStartDate && todayStr < task.recurrenceStartDate) return false;
   if (task.recurrence === "daily") return true;
   const today = new Date(`${todayStr}T00:00:00`);
@@ -181,6 +186,42 @@ export function TaskList({
     </div>
   );
 
+  // Reminders offers "This Event" vs "All Future Events" when you delete a recurring
+  // item — offer the same split here (only where a "today" occurrence actually exists;
+  // the "Other recurring tasks" section has no today instance to single out).
+  const DeleteConfirm = ({ task, showOccurrenceOption }: { task: Task; showOccurrenceOption?: boolean }) => (
+    <div className="rounded-lg px-3 py-2 flex flex-col gap-2" style={{ backgroundColor: "var(--surface-2)" }}>
+      <span style={{ fontSize: "0.78rem", color: "var(--foreground)" }}>
+        {showOccurrenceOption ? t.tasks.deleteRecurringChoice : t.tasks.deleteRecurringConfirm}
+      </span>
+      <div className="flex items-center gap-1 flex-wrap">
+        {showOccurrenceOption && (
+          <button
+            onClick={() => { skipToday(task.id); setPendingDeleteId(null); }}
+            className="rounded-lg px-2.5 py-1.5 hover:opacity-85"
+            style={{ backgroundColor: "var(--surface-1)", color: "var(--foreground)", fontSize: "0.78rem", fontWeight: 700, transition: "opacity 0.15s" }}
+          >
+            {t.tasks.deleteOccurrenceOnly}
+          </button>
+        )}
+        <button
+          onClick={() => { remove(task.id); setPendingDeleteId(null); }}
+          className="rounded-lg px-2.5 py-1.5 text-white hover:opacity-85"
+          style={{ backgroundColor: "var(--destructive)", fontSize: "0.78rem", fontWeight: 700, transition: "opacity 0.15s" }}
+        >
+          {showOccurrenceOption ? t.tasks.deleteWholeSeries : t.tasks.deleteRecurringYes}
+        </button>
+        <button
+          onClick={() => setPendingDeleteId(null)}
+          className="rounded-lg px-2.5 py-1.5 border border-border text-foreground hover:bg-muted"
+          style={{ fontSize: "0.78rem", fontWeight: 600, transition: "background-color 0.15s" }}
+        >
+          {t.tasks.deleteRecurringNo}
+        </button>
+      </div>
+    </div>
+  );
+
   const MonthDayPicker = ({ value, onChange }: { value: number[]; onChange: (days: number[]) => void }) => (
     <div
       className="grid gap-1"
@@ -224,6 +265,30 @@ export function TaskList({
 
   const remove = (id: number) =>
     setTasks((prev) => prev.filter((task) => task.id !== id));
+
+  // Reminders-style "delete this occurrence" — dismisses just today's instance (it won't
+  // show again until the series naturally schedules it in the future) without touching
+  // the recurrence rule itself.
+  const skipToday = (id: number) =>
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id
+          ? { ...task, skippedDates: [...(task.skippedDates ?? []), today] }
+          : task,
+      ),
+    );
+
+  // Deleting a recurring task removes the whole series, not just today's occurrence —
+  // easy to do by accident when you're really just trying to clear a completed item.
+  // Gate it behind a confirm step instead of skipping straight to the destructive action.
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+  const requestRemove = (task: Task) => {
+    if (task.recurrence) {
+      setPendingDeleteId(task.id);
+    } else {
+      remove(task.id);
+    }
+  };
 
   const startEditing = (task: Task) => {
     setEditingId(task.id);
@@ -477,26 +542,34 @@ export function TaskList({
                 )}
               </span>
             )}
-            <div className="flex items-center gap-1 flex-shrink-0 pr-1">
-              <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
-                {editingId === task.id ? (
-                  <Check size={16} />
-                ) : (
-                  <>
-                    <Pencil size={14} className="sm:hidden" />
-                    <span className="hidden sm:inline">{t.tasks.editLabel}</span>
-                  </>
+            {pendingDeleteId === task.id ? (
+              <div className="flex-1 min-w-0">
+                <DeleteConfirm task={task} showOccurrenceOption />
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 flex-shrink-0 pr-1">
+                {(!task.done || editingId === task.id) && (
+                  <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
+                    {editingId === task.id ? (
+                      <Check size={16} />
+                    ) : (
+                      <>
+                        <Pencil size={14} className="sm:hidden" />
+                        <span className="hidden sm:inline">{t.tasks.editLabel}</span>
+                      </>
+                    )}
+                  </IconButton>
                 )}
-              </IconButton>
-            <IconButton
-              size="md"
-              tone="destructive"
-              onClick={() => remove(task.id)}
-              aria-label={`${t.tasks.remove}: ${task.text}`}
-            >
-              <X size={16} />
-            </IconButton>
-            </div>
+                <IconButton
+                  size="md"
+                  tone="destructive"
+                  onClick={() => requestRemove(task)}
+                  aria-label={`${t.tasks.remove}: ${task.text}`}
+                >
+                  <X size={16} />
+                </IconButton>
+              </div>
+            )}
           </ReorderRow>
           </div>
         ))}
@@ -542,6 +615,9 @@ export function TaskList({
             <div className="px-3 pb-3 space-y-1.5">
               {otherRecurringTasks.map((task) => (
                 <div key={task.id} className="flex flex-col gap-1 rounded-lg px-2 py-2" style={{ backgroundColor: "var(--surface-1)" }}>
+                  {pendingDeleteId === task.id ? (
+                    <DeleteConfirm task={task} />
+                  ) : (
                   <div className="flex items-center gap-2">
                     {editingId === task.id ? (
                       <div className="flex-1 min-w-0 flex items-center gap-1.5">
@@ -575,12 +651,13 @@ export function TaskList({
                           </>
                         )}
                       </IconButton>
-                      <IconButton size="md" tone="destructive" onClick={() => remove(task.id)} aria-label={`${t.tasks.remove}: ${task.text}`}>
+                      <IconButton size="md" tone="destructive" onClick={() => requestRemove(task)} aria-label={`${t.tasks.remove}: ${task.text}`}>
                         <X size={16} />
                       </IconButton>
                     </div>
                   </div>
-                  {editingId !== task.id && (
+                  )}
+                  {editingId !== task.id && pendingDeleteId !== task.id && (
                     <span
                       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 self-start max-w-full"
                       style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}

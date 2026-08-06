@@ -145,7 +145,7 @@ function SectionPanel({
     const subtaskDoneCount = subtasks.filter((s) => s.done).length;
     const expanded = expandedIds.has(id);
     return (
-      <ReorderRow key={id} value={item} dragDisabled={editingId === id} className="flex items-center flex-wrap gap-2 group relative" handleSize={18}>
+      <ReorderRow key={id} value={item} dragDisabled={editingId === id} className="flex items-center flex-wrap gap-2 group relative py-1.5" handleSize={18}>
         {editingId === id ? (
           <div className="flex-1 min-w-0 flex items-center gap-2 rounded-xl p-3 bg-muted" style={{ flexBasis: 140 }}>
             <span
@@ -256,7 +256,7 @@ function SectionPanel({
         {/* flexBasis 100% forces this onto its own row within the flex-wrap parent,
             regardless of how much width the row above happened to use. */}
         {editingId === id && (
-          <div className="space-y-1.5" style={{ flexBasis: "100%" }}>
+          <div className="space-y-1.5 pb-1.5" style={{ flexBasis: "100%" }}>
             <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--muted-foreground)" }}>
               {t.routines.subtasksLabel}
             </p>
@@ -318,7 +318,7 @@ function SectionPanel({
           </div>
         )}
         {editingId !== id && expanded && subtasks.length > 0 && (
-          <div className="space-y-1.5 pl-9" style={{ flexBasis: "100%" }}>
+          <div className="space-y-1.5 pl-9 pb-1.5" style={{ flexBasis: "100%" }}>
             {subtasks.map((sub) => (
               <div key={sub.id} className="flex items-center gap-2">
                 <button

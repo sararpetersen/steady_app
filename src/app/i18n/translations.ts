@@ -750,7 +750,7 @@ const da: typeof en = {
     highContrast: { label: "Høj kontrast", description: "Stærkere tekst- og kant-kontrast" },
     resetOnboarding: "Genstart opsætning",
     clearData: "Slet alle mine data",
-    clearConfirm: "Er du sikker? Dette fjerner alle opgaver, noter, habits og stemningshistorik.",
+    clearConfirm: "Er du sikker? Dette fjerner alle opgaver, noter, vaner og stemningshistorik.",
     clearYes: "Ja, slet alt",
     clearNo: "Annuller",
     dataCleared: "Alle data er slettet.",
@@ -841,7 +841,7 @@ const da: typeof en = {
       { key: "empathy", label: "Dyb empati", emoji: "💗" },
       { key: "detail", label: "Øje for detaljer", emoji: "🔬" },
       { key: "outofbox", label: "Originale idéer", emoji: "💡" },
-      { key: "passionate", label: "Stærke sær-interesser", emoji: "⭐" },
+      { key: "passionate", label: "Stærke specialinteresser", emoji: "⭐" },
       { key: "honest", label: "Ærlig og direkte", emoji: "💬" },
       { key: "solver", label: "Kreativ problemløser", emoji: "🧩" },
       { key: "intuition", label: "Stærk intuition", emoji: "🌊" },
@@ -864,7 +864,7 @@ const da: typeof en = {
     subtitle: "Fortæl mig, hvad der er forvirrende, ikke virker, eller fungerer godt – alt hjælper.",
     messageLabel: "Din besked",
     messagePlaceholder: "Hvad tænker du på?",
-    emailLabel: "Email",
+    emailLabel: "E-mail",
     emailOptionalSuffix: "valgfrit, hvis du gerne vil have svar",
     emailPlaceholder: "dig@eksempel.dk",
     send: "Send",
@@ -878,7 +878,7 @@ const da: typeof en = {
   onboarding: {
     welcome: {
       title: "Velkommen til Steady!",
-      subtitle: "Din rolige dagligdagsfølgesvend til neurodivergente sind.",
+      subtitle: "Din rolige følgesvend i hverdagen – til neurodivergente sind.",
       reassurance:
         "Uanset om du har en diagnose, identificerer dig som neurodivergent, tror du måske er det, eller bare ønsker en roligere måde at komme gennem dagen på – så er Steady til dig.",
       start: "Kom i gang",
@@ -899,7 +899,7 @@ const da: typeof en = {
     language: {
       title: "Vælg dit sprog",
       subtitle: "Du kan ændre dette når som helst i din profil.",
-      moreComing: "Flere sprog kommer formentlig i den nærmeste fremtid.",
+      moreComing: "Flere sprog kommer forhåbentlig i den nærmeste fremtid.",
     },
     sensory: {
       title: "Hvad kan nogle gange være svært?",
@@ -1074,7 +1074,7 @@ const da: typeof en = {
   },
 
   habits: {
-    heading: "Vane-tracker",
+    heading: "Vanesporing",
     description: "Tryk for at markere en vane som gennemført i dag. Én er mere end nok.",
     addHabit: "Tilføj en vane",
     namePlaceholder: "Vanenavn…",
@@ -1123,7 +1123,7 @@ const da: typeof en = {
     description: "Intet pres – bare et sted til at skrive alt, hvad du har på hjertet.",
     prompts: [
       "Hvad er én ting, du glæder dig til i dag?",
-      "Hvad for en lille ting, er du stolt af for nylig?",
+      "Hvad er en lille ting, du er stolt af for nylig?",
       "Hvad har du mest brug for lige nu?",
       "Hvad er én ting, du gerne vil slippe i dag?",
       "Hvordan kan du være venlig over for dig selv i dag?",
@@ -1198,7 +1198,7 @@ const da: typeof en = {
     aboutPlaceholder: "En påmindelse, opmuntring eller noget andet, du gerne vil huske...",
 
     sensory: {
-      heading: "Mit sensoriske profil",
+      heading: "Min sensoriske profil",
       description: "Vælg det, der gælder for dig. Det hjælper dig med at forstå dig selv bedre.",
       options: [
         {

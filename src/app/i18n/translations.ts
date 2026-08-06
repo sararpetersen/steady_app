@@ -172,7 +172,7 @@ const en = {
 
   noteHistory: {
     heading: "Your Reflections",
-    empty: "No reflections yet.",
+    empty: "No reflections yet. Whenever you're ready is fine.",
     today: "Today",
     deleteEntry: "Delete this entry",
     editEntry: "Edit this entry",
@@ -431,7 +431,7 @@ const en = {
     start: "Start",
     pause: "Pause",
     reset: "Reset",
-    done: "Done. Time for a short break.",
+    done: "Nice, that's done. Time for a short break.",
   },
 
   note: {
@@ -805,7 +805,7 @@ const da: typeof en = {
 
   noteHistory: {
     heading: "Dine refleksioner",
-    empty: "Ingen refleksioner endnu.",
+    empty: "Ingen refleksioner endnu. Når du er klar, er fint.",
     today: "I dag",
     deleteEntry: "Slet denne note",
     editEntry: "Rediger denne note",
@@ -1061,7 +1061,7 @@ const da: typeof en = {
     start: "Start",
     pause: "Pause",
     reset: "Nulstil",
-    done: "Færdig. Tid til en kort pause.",
+    done: "Godt klaret. Tid til en kort pause.",
   },
 
   note: {

@@ -513,11 +513,11 @@ export default function App() {
                 setActiveTab("overview");
                 setSettingsOpen(false);
               }}
-              className="flex flex-col items-start gap-1.5 rounded-xl w-full p-2 cursor-default"
+              className="flex flex-col items-start gap-1.5 rounded-xl w-full p-2 cursor-default text-left"
               aria-label="Go to Overview"
             >
               <SteadyWordmark height={26} className="transition-transform hover:scale-[1.04] cursor-pointer" />
-              <p className="text-muted-foreground truncate w-full" style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>
+              <p className="text-muted-foreground truncate w-full text-left" style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>
                 {greeting}
               </p>
             </button>
@@ -639,7 +639,7 @@ export default function App() {
                   setActiveTab("overview");
                   setSettingsOpen(false);
                 }}
-                className="flex flex-col items-start gap-1 rounded-xl min-w-0 p-2 cursor-default"
+                className="flex flex-col items-start gap-1 rounded-xl min-w-0 p-2 cursor-default text-left"
                 aria-label="Go to Overview"
               >
                 <SteadyWordmark height={24} className="flex-shrink-0 transition-transform hover:scale-[1.04] cursor-pointer" />
@@ -647,8 +647,11 @@ export default function App() {
                     this paragraph never gets a cross-axis width to truncate against on its
                     own — w-full gives it one explicitly, so truncate has a box to clip to
                     instead of rendering at its full natural width and overlapping the avatar
-                    button next to it. */}
-                <p className="text-muted-foreground truncate w-full" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
+                    button next to it. Buttons default to text-align:center in the UA
+                    stylesheet, which doesn't affect this box's position (that's set by flex
+                    alignment) but does center the text glyphs within it — text-left overrides
+                    that so the greeting's ink actually starts at the box's left edge too. */}
+                <p className="text-muted-foreground truncate w-full text-left" style={{ fontSize: "0.78rem", lineHeight: 1.2 }}>
                   {greeting}
                 </p>
               </button>

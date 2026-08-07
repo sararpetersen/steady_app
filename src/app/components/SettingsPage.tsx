@@ -234,7 +234,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
               type={signUpShowPw ? "text" : "password"}
               value={signUpPw}
               onChange={(e) => setSignUpPw(e.target.value)}
-              placeholder="At least 6 characters"
+              placeholder={t.auth.passwordPlaceholder}
               className={inputCls}
               style={{ ...inputStyle, paddingRight: "2.5rem" }}
               autoComplete="new-password"
@@ -244,7 +244,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
               size="md"
               onClick={() => setSignUpShowPw((v) => !v)}
               className="absolute right-1 top-1/2 -translate-y-1/2"
-              aria-label={signUpShowPw ? "Hide password" : "Show password"}
+              aria-label={signUpShowPw ? t.common.hidePassword : t.common.showPassword}
             >
               {signUpShowPw ? <EyeOff size={15} /> : <Eye size={15} />}
             </IconButton>
@@ -260,7 +260,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
             type={signUpShowPw ? "text" : "password"}
             value={signUpConfirm}
             onChange={(e) => setSignUpConfirm(e.target.value)}
-            placeholder="Repeat your password"
+            placeholder={t.auth.confirmPasswordPlaceholder}
             className={inputCls}
             style={inputStyle}
             autoComplete="new-password"
@@ -456,7 +456,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-foreground" style={{ fontFamily: "var(--app-font-heading, Nunito)" }}>{s.title}</h2>
-        <button onClick={onClose} className="rounded-xl p-3 hover:bg-muted" style={{ transition: "background-color 0.15s" }} aria-label="Close settings">
+        <button onClick={onClose} className="rounded-xl p-3 hover:bg-muted" style={{ transition: "background-color 0.15s" }} aria-label={s.close}>
           <X size={20} className="text-foreground" />
         </button>
       </div>
@@ -606,7 +606,7 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
                 onClick={() => setPrivacyOpen(false)}
                 className="rounded-xl p-3 hover:bg-muted"
                 style={{ transition: "background-color 0.15s" }}
-                aria-label="Close privacy policy"
+                aria-label={s.closePrivacyPolicy}
               >
                 <X size={20} className="text-foreground" />
               </button>

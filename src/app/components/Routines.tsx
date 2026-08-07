@@ -62,13 +62,6 @@ const EMOJI_SUGGESTIONS = [
   "🧹", "🪴", "✍️", "🫧",
 ];
 
-const EMOJI_LABELS: Record<string, string> = {
-  "🌅": "Sunrise", "🛏️": "Bed", "🪥": "Toothbrush", "🚿": "Shower", "👕": "Shirt",
-  "🍽️": "Plate", "💊": "Medication", "📵": "No phone", "🎵": "Music", "📚": "Books",
-  "🧘": "Meditating", "🚶": "Walking", "☀️": "Sun", "🌙": "Moon", "✅": "Check",
-  "🎯": "Target", "🧹": "Cleaning", "🪴": "Plant", "✍️": "Writing", "🫧": "Bubbles",
-};
-
 function SectionPanel({
   sectionKey,
   doneIds,
@@ -408,7 +401,7 @@ function SectionPanel({
           {/* Add step */}
           {addingStep ? (
             <div className="space-y-2 mt-2">
-              <PictogramPicker value={stepEmojiDraft} onChange={setStepEmojiDraft} suggestions={EMOJI_SUGGESTIONS} labels={EMOJI_LABELS} size="sm" />
+              <PictogramPicker value={stepEmojiDraft} onChange={setStepEmojiDraft} suggestions={EMOJI_SUGGESTIONS} labels={t.routines.emojiLabels} size="sm" />
               <input
                 type="text"
                 value={stepDraft}
@@ -431,7 +424,7 @@ function SectionPanel({
                   onClick={() => { setAddingStep(false); setStepDraft(""); setStepEmojiDraft(""); setLinkToTasks(false); }}
                   className="rounded-xl px-4 py-2.5 border border-border text-muted-foreground hover:bg-muted flex-shrink-0"
                   style={{ transition: "background-color 0.15s" }}
-                  aria-label="Cancel"
+                  aria-label={t.routines.cancel}
                 >
                   <X size={16} />
                 </button>

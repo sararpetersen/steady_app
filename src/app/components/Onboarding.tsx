@@ -68,11 +68,11 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
   const registerAndFinish = async () => {
     setSignUpError("");
     if (!signUpEmail.trim()) {
-      setSignUpError("Please enter your email.");
+      setSignUpError(t.auth.emailRequired);
       return;
     }
     if (signUpPassword.length < 6) {
-      setSignUpError("Password must be at least 6 characters.");
+      setSignUpError(t.auth.passwordTooShort);
       return;
     }
     setSigningUp(true);
@@ -82,11 +82,11 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
         password: signUpPassword,
       });
       if (error) {
-        setSignUpError(error.message === "User already registered" ? "That email is already in use." : error.message);
+        setSignUpError(error.message === "User already registered" ? t.auth.emailInUse : error.message);
         return;
       }
       if (!data.user) {
-        setSignUpError("Something went wrong. Please try again.");
+        setSignUpError(t.auth.genericError);
         return;
       }
       onRegister?.(signUpEmail.toLowerCase(), data.user.id);
@@ -541,8 +541,8 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                   {[
                     name && `👋 ${name}${pronoun ? ` (${pronoun})` : ""}`,
                     lang === "da" ? "🇩🇰 Dansk" : "🇬🇧 English",
-                    sensory.length > 0 && `🧠 ${sensory.length} sensory note${sensory.length > 1 ? "s" : ""}`,
-                    support.length > 0 && `✨ ${support.length} support style${support.length > 1 ? "s" : ""}`,
+                    sensory.length > 0 && t.onboarding.done.sensoryNotes(sensory.length),
+                    support.length > 0 && t.onboarding.done.supportStyles(support.length),
                   ]
                     .filter(Boolean)
                     .map((line, i) => (
@@ -572,10 +572,10 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                       >
                         <div>
                           <p className="text-foreground" style={{ fontWeight: 700, fontSize: "0.95rem" }}>
-                            Save your setup
+                            {t.onboarding.done.saveSetup}
                           </p>
                           <p className="text-muted-foreground" style={{ fontSize: "0.8rem" }}>
-                            Create a free account to keep your data
+                            {t.onboarding.done.saveSetupDescription}
                           </p>
                         </div>
                         <span className="text-muted-foreground" style={{ fontSize: "1.2rem", lineHeight: 1 }}>
@@ -598,7 +598,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                             value={signUpPassword}
                             onChange={(e) => setSignUpPassword(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && registerAndFinish()}
-                            placeholder="Password (6+ characters)"
+                            placeholder={t.onboarding.done.passwordPlaceholder}
                             className="w-full rounded-xl px-4 py-2.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
                             style={{ fontSize: "0.9rem", transition: "border-color 0.15s" }}
                             autoComplete="new-password"
@@ -610,7 +610,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                             className="w-full rounded-xl py-3 bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-60"
                             style={{ fontWeight: 700, fontSize: "0.95rem", transition: "opacity 0.15s" }}
                           >
-                            Create account &amp; enter Steady
+                            {t.onboarding.done.createAccountEnter}
                           </button>
                         </div>
                       )}

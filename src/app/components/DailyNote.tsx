@@ -116,7 +116,7 @@ export function DailyNote() {
             {t.noteHistory.heading}
           </p>
           <p className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>
-            {historyEntries.length} {historyEntries.length === 1 ? "entry" : "entries"}
+            {t.noteHistory.count(historyEntries.length)}
           </p>
         </div>
 

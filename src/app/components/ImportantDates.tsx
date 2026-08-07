@@ -20,12 +20,6 @@ const EMOJI_SUGGESTIONS = [
   "🎂", "🎉", "💍", "✈️", "🎓", "💊", "🏥", "🌟", "❤️", "🕯️", "📅",
 ];
 
-const EMOJI_LABELS: Record<string, string> = {
-  "🎂": "Birthday cake", "🎉": "Party popper", "💍": "Ring", "✈️": "Airplane",
-  "🎓": "Graduation cap", "💊": "Medication", "🏥": "Hospital", "🌟": "Star",
-  "❤️": "Heart", "🕯️": "Candle", "📅": "Calendar",
-};
-
 function generateId() {
   return `date-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
@@ -225,7 +219,7 @@ export function ImportantDates() {
           className="rounded-2xl p-4 border-2 space-y-3"
           style={{ borderColor: "var(--primary)", backgroundColor: "var(--surface-1)" }}
         >
-          <PictogramPicker value={newEmoji} onChange={setNewEmoji} suggestions={EMOJI_SUGGESTIONS} labels={EMOJI_LABELS} />
+          <PictogramPicker value={newEmoji} onChange={setNewEmoji} suggestions={EMOJI_SUGGESTIONS} labels={d.emojiLabels} />
 
           <input
             type="text"

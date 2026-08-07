@@ -9,6 +9,8 @@ const en = {
     moveDown: "Move down",
     pickEmoji: "Pick an emoji",
     orTypeOwnEmoji: "or type your own:",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
   },
 
   greeting: {
@@ -48,6 +50,7 @@ const en = {
     passwordTooShort: "Password must be at least 6 characters.",
     emailInUse: "An account with this email already exists.",
     invalidCredentials: "Incorrect email or password.",
+    genericError: "Something went wrong. Please try again.",
     localDataNote: "Your data is stored locally on this device. Nothing is sent to any server.",
   },
 
@@ -78,6 +81,8 @@ const en = {
 
   settings: {
     title: "Settings",
+    close: "Close settings",
+    closePrivacyPolicy: "Close privacy policy",
     sections: {
       appearance: "Appearance",
       readability: "Readability",
@@ -204,6 +209,7 @@ const en = {
 
   noteHistory: {
     heading: "Your Reflections",
+    count: (n: number) => `${n} reflection${n === 1 ? "" : "s"}`,
     empty: "No reflections yet. Whenever you're ready is fine.",
     today: "Today",
     deleteEntry: "Delete this entry",
@@ -277,6 +283,12 @@ const en = {
       subtitle: "Steady is ready. Let's take today one step at a time.",
       enter: "Start my day",
       guestNote: "You're using Steady as a guest. To save your data, create an account any time in 'Settings'.",
+      saveSetup: "Save your setup",
+      saveSetupDescription: "Create a free account to keep your data",
+      passwordPlaceholder: "Password (6+ characters)",
+      createAccountEnter: "Create account & enter Steady",
+      sensoryNotes: (n: number) => `🧠 ${n} sensory note${n > 1 ? "s" : ""}`,
+      supportStyles: (n: number) => `✨ ${n} support style${n > 1 ? "s" : ""}`,
     },
     next: "Next",
     back: "Back",
@@ -401,8 +413,15 @@ const en = {
     alsoAddToTasks: "Also add to Tasks",
     linkedToTasks: "Also tracked in Tasks",
     emojiLabel: "Pictogram (optional)",
+    cancel: "Cancel",
     subtasksLabel: "Sub-steps",
     addSubtaskPlaceholder: "Add a sub-step…",
+    emojiLabels: {
+      "🌅": "Sunrise", "🛏️": "Bed", "🪥": "Toothbrush", "🚿": "Shower", "👕": "Shirt",
+      "🍽️": "Plate", "💊": "Medication", "📵": "No phone", "🎵": "Music", "📚": "Books",
+      "🧘": "Meditating", "🚶": "Walking", "☀️": "Sun", "🌙": "Moon", "✅": "Check",
+      "🎯": "Target", "🧹": "Cleaning", "🪴": "Plant", "✍️": "Writing", "🫧": "Bubbles",
+    } as Record<string, string>,
     sections: {
       morning: { label: "Morning", time: "7:00 - 9:00 AM" },
       afternoon: {
@@ -437,6 +456,14 @@ const en = {
     editLabel: "Edit",
     saveEdit: "Save habit",
     emojiLabel: "Habit emoji",
+    totalCompletionsSr: (n: number) => `${n} total completions`,
+    emojiLabels: {
+      "💧": "Water drop", "🚶": "Walking", "📵": "No phone", "📝": "Notepad",
+      "🏃": "Running", "😴": "Sleeping", "🥗": "Salad", "🧘": "Meditating",
+      "📚": "Books", "💊": "Medication", "🎵": "Music", "🌳": "Tree",
+      "☀️": "Sun", "🍎": "Apple", "💪": "Strength", "🧹": "Cleaning",
+      "🎯": "Target", "✍️": "Writing", "🫧": "Bubbles", "🌿": "Herb",
+    } as Record<string, string>,
     noHabits: "No habits yet. Add one below.",
     emptyTitle: "No habits yet",
     emptySubtitle: "Start with something simple – one small habit makes a difference.",
@@ -474,6 +501,9 @@ const en = {
     pause: "Pause",
     reset: "Reset",
     done: "Nice, that's done. Time for a short break.",
+    focusing: "Focusing",
+    running: "running",
+    timerRemaining: (mm: string, ss: string) => `${mm} minutes ${ss} seconds remaining`,
   },
 
   note: {
@@ -510,6 +540,11 @@ const en = {
     dateLabel: "Date",
     repeatsYearly: "Repeats every year",
     emojiLabel: "Date emoji",
+    emojiLabels: {
+      "🎂": "Birthday cake", "🎉": "Party popper", "💍": "Ring", "✈️": "Airplane",
+      "🎓": "Graduation cap", "💊": "Medication", "🏥": "Hospital", "🌟": "Star",
+      "❤️": "Heart", "🕯️": "Candle", "📅": "Calendar",
+    } as Record<string, string>,
     deleteDate: "Delete date",
     edit: "Edit date",
     editLabel: "Edit",
@@ -685,6 +720,8 @@ const da: typeof en = {
     moveDown: "Flyt ned",
     pickEmoji: "Vælg en emoji",
     orTypeOwnEmoji: "eller skriv din egen:",
+    showPassword: "Vis adgangskode",
+    hidePassword: "Skjul adgangskode",
   },
 
   greeting: {
@@ -724,6 +761,7 @@ const da: typeof en = {
     passwordTooShort: "Adgangskoden skal være mindst 6 tegn.",
     emailInUse: "Der findes allerede en konto med denne e-mail.",
     invalidCredentials: "Forkert e-mail eller adgangskode.",
+    genericError: "Noget gik galt. Prøv igen.",
     localDataNote: "Dine data gemmes lokalt på denne enhed. Intet sendes til nogen server.",
   },
 
@@ -754,6 +792,8 @@ const da: typeof en = {
 
   settings: {
     title: "Indstillinger",
+    close: "Luk indstillinger",
+    closePrivacyPolicy: "Luk privatlivspolitik",
     sections: {
       appearance: "Udseende",
       readability: "Læsbarhed",
@@ -882,6 +922,7 @@ const da: typeof en = {
 
   noteHistory: {
     heading: "Dine refleksioner",
+    count: (n: number) => `${n} refleksion${n === 1 ? "" : "er"}`,
     empty: "Ingen refleksioner endnu. Når du er klar, er fint.",
     today: "I dag",
     deleteEntry: "Slet denne note",
@@ -955,6 +996,12 @@ const da: typeof en = {
       subtitle: "Steady er klar. Lad os tage dagen ét lille skridt ad gangen.",
       enter: "Start min dag",
       guestNote: "Du bruger Steady som gæst. For at gemme dine data, opret en konto når som helst i 'Indstillinger'.",
+      saveSetup: "Gem din opsætning",
+      saveSetupDescription: "Opret en gratis konto for at beholde dine data",
+      passwordPlaceholder: "Adgangskode (mindst 6 tegn)",
+      createAccountEnter: "Opret konto og gå til Steady",
+      sensoryNotes: (n: number) => `🧠 ${n} sensorisk${n > 1 ? "e" : ""} note${n > 1 ? "r" : ""}`,
+      supportStyles: (n: number) => `✨ ${n} støttestil${n > 1 ? "e" : ""}`,
     },
     next: "Næste",
     back: "Tilbage",
@@ -1080,8 +1127,15 @@ const da: typeof en = {
     alsoAddToTasks: "Tilføj også til Opgaver",
     linkedToTasks: "Følges også i Opgaver",
     emojiLabel: "Piktogram (valgfrit)",
+    cancel: "Annuller",
     subtasksLabel: "Undertrin",
     addSubtaskPlaceholder: "Tilføj et undertrin…",
+    emojiLabels: {
+      "🌅": "Solopgang", "🛏️": "Seng", "🪥": "Tandbørste", "🚿": "Bruser", "👕": "Skjorte",
+      "🍽️": "Tallerken", "💊": "Medicin", "📵": "Ingen telefon", "🎵": "Musik", "📚": "Bøger",
+      "🧘": "Meditation", "🚶": "Gåtur", "☀️": "Sol", "🌙": "Måne", "✅": "Flueben",
+      "🎯": "Mål", "🧹": "Rengøring", "🪴": "Plante", "✍️": "Skrivning", "🫧": "Bobler",
+    } as Record<string, string>,
     sections: {
       morning: { label: "Morgen", time: "7:00 - 9:00" },
       afternoon: {
@@ -1116,6 +1170,14 @@ const da: typeof en = {
     editLabel: "Rediger",
     saveEdit: "Gem vane",
     emojiLabel: "Vane-emoji",
+    totalCompletionsSr: (n: number) => `${n} gennemførelser i alt`,
+    emojiLabels: {
+      "💧": "Vanddråbe", "🚶": "Gåtur", "📵": "Ingen telefon", "📝": "Notesblok",
+      "🏃": "Løb", "😴": "Søvn", "🥗": "Salat", "🧘": "Meditation",
+      "📚": "Bøger", "💊": "Medicin", "🎵": "Musik", "🌳": "Træ",
+      "☀️": "Sol", "🍎": "Æble", "💪": "Styrke", "🧹": "Rengøring",
+      "🎯": "Mål", "✍️": "Skrivning", "🫧": "Bobler", "🌿": "Urt",
+    } as Record<string, string>,
     noHabits: "Ingen vaner endnu. Tilføj én nedenfor.",
     emptyTitle: "Ingen vaner endnu",
     emptySubtitle: "Start med noget enkelt – én lille vane gør en forskel.",
@@ -1149,6 +1211,9 @@ const da: typeof en = {
     pause: "Pause",
     reset: "Nulstil",
     done: "Godt klaret. Tid til en kort pause.",
+    focusing: "Fokuserer",
+    running: "kører",
+    timerRemaining: (mm: string, ss: string) => `${mm} minutter og ${ss} sekunder tilbage`,
   },
 
   note: {
@@ -1185,6 +1250,11 @@ const da: typeof en = {
     dateLabel: "Dato",
     repeatsYearly: "Gentages hvert år",
     emojiLabel: "Dato-emoji",
+    emojiLabels: {
+      "🎂": "Fødselsdagskage", "🎉": "Konfetti", "💍": "Ring", "✈️": "Fly",
+      "🎓": "Studenterhue", "💊": "Medicin", "🏥": "Hospital", "🌟": "Stjerne",
+      "❤️": "Hjerte", "🕯️": "Stearinlys", "📅": "Kalender",
+    } as Record<string, string>,
     deleteDate: "Slet dato",
     edit: "Rediger dato",
     editLabel: "Rediger",

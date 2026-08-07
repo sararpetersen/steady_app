@@ -65,7 +65,7 @@ export function FocusTimer() {
               style={{ backgroundColor: "var(--green-bg)", color: "var(--green-text)", fontSize: "0.78rem", fontWeight: 700 }}
             >
               <span style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: "var(--primary)", display: "inline-block" }} />
-              Focusing
+              {t.focus.focusing}
             </span>
           )}
         </div>
@@ -116,7 +116,7 @@ export function FocusTimer() {
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
               <span
                 role="timer"
-                aria-label={`${mm} minutes ${ss} seconds remaining`}
+                aria-label={t.focus.timerRemaining(mm, ss)}
                 style={{
                   fontSize: running ? "1.7rem" : "1.7rem",
                   fontWeight: 800,
@@ -132,7 +132,7 @@ export function FocusTimer() {
                 <span
                   style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--green-text)", letterSpacing: "0.08em", textTransform: "uppercase" }}
                 >
-                  {t.lang === "en" ? "running" : "kører"}
+                  {t.focus.running}
                 </span>
               )}
             </div>

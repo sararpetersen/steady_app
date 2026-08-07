@@ -44,14 +44,6 @@ const EMOJI_SUGGESTIONS = [
   "🎵","🌳","☀️","🍎","💪","🧹","🎯","✍️","🫧","🌿",
 ];
 
-const EMOJI_LABELS: Record<string, string> = {
-  "💧": "Water drop", "🚶": "Walking", "📵": "No phone", "📝": "Notepad",
-  "🏃": "Running", "😴": "Sleeping", "🥗": "Salad", "🧘": "Meditating",
-  "📚": "Books", "💊": "Medication", "🎵": "Music", "🌳": "Tree",
-  "☀️": "Sun", "🍎": "Apple", "💪": "Strength", "🧹": "Cleaning",
-  "🎯": "Target", "✍️": "Writing", "🫧": "Bubbles", "🌿": "Herb",
-};
-
 const DONE_COLORS = [
   "var(--habit-water)",
   "var(--habit-move)",
@@ -256,7 +248,7 @@ export function HabitTracker() {
                 <span style={{ fontWeight: 700, fontSize: "0.78rem", color: "var(--green-text)" }}>
                   {totalCompletions}
                 </span>
-                <span className="sr-only">{totalCompletions} total completions</span>
+                <span className="sr-only">{t.habits.totalCompletionsSr(totalCompletions)}</span>
               </div>
               <div className="flex items-center gap-1" role="group" aria-label={t.habits.historyLabel}>
                 {last7DateKeys(today).map((dateKey) => {
@@ -319,7 +311,7 @@ export function HabitTracker() {
           className="rounded-2xl p-4 border-2 space-y-3"
           style={{ borderColor: "var(--primary)", backgroundColor: "var(--surface-1)" }}
         >
-          <PictogramPicker value={newEmoji} onChange={setNewEmoji} suggestions={EMOJI_SUGGESTIONS} labels={EMOJI_LABELS} />
+          <PictogramPicker value={newEmoji} onChange={setNewEmoji} suggestions={EMOJI_SUGGESTIONS} labels={t.habits.emojiLabels} />
 
           {/* Name input */}
           <input

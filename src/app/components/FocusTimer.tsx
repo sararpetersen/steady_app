@@ -98,15 +98,13 @@ export function FocusTimer() {
 
         <div className="flex flex-col items-center gap-5">
           <div className="relative" style={{ width: 148, height: 148 }}>
-            <svg
-              width="148"
-              height="148"
-              viewBox="0 0 148 148"
-              aria-hidden="true"
-            >
+            <svg width="148" height="148" viewBox="0 0 148 148" aria-hidden="true">
               <circle cx="74" cy="74" r="60" fill="none" stroke="var(--surface-2)" strokeWidth="11" />
               <circle
-                cx="74" cy="74" r="60" fill="none"
+                cx="74"
+                cy="74"
+                r="60"
+                fill="none"
                 stroke={done ? "var(--purple-vivid)" : "var(--primary)"}
                 strokeWidth="11"
                 strokeDasharray={`${strokeDash * (60 / 52)} ${circumference * (60 / 52)}`}
@@ -120,7 +118,7 @@ export function FocusTimer() {
                 role="timer"
                 aria-label={`${mm} minutes ${ss} seconds remaining`}
                 style={{
-                  fontSize: running ? "1.9rem" : "1.8rem",
+                  fontSize: running ? "1.7rem" : "1.7rem",
                   fontWeight: 800,
                   fontFamily: "inherit",
                   color: done ? "var(--purple-vivid)" : "var(--foreground)",
@@ -131,16 +129,16 @@ export function FocusTimer() {
                 {mm}:{ss}
               </span>
               {running && (
-                <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--green-text)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                <span
+                  style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--green-text)", letterSpacing: "0.08em", textTransform: "uppercase" }}
+                >
                   {t.lang === "en" ? "running" : "kører"}
                 </span>
               )}
             </div>
           </div>
 
-          {done && (
-            <p style={{ fontWeight: 700, color: "var(--purple-vivid)", fontSize: "1rem" }}>{t.focus.done}</p>
-          )}
+          {done && <p style={{ fontWeight: 700, color: "var(--purple-vivid)", fontSize: "1rem" }}>{t.focus.done}</p>}
 
           <div className="flex gap-3">
             <button

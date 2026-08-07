@@ -541,6 +541,7 @@ const en = {
     optionalPhoto: "Optional photo",
     photoSet: "Photo set",
     namePlaceholder: "Your name or nickname",
+    nameInputPlaceholder: "e.g. Alex, Sam…",
     pronounsLabel: "Pronouns",
     optionalSuffix: "optional",
     pronounsOptions: [
@@ -856,7 +857,7 @@ const da: typeof en = {
     topHabit: (label: string, n: number) => `${label} gik igen flest gange, ${n} gange.`,
     reflections: (n: number) => `Du skrev ${n} refleksion${n === 1 ? "" : "er"} i denne uge.`,
     somethingYouWrote: "Noget du skrev i denne uge",
-    closing: "Uanset hvordan ugen gik, viste du op. Det tæller.",
+    closing: "Uanset hvordan ugen gik, dukkede du op. Det tæller.",
   },
 
   strengths: {
@@ -1214,6 +1215,7 @@ const da: typeof en = {
     optionalPhoto: "Valgfrit foto",
     photoSet: "Foto valgt",
     namePlaceholder: "Dit navn eller kaldenavn",
+    nameInputPlaceholder: "f.eks. Alex, Sara…",
     pronounsLabel: "Pronomener",
     optionalSuffix: "valgfrit",
     pronounsOptions: [

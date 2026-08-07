@@ -132,7 +132,8 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
               type="text"
               value={profile.name}
               onChange={(e) => update({ name: e.target.value })}
-              className="w-full rounded-xl px-4 py-3 border border-border bg-input-background text-foreground outline-none focus:border-primary"
+              placeholder={p.nameInputPlaceholder}
+              className="w-full rounded-xl px-4 py-3 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
               style={{ transition: "border-color 0.15s" }}
             />
           </div>

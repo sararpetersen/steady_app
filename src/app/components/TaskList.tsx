@@ -649,12 +649,12 @@ export function TaskList({
             {/* flexBasis 100% forces this onto its own row within the flex-wrap parent —
                 same pattern as Routines' sub-step panel. */}
             {editingId === task.id && (
-              <div className="space-y-1.5 pl-2" style={{ flexBasis: "100%" }}>
+              <div className="space-y-1.5 pl-9" style={{ flexBasis: "100%" }}>
                 <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--muted-foreground)" }}>
                   {t.tasks.subtasksLabel}
                 </p>
                 {task.subtasks?.map((sub) => (
-                  <div key={sub.id} className="flex items-center gap-2 pl-1">
+                  <div key={sub.id} className="flex items-center gap-2">
                     <button
                       onClick={() => toggleSubtask(task.id, sub.id)}
                       aria-pressed={sub.done}
@@ -679,7 +679,7 @@ export function TaskList({
                     </IconButton>
                   </div>
                 ))}
-                <div className="flex gap-1.5 pl-1">
+                <div className="flex gap-1.5">
                   <input
                     type="text"
                     value={newSubtaskDraft}

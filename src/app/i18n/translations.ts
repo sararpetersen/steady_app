@@ -112,7 +112,7 @@ const en = {
     importError: "Couldn't read that file. Make sure it's a Steady export.",
     privacy:
       "Your data stays on this device only. Nothing is sent to any server, and there is no tracking or advertising of any kind. Account creation is optional.",
-    privacyLink: "Read full privacy policy",
+    privacyLink: "Read the full privacy policy",
     privacyPolicy: {
       title: "Privacy policy",
       lastUpdated: "Last updated: July 2026",
@@ -888,7 +888,7 @@ const da: typeof en = {
     importError: "Filen kunne ikke læses. Sørg for, at det er en Steady-eksport.",
     privacy:
       "Dine data forbliver kun på denne enhed – intet af det sendes til nogen server, og der er ingen sporing eller reklamer af nogen art. Kontooprettelse er helt valgfrit.",
-    privacyLink: "Læs fuld privatlivspolitik",
+    privacyLink: "Læs den fulde privatlivspolitik",
     privacyPolicy: {
       title: "Privatlivspolitik",
       lastUpdated: "Sidst opdateret: juli 2026",

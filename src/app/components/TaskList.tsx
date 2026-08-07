@@ -621,7 +621,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
               {/* flexBasis 100% forces this onto its own row within the flex-wrap parent —
                 same pattern as Routines' sub-step panel. */}
               {editingId === task.id && (
-                <div className="space-y-1.5 pl-7 pr-1" style={{ flexBasis: "100%" }}>
+                <div className="space-y-1.5 pl-7 pr-2" style={{ flexBasis: "100%" }}>
                   <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--muted-foreground)" }}>{t.tasks.subtasksLabel}</p>
                   {task.subtasks?.map((sub) => (
                     <div key={sub.id} className="flex items-center gap-2">
@@ -687,7 +687,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                 </div>
               )}
               {editingId !== task.id && expandedIds.has(task.id) && (task.subtasks?.length ?? 0) > 0 && (
-                <div className="space-y-1.5 pl-7 pr-1" style={{ flexBasis: "100%" }}>
+                <div className="space-y-1.5 pl-7 pr-2" style={{ flexBasis: "100%" }}>
                   {task.subtasks?.map((sub) => (
                     <div key={sub.id} className="flex items-center gap-2">
                       <button

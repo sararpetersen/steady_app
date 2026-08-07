@@ -8,7 +8,7 @@ import { AnimatedCollapse } from "./AnimatedCollapse";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 import { PictogramPicker } from "./ui/PictogramPicker";
-import type { Task } from "./TaskList";
+import type { Task, TaskRecurrence } from "./TaskList";
 
 export const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
 export type SectionKey = typeof SECTION_KEYS[number];
@@ -34,7 +34,7 @@ export interface SubTask {
 export interface CustomItem {
   id: number;
   text: string;
-  // When set, this step is the same item as a "daily" task in the Tasks tab — added to
+  // When set, this step is the same item as a task in the Tasks tab (any recurrence) — added to
   // solve the duplicate-entry complaint of having to type a thing twice to track it both
   // places. Completion and text are mirrored from that task rather than tracked locally;
   // if the task is later deleted from the Tasks side, this just self-heals back into a
@@ -81,7 +81,7 @@ function SectionPanel({
   onToggle: (id: number) => void;
   customItems: CustomItem[];
   tasks: Task[];
-  onAddCustom: (text: string, linkToTasks: boolean, emoji: string) => void;
+  onAddCustom: (text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence) => void;
   onEditCustom: (id: number, text: string, emoji: string) => void;
   onReorderCustom: (items: CustomItem[]) => void;
   onDeleteCustom: (id: number) => void;
@@ -96,6 +96,7 @@ function SectionPanel({
   const [stepDraft, setStepDraft] = useState("");
   const [stepEmojiDraft, setStepEmojiDraft] = useState("");
   const [linkToTasks, setLinkToTasks] = useState(false);
+  const [linkRecurrence, setLinkRecurrence] = useState<TaskRecurrence>("daily");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editDraft, setEditDraft] = useState("");
   const [editEmojiDraft, setEditEmojiDraft] = useState("");
@@ -123,10 +124,11 @@ function SectionPanel({
   const submitStep = () => {
     const trimmed = stepDraft.trim();
     if (!trimmed) return;
-    onAddCustom(trimmed, linkToTasks, stepEmojiDraft.trim());
+    onAddCustom(trimmed, linkToTasks, stepEmojiDraft.trim(), linkRecurrence);
     setStepDraft("");
     setStepEmojiDraft("");
     setLinkToTasks(false);
+    setLinkRecurrence("daily");
     setAddingStep(false);
   };
 
@@ -421,7 +423,7 @@ function SectionPanel({
                   {t.routines.addStepButton}
                 </button>
                 <button
-                  onClick={() => { setAddingStep(false); setStepDraft(""); setStepEmojiDraft(""); setLinkToTasks(false); }}
+                  onClick={() => { setAddingStep(false); setStepDraft(""); setStepEmojiDraft(""); setLinkToTasks(false); setLinkRecurrence("daily"); }}
                   className="rounded-xl px-4 py-2.5 border border-border text-muted-foreground hover:bg-muted flex-shrink-0"
                   style={{ transition: "background-color 0.15s" }}
                   aria-label={t.routines.cancel}
@@ -439,6 +441,29 @@ function SectionPanel({
                 />
                 {t.routines.alsoAddToTasks}
               </label>
+              {linkToTasks && (
+                <div className="flex items-center gap-1.5 pl-1" role="group" aria-label={t.tasks.repeatButtonLabel}>
+                  {(["daily", "weekly", "monthly"] as const).map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setLinkRecurrence(option)}
+                      aria-pressed={linkRecurrence === option}
+                      className="rounded-full px-3 py-1 border"
+                      style={{
+                        fontSize: "0.78rem",
+                        fontWeight: linkRecurrence === option ? 700 : 500,
+                        backgroundColor: linkRecurrence === option ? "var(--primary)" : "transparent",
+                        borderColor: linkRecurrence === option ? "var(--primary)" : "var(--border)",
+                        color: linkRecurrence === option ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                        transition: "all 0.15s",
+                      }}
+                    >
+                      {option === "daily" ? t.tasks.repeatDailyBadge : option === "weekly" ? t.tasks.repeatWeeklyBadge : t.tasks.repeatMonthlyBadge}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
             <button
@@ -475,8 +500,9 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
 
   // Reset checked-off steps when the day rolls over, so routines start fresh each day.
   // Linked steps don't need their own reset: their completion lives on the task, and that
-  // task already resets itself (it's "daily") via the Tasks rollover in App.tsx. Sub-tasks
-  // live inside `custom` rather than the doneIds array, so they need their own reset pass.
+  // task already resets itself on its own cadence (daily/weekly/monthly) via the Tasks
+  // rollover in App.tsx. Sub-tasks live inside `custom` rather than the doneIds array, so
+  // they need their own reset pass.
   useEffect(() => {
     if (doneDate !== today) {
       setDoneIds([]);
@@ -513,14 +539,22 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     setDoneIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
-  const addCustom = (section: SectionKey, text: string, linkToTasks: boolean, emoji: string) => {
+  const addCustom = (section: SectionKey, text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence) => {
     const id = nextId;
     setNextId((n) => n + 1);
     let linkedTaskId: number | undefined;
     if (linkToTasks) {
       linkedTaskId = taskNextId;
       setTaskNextId((n) => n + 1);
-      setTasks((prev) => [...prev, { id: linkedTaskId!, text, done: false, recurrence: "daily" }]);
+      const newTask: Task = { id: linkedTaskId, text, done: false, recurrence };
+      if (recurrence === "weekly") {
+        newTask.weeklyWeekdays = [new Date(`${today}T00:00:00`).getDay()];
+        newTask.recurrenceStartDate = today;
+      } else if (recurrence === "monthly") {
+        newTask.monthlyDays = [new Date(`${today}T00:00:00`).getDate()];
+        newTask.recurrenceStartDate = today;
+      }
+      setTasks((prev) => [...prev, newTask]);
     }
     setCustom((prev) => ({
       ...prev,
@@ -612,7 +646,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
             onToggle={toggleDone}
             customItems={custom[key] ?? []}
             tasks={tasks}
-            onAddCustom={(text, linkToTasks, emoji) => addCustom(key, text, linkToTasks, emoji)}
+            onAddCustom={(text, linkToTasks, emoji, recurrence) => addCustom(key, text, linkToTasks, emoji, recurrence)}
             onEditCustom={(id, text, emoji) => editCustom(key, id, text, emoji)}
             onReorderCustom={(items) => reorderCustom(key, items)}
             onDeleteCustom={(id) => deleteCustom(key, id)}

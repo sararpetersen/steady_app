@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MotionConfig } from "motion/react";
 import { MoodCheck } from "./components/MoodCheck";
 import { TaskList, type Task, isTaskScheduledToday } from "./components/TaskList";
@@ -76,6 +76,22 @@ export default function App() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [rawProfile, setProfile] = useLocalStorage<ProfileData>("steady-profile", DEFAULT_PROFILE);
   const [profilePhoto, setProfilePhoto] = useLocalStorage<string | null>("steady-profile-photo", null);
+
+  // The mobile header+nav switched from `position: sticky` to `fixed` (below) so iOS
+  // Safari's elastic overscroll bounce can't drag it away from the top edge and briefly
+  // reveal page content above it. Fixed elements are removed from document flow though, so
+  // this measures its real rendered height (which varies with the avatar photo or larger
+  // accessibility font sizes) and applies it as a spacer's height, keeping page content from
+  // sliding underneath it.
+  const mobileNavRef = useRef<HTMLDivElement>(null);
+  const [mobileNavHeight, setMobileNavHeight] = useState(0);
+  useLayoutEffect(() => {
+    const el = mobileNavRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => setMobileNavHeight(entry.contentRect.height));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // While a freshly-authenticated (non-guest) session is still pulling its remote data down,
   // hold off on the `!onboarded` check below — otherwise a real returning user briefly flashes
@@ -639,11 +655,13 @@ export default function App() {
               offset (a hardcoded top-[61px] for the nav) broke as soon as the header's real
               height differed from that guess — e.g. with a profile photo avatar or larger
               accessibility font sizes — letting the nav bar scroll up and cover the header. */}
-          {/* iOS Safari repaints sticky elements off their own compositor layer during fast
-              momentum/rubber-band scrolling, which can flash the content underneath for a
-              frame — forcing this onto its own layer (translateZ(0)) keeps it composited
-              independently so it doesn't get caught in that repaint. */}
-          <div className="sticky top-0 z-10 lg:hidden" style={{ transform: "translateZ(0)", WebkitTransform: "translateZ(0)" }}>
+          {/* `fixed` instead of `sticky`: on iOS Safari, a sticky element can get dragged
+              along during the elastic overscroll bounce at the top of the page (scroll down
+              then sharply back up), sliding it away from the top edge and revealing content
+              above it before it snaps back. A fixed element is anchored to the viewport
+              itself rather than the document's scroll position, so the bounce can't move it.
+              The spacer div right after this reserves its height in normal flow instead. */}
+          <div ref={mobileNavRef} className="fixed top-0 inset-x-0 z-10 lg:hidden" style={{ transform: "translateZ(0)", WebkitTransform: "translateZ(0)" }}>
           <header className="border-b border-border px-5 py-3" style={{ backgroundColor: "var(--card)" }}>
             <div className="max-w-xl mx-auto flex items-center justify-between gap-4">
               {/* Logo — clickable, goes to Overview */}
@@ -739,6 +757,7 @@ export default function App() {
             </div>
           </nav>
           </div>
+          <div aria-hidden="true" className="lg:hidden" style={{ height: mobileNavHeight }} />
 
           {/* Main content */}
           <main className="flex-1 w-full max-w-xl lg:max-w-2xl mx-auto px-4 pt-5 pb-8">

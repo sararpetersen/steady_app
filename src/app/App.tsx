@@ -103,7 +103,12 @@ export default function App() {
               ? { ...task, skippedDates: prunedSkips }
               : task;
             if (!pruned.done) return pruned;
-            return isTaskScheduledToday(pruned, today) ? { ...pruned, done: false } : pruned;
+            if (!isTaskScheduledToday(pruned, today)) return pruned;
+            return {
+              ...pruned,
+              done: false,
+              subtasks: pruned.subtasks?.map((s) => ({ ...s, done: false })),
+            };
           }),
       );
       setTasksDate(today);

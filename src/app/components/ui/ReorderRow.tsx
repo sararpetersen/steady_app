@@ -50,8 +50,17 @@ export function ReorderRow<T>({
       <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
         <GripVertical size={handleSize} />
       </span>
-      {/* Drag is mouse/touch-only — these give keyboard users a way to reorder too. */}
-      <span className="flex flex-col flex-shrink-0">
+      {/* Drag is mouse/touch-only — these give keyboard users a way to reorder too. Faded
+          out by default on pointer devices (same reveal-on-hover/focus pattern used for
+          the note edit/delete buttons) so they don't add visual clutter for the vast
+          majority of users who'll never need them; focus-within keeps them reachable and
+          visible for keyboard users tabbing through, and touch devices (no hover) keep
+          them visible always since there's no other way to reveal them there. */}
+      {/* sm:opacity-0 and the two reveal variants below all target the same property at
+          equal specificity, so whichever rule Tailwind happens to emit last in the
+          stylesheet would silently win regardless of hover/focus state — the `!` pins
+          the reveal rules to actually win when their condition is true. */}
+      <span className="flex flex-col flex-shrink-0 sm:opacity-0 sm:group-hover:opacity-100! sm:group-focus-within:opacity-100!" style={{ transition: "opacity 0.15s" }}>
         <button
           type="button"
           onClick={() => move(-1)}

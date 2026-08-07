@@ -369,6 +369,8 @@ const en = {
     deleteRecurringChoice: "This is a recurring task. Delete just today's, or the whole series?",
     deleteOccurrenceOnly: "Delete just today",
     deleteWholeSeries: "Delete whole series",
+    subtasksLabel: "Sub-steps",
+    addSubtaskPlaceholder: "Add a sub-step…",
   },
 
   routines: {
@@ -1031,6 +1033,8 @@ const da: typeof en = {
     deleteRecurringChoice: "Dette er en gentagen opgave. Vil du kun slette dagens, eller hele opgaven?",
     deleteOccurrenceOnly: "Slet kun i dag",
     deleteWholeSeries: "Slet hele opgaven",
+    subtasksLabel: "Undertrin",
+    addSubtaskPlaceholder: "Tilføj et undertrin…",
   },
 
   routines: {

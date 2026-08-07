@@ -2,12 +2,18 @@ import { useState } from "react";
 import { useLang } from "../i18n/LangContext";
 import { useToday } from "../hooks/useToday";
 import { Reorder } from "motion/react";
-import { Plus, X, CheckCircle2, Check, Pencil, Repeat, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, X, CheckCircle2, Check, Pencil, Repeat, ChevronDown, ChevronUp, ListTree } from "lucide-react";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 import { AnimatedCollapse } from "./AnimatedCollapse";
 
 export type TaskRecurrence = "daily" | "weekly" | "monthly";
+
+export interface SubTask {
+  id: number;
+  text: string;
+  done: boolean;
+}
 
 export interface Task {
   id: number;
@@ -40,6 +46,10 @@ export interface Task {
   // series keeps recurring, but these specific dates are skipped as if never scheduled.
   // Stale (past) entries are pruned at rollover in App.tsx so this can't grow forever.
   skippedDates?: string[];
+  // Optional breakdown for a task that needs more specificity than one checkbox covers —
+  // same pattern as Routine steps' sub-steps. Independent of the parent task's own done
+  // state, so checking sub-steps doesn't auto-complete the parent.
+  subtasks?: SubTask[];
 }
 
 function startOfWeekMs(dateStr: string): number {
@@ -121,6 +131,8 @@ export function TaskList({
   const [editWeeklyInterval, setEditWeeklyInterval] = useState(1);
   const [editMonthlyDays, setEditMonthlyDays] = useState<number[]>([todayDayOfMonth]);
   const [editStartDate, setEditStartDate] = useState(today);
+  const [newSubtaskDraft, setNewSubtaskDraft] = useState("");
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   const [otherOpen, setOtherOpen] = useState(false);
   // The weekday/day-of-month picker used to expand inline inside the row it belonged to,
   // which fought with the row's own flex layout (drag handle, checkbox, edit/delete
@@ -322,6 +334,45 @@ export function TaskList({
     setEditingId(null);
   };
 
+  const toggleExpanded = (id: number) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const addSubtask = (taskId: number, text: string) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === taskId
+          ? { ...task, subtasks: [...(task.subtasks ?? []), { id: nextId, text, done: false }] }
+          : task,
+      ),
+    );
+    setNextId((n) => n + 1);
+  };
+
+  const toggleSubtask = (taskId: number, subId: number) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === taskId
+          ? { ...task, subtasks: task.subtasks?.map((s) => (s.id === subId ? { ...s, done: !s.done } : s)) }
+          : task,
+      ),
+    );
+  };
+
+  const deleteSubtask = (taskId: number, subId: number) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === taskId
+          ? { ...task, subtasks: task.subtasks?.filter((s) => s.id !== subId) }
+          : task,
+      ),
+    );
+  };
+
   const add = () => {
     const trimmed = newText.trim();
     if (!trimmed) return;
@@ -458,7 +509,7 @@ export function TaskList({
             moveUpLabel={t.common.moveUp}
             moveDownLabel={t.common.moveDown}
             dragDisabled={editingId === task.id}
-            className="flex items-center flex-wrap gap-1 rounded-xl hover:brightness-95 py-2"
+            className="flex items-center flex-wrap gap-1 rounded-xl hover:brightness-95 py-2 group"
             style={{
               backgroundColor: task.done
                 ? "var(--green-bg)"
@@ -560,6 +611,19 @@ export function TaskList({
               </div>
             ) : (
               <div className="flex items-center gap-1 flex-shrink-0 pr-1">
+                {editingId !== task.id && (task.subtasks?.length ?? 0) > 0 && (
+                  <IconButton
+                    size="pill"
+                    tone="default"
+                    onClick={() => toggleExpanded(task.id)}
+                    aria-label={`${t.tasks.subtasksLabel}: ${task.subtasks!.filter((s) => s.done).length}/${task.subtasks!.length}`}
+                    aria-expanded={expandedIds.has(task.id)}
+                    style={{ fontSize: "0.75rem", fontWeight: 700 }}
+                  >
+                    <ListTree size={13} aria-hidden="true" />
+                    {task.subtasks!.filter((s) => s.done).length}/{task.subtasks!.length}
+                  </IconButton>
+                )}
                 {(!task.done || editingId === task.id) && (
                   <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
                     {editingId === task.id ? (
@@ -580,6 +644,97 @@ export function TaskList({
                 >
                   <X size={16} />
                 </IconButton>
+              </div>
+            )}
+            {/* flexBasis 100% forces this onto its own row within the flex-wrap parent —
+                same pattern as Routines' sub-step panel. */}
+            {editingId === task.id && (
+              <div className="space-y-1.5 pl-2" style={{ flexBasis: "100%" }}>
+                <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--muted-foreground)" }}>
+                  {t.tasks.subtasksLabel}
+                </p>
+                {task.subtasks?.map((sub) => (
+                  <div key={sub.id} className="flex items-center gap-2 pl-1">
+                    <button
+                      onClick={() => toggleSubtask(task.id, sub.id)}
+                      aria-pressed={sub.done}
+                      aria-label={sub.text}
+                      className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
+                      style={{
+                        width: 18, height: 18,
+                        borderColor: sub.done ? "var(--primary)" : "var(--muted-foreground)",
+                        backgroundColor: sub.done ? "var(--primary)" : "transparent",
+                      }}
+                    >
+                      {sub.done && <Check size={11} color="white" />}
+                    </button>
+                    <span
+                      className="flex-1 min-w-0 truncate"
+                      style={{ fontSize: "0.88rem", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? 0.6 : 1 }}
+                    >
+                      {sub.text}
+                    </span>
+                    <IconButton size="sm" tone="destructive" onClick={() => deleteSubtask(task.id, sub.id)} aria-label={`${t.tasks.remove}: ${sub.text}`}>
+                      <X size={12} />
+                    </IconButton>
+                  </div>
+                ))}
+                <div className="flex gap-1.5 pl-1">
+                  <input
+                    type="text"
+                    value={newSubtaskDraft}
+                    onChange={(e) => setNewSubtaskDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter") return;
+                      const trimmed = newSubtaskDraft.trim();
+                      if (!trimmed) return;
+                      addSubtask(task.id, trimmed);
+                      setNewSubtaskDraft("");
+                    }}
+                    placeholder={t.tasks.addSubtaskPlaceholder}
+                    className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+                    style={{ fontSize: "0.85rem" }}
+                  />
+                  <button
+                    onClick={() => {
+                      const trimmed = newSubtaskDraft.trim();
+                      if (!trimmed) return;
+                      addSubtask(task.id, trimmed);
+                      setNewSubtaskDraft("");
+                    }}
+                    className="rounded-lg px-2.5 border border-border text-muted-foreground hover:bg-muted flex-shrink-0"
+                    aria-label={t.tasks.addSubtaskPlaceholder.replace("…", "")}
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+              </div>
+            )}
+            {editingId !== task.id && expandedIds.has(task.id) && (task.subtasks?.length ?? 0) > 0 && (
+              <div className="space-y-1.5 pl-9" style={{ flexBasis: "100%" }}>
+                {task.subtasks?.map((sub) => (
+                  <div key={sub.id} className="flex items-center gap-2">
+                    <button
+                      onClick={() => toggleSubtask(task.id, sub.id)}
+                      aria-pressed={sub.done}
+                      aria-label={sub.text}
+                      className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
+                      style={{
+                        width: 18, height: 18,
+                        borderColor: sub.done ? "var(--primary)" : "var(--muted-foreground)",
+                        backgroundColor: sub.done ? "var(--primary)" : "transparent",
+                      }}
+                    >
+                      {sub.done && <Check size={11} color="white" />}
+                    </button>
+                    <span
+                      className="flex-1 min-w-0 truncate"
+                      style={{ fontSize: "0.88rem", color: "var(--muted-foreground)", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? 0.6 : 1 }}
+                    >
+                      {sub.text}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </ReorderRow>

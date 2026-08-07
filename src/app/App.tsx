@@ -33,9 +33,9 @@ import { APP_NAME } from "./version";
 
 // Today's growth is relative to how many habits *this* person tracks, not a fixed count —
 // so it scales whether someone has 2 habits or 8, and resets fresh each day (no streak logic).
-type GrowthStageKey = "seed" | "sprouting" | "blooming" | "fullBloom";
+type TodayGrowthStageKey = "seed" | "sprouting" | "blooming" | "fullBloom";
 
-function getTodaysGrowthStageKey(done: number, total: number): GrowthStageKey {
+function getTodaysGrowthStageKey(done: number, total: number): TodayGrowthStageKey {
   if (total === 0 || done === 0) return "seed";
   const ratio = done / total;
   if (ratio >= 1) return "fullBloom";
@@ -43,16 +43,24 @@ function getTodaysGrowthStageKey(done: number, total: number): GrowthStageKey {
   return "sprouting";
 }
 
-const GROWTH_STAGE_EMOJI: Record<GrowthStageKey, string> = {
+// The lifetime stat keeps climbing past "fullBloom" instead of freezing there forever —
+// grove/forest give the emoji (and not just the raw number) somewhere to keep growing.
+type LifetimeGrowthStageKey = TodayGrowthStageKey | "grove" | "forest";
+
+const GROWTH_STAGE_EMOJI: Record<LifetimeGrowthStageKey, string> = {
   seed: "🌱",
   sprouting: "🌿",
   blooming: "🌸",
   fullBloom: "🌳",
+  grove: "🌳🌿",
+  forest: "🌲🌳",
 };
 
 // The lifetime "Habit growth" counter never resets, so its stage can climb through
 // milestones as the all-time total rises — separate from today's ratio above.
-function getHabitGrowthStageKey(total: number): GrowthStageKey {
+function getHabitGrowthStageKey(total: number): LifetimeGrowthStageKey {
+  if (total >= 250) return "forest";
+  if (total >= 100) return "grove";
   if (total >= 50) return "fullBloom";
   if (total >= 25) return "blooming";
   if (total >= 10) return "sprouting";

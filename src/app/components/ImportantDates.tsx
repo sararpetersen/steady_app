@@ -3,7 +3,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useLang } from "../i18n/LangContext";
 import { Reorder } from "motion/react";
-import { Plus, X, Check, Pencil } from "lucide-react";
+import { Plus, X, Check, Pencil, ChevronLeft, ChevronRight, List, CalendarDays } from "lucide-react";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 import { PictogramPicker } from "./ui/PictogramPicker";
@@ -24,24 +24,24 @@ function generateId() {
   return `date-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-function parseDateKey(dateKey: string): Date {
+export function parseDateKey(dateKey: string): Date {
   const [y, m, d] = dateKey.split("-").map(Number);
   return new Date(y, m - 1, d);
 }
 
-function daysBetween(from: Date, to: Date): number {
+export function daysBetween(from: Date, to: Date): number {
   const msPerDay = 24 * 60 * 60 * 1000;
   const a = new Date(from.getFullYear(), from.getMonth(), from.getDate());
   const b = new Date(to.getFullYear(), to.getMonth(), to.getDate());
   return Math.round((b.getTime() - a.getTime()) / msPerDay);
 }
 
-interface DateStatus {
+export interface DateStatus {
   daysUntil: number | null; // 0 = today, >0 = upcoming
   daysSince: number | null; // >0 = days elapsed since a past, non-repeating date
 }
 
-function getDateStatus(entry: ImportantDateEntry, todayKey: string): DateStatus {
+export function getDateStatus(entry: ImportantDateEntry, todayKey: string): DateStatus {
   const today = parseDateKey(todayKey);
   const anchor = parseDateKey(entry.date);
 
@@ -71,6 +71,39 @@ function formatStatus(status: DateStatus, t: ReturnType<typeof useLang>["dates"]
   return "";
 }
 
+function toDateKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+// Yearly entries match any year on the same month/day; one-off entries only match their
+// exact date, so an old birthday from a past year doesn't keep lighting up every month view.
+function entriesOnDay(dates: ImportantDateEntry[], cellDate: Date): ImportantDateEntry[] {
+  return dates.filter((entry) => {
+    const anchor = parseDateKey(entry.date);
+    if (entry.repeatsYearly) {
+      return anchor.getMonth() === cellDate.getMonth() && anchor.getDate() === cellDate.getDate();
+    }
+    return (
+      anchor.getFullYear() === cellDate.getFullYear() &&
+      anchor.getMonth() === cellDate.getMonth() &&
+      anchor.getDate() === cellDate.getDate()
+    );
+  });
+}
+
+// Monday-first grid (matching the mood history strip elsewhere in the app), padded with
+// null leading/trailing cells so every row is a full week.
+function buildMonthGrid(monthCursor: Date): (Date | null)[] {
+  const first = new Date(monthCursor.getFullYear(), monthCursor.getMonth(), 1);
+  const firstWeekday = (first.getDay() + 6) % 7;
+  const daysInMonth = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 0).getDate();
+  const cells: (Date | null)[] = [];
+  for (let i = 0; i < firstWeekday; i++) cells.push(null);
+  for (let day = 1; day <= daysInMonth; day++) cells.push(new Date(monthCursor.getFullYear(), monthCursor.getMonth(), day));
+  while (cells.length % 7 !== 0) cells.push(null);
+  return cells;
+}
+
 export function ImportantDates() {
   const t = useLang();
   const d = t.dates;
@@ -86,6 +119,13 @@ export function ImportantDates() {
   const [editDate, setEditDate] = useState("");
   const [editRepeats, setEditRepeats] = useState(true);
   const today = useToday();
+  const [view, setView] = useState<"list" | "calendar">("list");
+  const [monthCursor, setMonthCursor] = useState(() => parseDateKey(today));
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+
+  const monthGrid = buildMonthGrid(monthCursor);
+  const monthLabel = monthCursor.toLocaleDateString(t.dateLocale, { month: "long", year: "numeric" });
+  const selectedEntries = selectedDay ? entriesOnDay(dates, parseDateKey(selectedDay)) : [];
 
   const deleteDate = (id: string) => {
     setDates((prev) => prev.filter((entry) => entry.id !== id));
@@ -133,6 +173,30 @@ export function ImportantDates() {
         {d.description}
       </p>
 
+      {dates.length > 0 && (
+        <div className="flex gap-1 mb-4 p-1 rounded-xl" style={{ backgroundColor: "var(--surface-1)", width: "fit-content" }} role="group" aria-label={d.viewToggleLabel}>
+          {(["list", "calendar"] as const).map((option) => (
+            <button
+              key={option}
+              onClick={() => setView(option)}
+              aria-pressed={view === option}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5"
+              style={{
+                fontSize: "0.85rem",
+                fontWeight: view === option ? 700 : 500,
+                backgroundColor: view === option ? "var(--card)" : "transparent",
+                color: view === option ? "var(--foreground)" : "var(--muted-foreground)",
+                boxShadow: view === option ? "0 1px 2px rgba(0,0,0,0.06)" : "none",
+                transition: "all 0.15s",
+              }}
+            >
+              {option === "list" ? <List size={14} /> : <CalendarDays size={14} />}
+              {option === "list" ? d.viewList : d.viewCalendar}
+            </button>
+          ))}
+        </div>
+      )}
+
       {dates.length === 0 && !showForm && (
         <div className="text-center py-6 space-y-1">
           <p className="text-foreground" style={{ fontWeight: 700 }}>{d.emptyTitle}</p>
@@ -140,6 +204,76 @@ export function ImportantDates() {
         </div>
       )}
 
+      {dates.length > 0 && view === "calendar" && (
+        <div className="mb-4 rounded-xl border border-border p-3" style={{ backgroundColor: "var(--surface-1)" }}>
+          <div className="flex items-center justify-between mb-3">
+            <IconButton size="md" onClick={() => { setMonthCursor((c) => new Date(c.getFullYear(), c.getMonth() - 1, 1)); setSelectedDay(null); }} aria-label={d.prevMonth}>
+              <ChevronLeft size={16} />
+            </IconButton>
+            <p className="text-foreground" style={{ fontWeight: 700, fontSize: "0.95rem" }}>{monthLabel}</p>
+            <IconButton size="md" onClick={() => { setMonthCursor((c) => new Date(c.getFullYear(), c.getMonth() + 1, 1)); setSelectedDay(null); }} aria-label={d.nextMonth}>
+              <ChevronRight size={16} />
+            </IconButton>
+          </div>
+          <div className="grid grid-cols-7 gap-1 mb-1">
+            {t.moodHistory.days.map((label) => (
+              <span key={label} className="text-center text-muted-foreground" style={{ fontSize: "0.68rem", fontWeight: 700 }}>
+                {label}
+              </span>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-1">
+            {monthGrid.map((cellDate, i) => {
+              if (!cellDate) return <div key={i} aria-hidden="true" />;
+              const cellKey = toDateKey(cellDate);
+              const dayEntries = entriesOnDay(dates, cellDate);
+              const isToday = cellKey === today;
+              const isSelected = cellKey === selectedDay;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setSelectedDay(cellKey === selectedDay ? null : cellKey)}
+                  className="rounded-lg flex flex-col items-center justify-center gap-0.5"
+                  style={{
+                    aspectRatio: "1",
+                    backgroundColor: isSelected ? "var(--green-bg)" : isToday ? "var(--card)" : "transparent",
+                    border: isToday ? "2px solid var(--primary)" : "2px solid transparent",
+                    transition: "all 0.15s",
+                  }}
+                  aria-pressed={isSelected}
+                  aria-label={dayEntries.length > 0 ? `${cellDate.getDate()}: ${dayEntries.map((e) => e.name).join(", ")}` : String(cellDate.getDate())}
+                >
+                  <span style={{ fontSize: "0.78rem", fontWeight: isToday ? 800 : 500, color: isToday ? "var(--primary)" : "var(--foreground)" }}>
+                    {cellDate.getDate()}
+                  </span>
+                  {dayEntries.length > 0 && (
+                    <span aria-hidden="true" style={{ fontSize: "0.65rem", lineHeight: 1 }}>
+                      {dayEntries.slice(0, 2).map((e) => e.emoji).join("")}
+                      {dayEntries.length > 2 ? `+${dayEntries.length - 2}` : ""}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          {selectedDay && (
+            <div className="mt-3 pt-3 border-t border-border space-y-1.5">
+              {selectedEntries.length === 0 ? (
+                <p className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>{d.noDatesThisDay}</p>
+              ) : (
+                selectedEntries.map((entry) => (
+                  <div key={entry.id} className="flex items-center gap-2">
+                    <span aria-hidden="true" style={{ fontSize: "1.1rem" }}>{entry.emoji}</span>
+                    <span className="text-foreground" style={{ fontSize: "0.9rem" }}>{entry.name}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {view === "list" && (
       <Reorder.Group axis="y" values={dates} onReorder={setDates} className="space-y-2 mb-3">
         {dates.map((entry) => {
           const status = getDateStatus(entry, today);
@@ -213,6 +347,7 @@ export function ImportantDates() {
           );
         })}
       </Reorder.Group>
+      )}
 
       {showForm ? (
         <div

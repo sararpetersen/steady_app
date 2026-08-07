@@ -82,7 +82,7 @@ function SectionPanel({
   customItems: CustomItem[];
   tasks: Task[];
   onAddCustom: (text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence) => void;
-  onEditCustom: (id: number, text: string, emoji: string) => void;
+  onEditCustom: (id: number, text: string, emoji: string, targetSection: SectionKey) => void;
   onReorderCustom: (items: CustomItem[]) => void;
   onDeleteCustom: (id: number) => void;
   onAddSubtask: (id: number, text: string) => void;
@@ -101,6 +101,7 @@ function SectionPanel({
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editDraft, setEditDraft] = useState("");
   const [editEmojiDraft, setEditEmojiDraft] = useState("");
+  const [editSection, setEditSection] = useState<SectionKey>(sectionKey);
   const [newSubtaskDraft, setNewSubtaskDraft] = useState("");
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
 
@@ -146,12 +147,13 @@ function SectionPanel({
     setEditingId(item.id);
     setEditDraft(linkedTask(item)?.text ?? item.text);
     setEditEmojiDraft(item.emoji ?? "");
+    setEditSection(sectionKey);
   };
 
   const saveEdit = (id: number) => {
     const trimmed = editDraft.trim();
     if (!trimmed) return;
-    onEditCustom(id, trimmed, editEmojiDraft.trim());
+    onEditCustom(id, trimmed, editEmojiDraft.trim(), editSection);
     setEditingId(null);
     setEditDraft("");
     setEditEmojiDraft("");
@@ -235,6 +237,28 @@ function SectionPanel({
               />
             )}
           </button>
+        )}
+        {editingId === id && (
+          <div className="flex items-center gap-1 flex-wrap pb-1" style={{ flexBasis: "100%" }}>
+            {SECTION_KEYS.map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setEditSection(key)}
+                aria-pressed={editSection === key}
+                className="rounded-full px-3 py-1 hover:opacity-85"
+                style={{
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  backgroundColor: editSection === key ? "var(--primary)" : "var(--surface-1)",
+                  color: editSection === key ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                  transition: "all 0.15s",
+                }}
+              >
+                {t.routines.sections[key].label}
+              </button>
+            ))}
+          </div>
         )}
         {linked && <span className="sr-only">{t.routines.linkedToTasks}</span>}
         <div className="flex items-center gap-0.5 flex-shrink-0">
@@ -585,10 +609,24 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     setDoneIds((prev) => prev.filter((x) => x !== id));
   };
 
-  const editCustom = (section: SectionKey, id: number, text: string, emoji: string) => {
+  const editCustom = (section: SectionKey, id: number, text: string, emoji: string, targetSection: SectionKey) => {
     const item = (custom[section] ?? []).find((i) => i.id === id);
     if (item?.linkedTaskId != null) {
       setTasks((prev) => prev.map((tsk) => (tsk.id === item.linkedTaskId ? { ...tsk, text } : tsk)));
+    }
+    if (targetSection !== section) {
+      // Moving to another section — drop it from this one and append it to the target's.
+      setCustom((prev) => {
+        const moved = (prev[section] ?? []).find((i) => i.id === id);
+        if (!moved) return prev;
+        const updated = { ...moved, text, emoji: emoji || undefined };
+        return {
+          ...prev,
+          [section]: (prev[section] ?? []).filter((i) => i.id !== id),
+          [targetSection]: [...(prev[targetSection] ?? []), updated],
+        };
+      });
+      return;
     }
     setCustom((prev) => ({
       ...prev,
@@ -658,7 +696,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
             customItems={custom[key] ?? []}
             tasks={tasks}
             onAddCustom={(text, linkToTasks, emoji, recurrence) => addCustom(key, text, linkToTasks, emoji, recurrence)}
-            onEditCustom={(id, text, emoji) => editCustom(key, id, text, emoji)}
+            onEditCustom={(id, text, emoji, targetSection) => editCustom(key, id, text, emoji, targetSection)}
             onReorderCustom={(items) => reorderCustom(key, items)}
             onDeleteCustom={(id) => deleteCustom(key, id)}
             onAddSubtask={addSubtask}

@@ -3,7 +3,7 @@ import { useLang } from "../i18n/LangContext";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { SECTION_KEYS, SECTION_ICONS, type CustomMap, type CustomItem, type SectionKey } from "./Routines";
-import type { Task } from "./TaskList";
+import { isTaskScheduledToday, type Task } from "./TaskList";
 
 interface Props {
   tasks: Task[];
@@ -34,8 +34,17 @@ export function NowNextBanner({ tasks }: Props) {
     return effectiveDoneIds.includes(item.id);
   };
 
+  // A step linked to a recurring task only belongs here on the days that task is actually
+  // due — same rule Routines.tsx uses — otherwise a "Tue/Thu/Sun only" step would show up
+  // as today's "Right now" on every other day too, as long as it hadn't been marked done.
+  const isScheduledToday = (item: CustomItem) => {
+    if (item.linkedTaskId == null) return true;
+    const linked = tasks.find((tsk) => tsk.id === item.linkedTaskId);
+    return !linked || isTaskScheduledToday(linked, today);
+  };
+
   const allSteps: FlatStep[] = SECTION_KEYS.flatMap((sectionKey) =>
-    (custom[sectionKey] ?? []).map((item) => ({ sectionKey, item }))
+    (custom[sectionKey] ?? []).filter(isScheduledToday).map((item) => ({ sectionKey, item }))
   );
 
   if (allSteps.length === 0) return null;

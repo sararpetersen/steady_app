@@ -6,6 +6,7 @@ import { Reorder, motion } from "motion/react";
 import { Sprout, Plus, X, Check, StickyNote, Pencil } from "lucide-react";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
+import { PictogramPicker } from "./ui/PictogramPicker";
 
 export interface Habit {
   id: string;
@@ -318,48 +319,7 @@ export function HabitTracker() {
           className="rounded-2xl p-4 border-2 space-y-3"
           style={{ borderColor: "var(--primary)", backgroundColor: "var(--surface-1)" }}
         >
-          {/* Emoji picker */}
-          <div>
-            <p className="text-muted-foreground mb-2" style={{ fontSize: "0.82rem", fontWeight: 600 }}>
-              Pick an emoji
-            </p>
-            <div className="flex flex-wrap gap-1.5 mb-2">
-              {EMOJI_SUGGESTIONS.map((e) => (
-                <button
-                  key={e}
-                  onClick={() => setNewEmoji(e)}
-                  className="rounded-lg hover:scale-110"
-                  style={{
-                    width: 44,
-                    height: 44,
-                    fontSize: "1.3rem",
-                    backgroundColor: newEmoji === e ? "var(--green-bg)" : "transparent",
-                    border: newEmoji === e ? "2px solid var(--primary)" : "2px solid transparent",
-                    transition: "all 0.15s",
-                  }}
-                  aria-label={EMOJI_LABELS[e] ?? e}
-                  aria-pressed={newEmoji === e}
-                >
-                  {e}
-                </button>
-              ))}
-            </div>
-            {/* Selected emoji preview */}
-            <div className="flex items-center gap-2">
-              <span style={{ fontSize: "1.8rem" }}>{newEmoji}</span>
-              <span className="text-muted-foreground" style={{ fontSize: "0.82rem" }}>
-                or type your own:
-              </span>
-              <input
-                type="text"
-                value={newEmoji}
-                onChange={(e) => setNewEmoji(e.target.value.slice(-2) || e.target.value)}
-                className="rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary text-center"
-                style={{ width: 48, height: 36, fontSize: "1.2rem" }}
-                maxLength={2}
-              />
-            </div>
-          </div>
+          <PictogramPicker value={newEmoji} onChange={setNewEmoji} suggestions={EMOJI_SUGGESTIONS} labels={EMOJI_LABELS} />
 
           {/* Name input */}
           <input

@@ -7,6 +7,8 @@ const en = {
   common: {
     moveUp: "Move up",
     moveDown: "Move down",
+    pickEmoji: "Pick an emoji",
+    orTypeOwnEmoji: "or type your own:",
   },
 
   greeting: {
@@ -399,7 +401,6 @@ const en = {
     alsoAddToTasks: "Also add to Tasks",
     linkedToTasks: "Also tracked in Tasks",
     emojiLabel: "Pictogram (optional)",
-    orTypeOwn: "or type your own:",
     subtasksLabel: "Sub-steps",
     addSubtaskPlaceholder: "Add a sub-step…",
     sections: {
@@ -682,6 +683,8 @@ const da: typeof en = {
   common: {
     moveUp: "Flyt op",
     moveDown: "Flyt ned",
+    pickEmoji: "Vælg en emoji",
+    orTypeOwnEmoji: "eller skriv din egen:",
   },
 
   greeting: {
@@ -1077,7 +1080,6 @@ const da: typeof en = {
     alsoAddToTasks: "Tilføj også til Opgaver",
     linkedToTasks: "Følges også i Opgaver",
     emojiLabel: "Piktogram (valgfrit)",
-    orTypeOwn: "eller skriv din egen:",
     subtasksLabel: "Undertrin",
     addSubtaskPlaceholder: "Tilføj et undertrin…",
     sections: {

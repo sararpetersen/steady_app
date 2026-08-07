@@ -7,6 +7,7 @@ import { useLang } from "../i18n/LangContext";
 import { AnimatedCollapse } from "./AnimatedCollapse";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
+import { PictogramPicker } from "./ui/PictogramPicker";
 import type { Task } from "./TaskList";
 
 export const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
@@ -407,48 +408,7 @@ function SectionPanel({
           {/* Add step */}
           {addingStep ? (
             <div className="space-y-2 mt-2">
-              {/* Pick-or-type pictogram, same pattern as the Habit tracker's "Add habit" form. */}
-              <div>
-                <p className="text-muted-foreground mb-2" style={{ fontSize: "0.82rem", fontWeight: 600 }}>
-                  {t.routines.emojiLabel}
-                </p>
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                  {EMOJI_SUGGESTIONS.map((e) => (
-                    <button
-                      key={e}
-                      onClick={() => setStepEmojiDraft(e)}
-                      className="rounded-lg hover:scale-110"
-                      style={{
-                        width: 40,
-                        height: 40,
-                        fontSize: "1.2rem",
-                        backgroundColor: stepEmojiDraft === e ? "var(--green-bg)" : "transparent",
-                        border: stepEmojiDraft === e ? "2px solid var(--primary)" : "2px solid transparent",
-                        transition: "all 0.15s",
-                      }}
-                      aria-label={EMOJI_LABELS[e] ?? e}
-                      aria-pressed={stepEmojiDraft === e}
-                    >
-                      {e}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span style={{ fontSize: "1.5rem" }}>{stepEmojiDraft || "—"}</span>
-                  <span className="text-muted-foreground" style={{ fontSize: "0.82rem" }}>
-                    {t.routines.orTypeOwn}
-                  </span>
-                  <input
-                    type="text"
-                    aria-label={t.routines.emojiLabel}
-                    value={stepEmojiDraft}
-                    onChange={(e) => setStepEmojiDraft(e.target.value.slice(-2) || e.target.value)}
-                    className="rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary text-center"
-                    style={{ width: 48, height: 36, fontSize: "1.1rem" }}
-                    maxLength={2}
-                  />
-                </div>
-              </div>
+              <PictogramPicker value={stepEmojiDraft} onChange={setStepEmojiDraft} suggestions={EMOJI_SUGGESTIONS} labels={EMOJI_LABELS} size="sm" />
               <input
                 type="text"
                 value={stepDraft}

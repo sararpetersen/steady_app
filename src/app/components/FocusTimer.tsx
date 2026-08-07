@@ -120,7 +120,7 @@ export function FocusTimer() {
                 role="timer"
                 aria-label={`${mm} minutes ${ss} seconds remaining`}
                 style={{
-                  fontSize: running ? "2rem" : "1.8rem",
+                  fontSize: running ? "1.9rem" : "1.8rem",
                   fontWeight: 800,
                   fontFamily: "inherit",
                   color: done ? "var(--purple-vivid)" : "var(--foreground)",

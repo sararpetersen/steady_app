@@ -218,21 +218,26 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
             {t.moodHistory.noData}
           </p>
         ) : (
-          <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(7, 1fr)" }}>
+          <div className="grid gap-1 sm:gap-2" style={{ gridTemplateColumns: "repeat(7, minmax(0, 1fr))" }}>
             {days.map((date) => {
               const entry = moodHistory.find((e) => e.date === date);
               const mood = entry !== undefined ? moods[entry.moodIndex] : null;
               const dayIndex = new Date(date).getDay();
               const dayLabel = t.moodHistory.days[(dayIndex + 6) % 7]; // Mon=0
               return (
-                <div key={date} className="flex flex-col items-center gap-1.5">
+                <div key={date} className="flex flex-col items-center gap-1.5 min-w-0">
                   <div
-                    className="rounded-full flex items-center justify-center"
-                    style={{ width: 40, height: 40, backgroundColor: mood ? "var(--surface-2)" : "var(--surface-1)", fontSize: "1.4rem" }}
+                    className="rounded-full flex items-center justify-center mx-auto"
+                    style={{
+                      width: "clamp(28px, 100%, 40px)",
+                      aspectRatio: "1",
+                      backgroundColor: mood ? "var(--surface-2)" : "var(--surface-1)",
+                      fontSize: "clamp(1rem, 7vw, 1.4rem)",
+                    }}
                   >
                     {mood ? mood.emoji : <span style={{ color: "var(--muted-foreground)", fontSize: "1rem" }}>·</span>}
                   </div>
-                  <span className="text-muted-foreground" style={{ fontSize: "0.68rem", fontWeight: 600 }}>
+                  <span className="text-muted-foreground truncate w-full text-center" style={{ fontSize: "0.68rem", fontWeight: 600 }}>
                     {dayLabel}
                   </span>
                 </div>

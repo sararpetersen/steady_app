@@ -639,7 +639,11 @@ export default function App() {
               offset (a hardcoded top-[61px] for the nav) broke as soon as the header's real
               height differed from that guess — e.g. with a profile photo avatar or larger
               accessibility font sizes — letting the nav bar scroll up and cover the header. */}
-          <div className="sticky top-0 z-10 lg:hidden">
+          {/* iOS Safari repaints sticky elements off their own compositor layer during fast
+              momentum/rubber-band scrolling, which can flash the content underneath for a
+              frame — forcing this onto its own layer (translateZ(0)) keeps it composited
+              independently so it doesn't get caught in that repaint. */}
+          <div className="sticky top-0 z-10 lg:hidden" style={{ transform: "translateZ(0)", WebkitTransform: "translateZ(0)" }}>
           <header className="border-b border-border px-5 py-3" style={{ backgroundColor: "var(--card)" }}>
             <div className="max-w-xl mx-auto flex items-center justify-between gap-4">
               {/* Logo — clickable, goes to Overview */}

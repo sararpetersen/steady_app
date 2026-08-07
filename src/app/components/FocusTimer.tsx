@@ -1,17 +1,31 @@
 import { useState, useEffect, useRef } from "react";
+import { motion } from "motion/react";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import { useToday } from "../hooks/useToday";
 
 const PRESET_SECONDS = [5 * 60, 15 * 60, 25 * 60, 45 * 60];
 const PRESET_LABELS = ["5 min", "15 min", "25 min", "45 min"];
 
 export function FocusTimer() {
   const t = useLang();
+  const today = useToday();
   const [total, setTotal] = useState(25 * 60);
   const [remaining, setRemaining] = useState(25 * 60);
   const [running, setRunning] = useState(false);
   const [done, setDone] = useState(false);
+  const [sessionCounts, setSessionCounts] = useLocalStorage<Record<string, number>>("steady-focus-sessions", {});
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const todaySessionCount = sessionCounts[today] ?? 0;
+
+  // Counts a completed session once per finish, so the companion can say "this is your Nth session today".
+  useEffect(() => {
+    if (done) {
+      setSessionCounts((prev) => ({ ...prev, [today]: (prev[today] ?? 0) + 1 }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
 
   useEffect(() => {
     if (running) {
@@ -46,6 +60,8 @@ export function FocusTimer() {
   const progress = remaining / total;
   const circumference = 2 * Math.PI * 52;
   const strokeDash = circumference * progress;
+
+  const companionMessage = progress > 0.66 ? t.focus.companion.early : progress > 0.33 ? t.focus.companion.mid : t.focus.companion.late;
 
   return (
     <>
@@ -138,7 +154,29 @@ export function FocusTimer() {
             </div>
           </div>
 
-          {done && <p style={{ fontWeight: 700, color: "var(--purple-vivid)", fontSize: "1rem" }}>{t.focus.done}</p>}
+          {running && (
+            <div
+              className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 w-full"
+              style={{ backgroundColor: "var(--green-bg)" }}
+            >
+              <motion.img
+                src="/sprout2.webp"
+                alt=""
+                aria-hidden="true"
+                style={{ width: 30, height: 30, objectFit: "contain", flexShrink: 0 }}
+                animate={{ scale: [1, 1.08, 1] }}
+                transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <p style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--green-text)" }}>{companionMessage}</p>
+            </div>
+          )}
+
+          {done && (
+            <div className="flex flex-col items-center gap-1">
+              <p style={{ fontWeight: 700, color: "var(--purple-vivid)", fontSize: "1rem" }}>{t.focus.done}</p>
+              <p style={{ fontSize: "0.82rem", color: "var(--muted-foreground)" }}>{t.focus.companion.sessionCount(todaySessionCount)}</p>
+            </div>
+          )}
 
           <div className="flex gap-3">
             <button

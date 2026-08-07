@@ -506,6 +506,12 @@ const en = {
     focusing: "Focusing",
     running: "running",
     timerRemaining: (mm: string, ss: string) => `${mm} minutes ${ss} seconds remaining`,
+    companion: {
+      early: "Sprout's settling in beside you.",
+      mid: "Still here with you — keep going.",
+      late: "Almost there. Sprout's cheering you on.",
+      sessionCount: (n: number) => (n <= 1 ? "That's your first focus session today." : `That's focus session #${n} today.`),
+    },
   },
 
   note: {
@@ -1232,6 +1238,12 @@ const da: typeof en = {
     focusing: "Fokuserer",
     running: "kører",
     timerRemaining: (mm: string, ss: string) => `${mm} minutter og ${ss} sekunder tilbage`,
+    companion: {
+      early: "Sprout slår sig ned ved siden af dig.",
+      mid: "Stadig her sammen med dig – bliv ved.",
+      late: "Næsten der. Sprout hepper på dig.",
+      sessionCount: (n: number) => (n <= 1 ? "Det var din første fokus-session i dag." : `Det var fokus-session nr. ${n} i dag.`),
+    },
   },
 
   note: {

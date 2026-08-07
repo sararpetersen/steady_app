@@ -172,7 +172,7 @@ const en = {
 
   weeklyRecap: {
     heading: "Your Week",
-    description: "A gentle look back – not a report card.",
+    description: "A calm look back – not a report card.",
     notEnoughData: "Check in a few more times this week and a small recap will show up here.",
     checkedIn: (n: number) => `You checked in ${n} time${n === 1 ? "" : "s"} this week.`,
     moodMostly: (label: string) => `Mostly feeling ${label.toLowerCase()}.`,
@@ -848,7 +848,7 @@ const da: typeof en = {
 
   weeklyRecap: {
     heading: "Din uge",
-    description: "Et blidt tilbageblik – ikke et karakterblad.",
+    description: "Et roligt tilbageblik – ikke et karakterblad.",
     notEnoughData: "Tjek ind et par gange mere i denne uge, så dukker der en lille opsummering op her.",
     checkedIn: (n: number) => `Du tjekkede ind ${n} gang${n === 1 ? "" : "e"} i denne uge.`,
     moodMostly: (label: string) => `Din stemning var oftest ${label.toLowerCase()}.`,

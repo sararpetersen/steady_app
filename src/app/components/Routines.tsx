@@ -8,7 +8,7 @@ import { AnimatedCollapse } from "./AnimatedCollapse";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 import { PictogramPicker } from "./ui/PictogramPicker";
-import type { Task, TaskRecurrence } from "./TaskList";
+import { isTaskScheduledToday, type Task, type TaskRecurrence } from "./TaskList";
 
 export const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
 export type SectionKey = typeof SECTION_KEYS[number];
@@ -90,6 +90,7 @@ function SectionPanel({
   onDeleteSubtask: (id: number, subtaskId: number) => void;
 }) {
   const t = useLang();
+  const today = useToday();
   const section = t.routines.sections[sectionKey];
   const [open, setOpen] = useState(false);
   const [addingStep, setAddingStep] = useState(false);
@@ -110,8 +111,17 @@ function SectionPanel({
     item.linkedTaskId != null ? tasks.find((tsk) => tsk.id === item.linkedTaskId) : undefined;
   const isDone = (item: CustomItem) => linkedTask(item)?.done ?? doneIds.includes(item.id);
 
-  const allIds = customItems.map((c) => c.id);
-  const doneCount = customItems.filter(isDone).length;
+  // A step linked to a recurring task only belongs on the days that task is actually due —
+  // otherwise a "Monday only" step would sit in the routine looking identical to a daily one,
+  // making the weekday choice made in the Tasks tab appear to have no effect here.
+  const isScheduledToday = (item: CustomItem) => {
+    const task = linkedTask(item);
+    return !task || isTaskScheduledToday(task, today);
+  };
+  const visibleItems = customItems.filter(isScheduledToday);
+
+  const allIds = visibleItems.map((c) => c.id);
+  const doneCount = visibleItems.filter(isDone).length;
 
   const toggleExpanded = (id: number) => {
     setExpandedIds((prev) => {
@@ -148,6 +158,7 @@ function SectionPanel({
   };
 
   const renderItem = (item: CustomItem) => {
+    if (!isScheduledToday(item)) return null;
     const { id } = item;
     const linked = linkedTask(item);
     const text = linked?.text ?? item.text;
@@ -391,9 +402,9 @@ function SectionPanel({
       <AnimatedCollapse open={open}>
         <div className="p-4 space-y-1 bg-card">
           {/* Custom items */}
-          {customItems.length === 0 && !addingStep && (
+          {visibleItems.length === 0 && !addingStep && (
             <p className="text-muted-foreground py-2 pl-1" style={{ fontSize: "0.88rem" }}>
-              {t.routines.noSteps}
+              {customItems.length > 0 ? t.routines.noStepsToday : t.routines.noSteps}
             </p>
           )}
           <Reorder.Group axis="y" values={customItems} onReorder={onReorderCustom} className="space-y-1">

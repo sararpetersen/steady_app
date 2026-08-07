@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { History } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
@@ -88,7 +88,7 @@ export function WeeklyRecap() {
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <div className="flex items-center gap-2 mb-1">
-        <Sparkles size={18} style={{ color: "var(--purple-vivid)" }} aria-hidden="true" />
+        <History size={18} style={{ color: "var(--orange-text)" }} aria-hidden="true" />
         <h3 className="text-foreground">{r.heading}</h3>
       </div>
       <p className="text-muted-foreground mb-3" style={{ fontSize: "0.95rem" }}>
@@ -100,10 +100,10 @@ export function WeeklyRecap() {
           {r.notEnoughData}
         </p>
       ) : (
-        <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: "var(--purple-bg)" }}>
+        <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: "var(--orange-bg)" }}>
           <ul className="space-y-2">
             {recap.checkedInDays > 0 && (
-              <li className="flex items-start gap-2" style={{ color: "var(--purple-text)", fontSize: "0.9rem", lineHeight: 1.6 }}>
+              <li className="flex items-start gap-2" style={{ color: "var(--orange-text)", fontSize: "0.9rem", lineHeight: 1.6 }}>
                 <span aria-hidden="true" className="flex-shrink-0">{recap.topMoodIndex !== null ? moods[recap.topMoodIndex].emoji : "💬"}</span>
                 <span>
                   {r.checkedIn(recap.checkedInDays)}
@@ -112,7 +112,7 @@ export function WeeklyRecap() {
               </li>
             )}
             {recap.habitCompletions > 0 && (
-              <li className="flex items-start gap-2" style={{ color: "var(--purple-text)", fontSize: "0.9rem", lineHeight: 1.6 }}>
+              <li className="flex items-start gap-2" style={{ color: "var(--orange-text)", fontSize: "0.9rem", lineHeight: 1.6 }}>
                 <span aria-hidden="true" className="flex-shrink-0">🌱</span>
                 <span>
                   {r.habitCompletionsSentence(recap.habitCompletions)}
@@ -121,7 +121,7 @@ export function WeeklyRecap() {
               </li>
             )}
             {recap.reflectionCount > 0 && (
-              <li className="flex items-start gap-2" style={{ color: "var(--purple-text)", fontSize: "0.9rem", lineHeight: 1.6 }}>
+              <li className="flex items-start gap-2" style={{ color: "var(--orange-text)", fontSize: "0.9rem", lineHeight: 1.6 }}>
                 <span aria-hidden="true" className="flex-shrink-0">📝</span>
                 <span>{r.reflections(recap.reflectionCount)}</span>
               </li>
@@ -139,7 +139,7 @@ export function WeeklyRecap() {
             </div>
           )}
 
-          <p style={{ color: "var(--purple-text)", fontSize: "0.85rem", lineHeight: 1.6, opacity: 0.9 }}>{r.closing}</p>
+          <p style={{ color: "var(--orange-text)", fontSize: "0.85rem", lineHeight: 1.6, opacity: 0.9 }}>{r.closing}</p>
         </div>
       )}
     </div>

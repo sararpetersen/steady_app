@@ -98,21 +98,12 @@ function nextScheduledDate(task: Task, fromDate: string): string | null {
 
 interface Props {
   tasks: Task[];
-  setTasks: (
-    updater: Task[] | ((prev: Task[]) => Task[]),
-  ) => void;
+  setTasks: (updater: Task[] | ((prev: Task[]) => Task[])) => void;
   nextId: number;
-  setNextId: (
-    updater: number | ((prev: number) => number),
-  ) => void;
+  setNextId: (updater: number | ((prev: number) => number)) => void;
 }
 
-export function TaskList({
-  tasks,
-  setTasks,
-  nextId,
-  setNextId,
-}: Props) {
+export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
   const t = useLang();
   const today = useToday();
   const todayDate = new Date(`${today}T00:00:00`);
@@ -209,15 +200,27 @@ export function TaskList({
       <div className="flex items-center gap-1 flex-wrap">
         {showOccurrenceOption && (
           <button
-            onClick={() => { skipToday(task.id); setPendingDeleteId(null); }}
+            onClick={() => {
+              skipToday(task.id);
+              setPendingDeleteId(null);
+            }}
             className="rounded-lg px-2.5 py-1.5 hover:opacity-85"
-            style={{ backgroundColor: "var(--surface-1)", color: "var(--foreground)", fontSize: "0.78rem", fontWeight: 700, transition: "opacity 0.15s" }}
+            style={{
+              backgroundColor: "var(--surface-1)",
+              color: "var(--foreground)",
+              fontSize: "0.78rem",
+              fontWeight: 700,
+              transition: "opacity 0.15s",
+            }}
           >
             {t.tasks.deleteOccurrenceOnly}
           </button>
         )}
         <button
-          onClick={() => { remove(task.id); setPendingDeleteId(null); }}
+          onClick={() => {
+            remove(task.id);
+            setPendingDeleteId(null);
+          }}
           className="rounded-lg px-2.5 py-1.5 text-white hover:opacity-85"
           style={{ backgroundColor: "var(--destructive)", fontSize: "0.78rem", fontWeight: 700, transition: "opacity 0.15s" }}
         >
@@ -268,27 +271,15 @@ export function TaskList({
   // Completing a task is one-way — once checked off, tapping it again does nothing.
   // Undoing a mistake means deleting the task (or, for recurring ones, waiting for the
   // next cycle to reset it), rather than freely toggling done/undone back and forth.
-  const toggle = (id: number) =>
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id && !task.done ? { ...task, done: true } : task,
-      ),
-    );
+  const toggle = (id: number) => setTasks((prev) => prev.map((task) => (task.id === id && !task.done ? { ...task, done: true } : task)));
 
-  const remove = (id: number) =>
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+  const remove = (id: number) => setTasks((prev) => prev.filter((task) => task.id !== id));
 
   // Reminders-style "delete this occurrence" — dismisses just today's instance (it won't
   // show again until the series naturally schedules it in the future) without touching
   // the recurrence rule itself.
   const skipToday = (id: number) =>
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id
-          ? { ...task, skippedDates: [...(task.skippedDates ?? []), today] }
-          : task,
-      ),
-    );
+    setTasks((prev) => prev.map((task) => (task.id === id ? { ...task, skippedDates: [...(task.skippedDates ?? []), today] } : task)));
 
   // Deleting a recurring task removes the whole series, not just today's occurrence —
   // easy to do by accident when you're really just trying to clear a completed item.
@@ -337,18 +328,15 @@ export function TaskList({
   const toggleExpanded = (id: number) => {
     setExpandedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
 
   const addSubtask = (taskId: number, text: string) => {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId
-          ? { ...task, subtasks: [...(task.subtasks ?? []), { id: nextId, text, done: false }] }
-          : task,
-      ),
+      prev.map((task) => (task.id === taskId ? { ...task, subtasks: [...(task.subtasks ?? []), { id: nextId, text, done: false }] } : task)),
     );
     setNextId((n) => n + 1);
   };
@@ -356,21 +344,13 @@ export function TaskList({
   const toggleSubtask = (taskId: number, subId: number) => {
     setTasks((prev) =>
       prev.map((task) =>
-        task.id === taskId
-          ? { ...task, subtasks: task.subtasks?.map((s) => (s.id === subId ? { ...s, done: !s.done } : s)) }
-          : task,
+        task.id === taskId ? { ...task, subtasks: task.subtasks?.map((s) => (s.id === subId ? { ...s, done: !s.done } : s)) } : task,
       ),
     );
   };
 
   const deleteSubtask = (taskId: number, subId: number) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId
-          ? { ...task, subtasks: task.subtasks?.filter((s) => s.id !== subId) }
-          : task,
-      ),
-    );
+    setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, subtasks: task.subtasks?.filter((s) => s.id !== subId) } : task)));
   };
 
   const add = () => {
@@ -412,8 +392,7 @@ export function TaskList({
   };
   const modalNextDate = nextScheduledDate(modalTask, today);
   const formatDueDate = (date: string) =>
-    new Intl.DateTimeFormat(undefined, { day: "numeric", month: "long", year: "numeric" })
-      .format(new Date(`${date}T00:00:00`));
+    new Intl.DateTimeFormat(undefined, { day: "numeric", month: "long", year: "numeric" }).format(new Date(`${date}T00:00:00`));
 
   // Split off weekly/monthly tasks that aren't scheduled for today — they stay in storage
   // (and stay editable/deletable below) but don't clutter today's list looking like they're due.
@@ -427,8 +406,7 @@ export function TaskList({
   const sortedTasks = [...todayTasks].sort((a, b) => Number(a.done) - Number(b.done));
   const firstCompletedIndex = sortedTasks.findIndex((task) => task.done);
 
-  const weekdaysBadge = (days: number[] | undefined) =>
-    (days ?? []).map((d) => t.tasks.weekdaysAbbr[d]).join(", ");
+  const weekdaysBadge = (days: number[] | undefined) => (days ?? []).map((d) => t.tasks.weekdaysAbbr[d]).join(", ");
 
   const recurrenceTitle = (task: Task) => {
     if (task.recurrence === "weekly" && (task.weeklyIntervalWeeks ?? 1) > 1) {
@@ -452,8 +430,8 @@ export function TaskList({
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-foreground text-lg">{t.tasks.heading}</h2>
-        {todayTasks.length > 0 && (
-          remaining === 0 ? (
+        {todayTasks.length > 0 &&
+          (remaining === 0 ? (
             <span
               className="rounded-full px-3 py-1 flex items-center gap-1.5"
               style={{ backgroundColor: "var(--green-bg)", color: "var(--green-text)", fontSize: "0.85rem", fontWeight: 700 }}
@@ -468,27 +446,28 @@ export function TaskList({
             >
               {remaining} {t.tasks.left}
             </span>
-          )
-        )}
+          ))}
       </div>
-      <p
-        className="text-muted-foreground mb-4 text-sm sm:text-base"
-      >
-        {t.tasks.description}
-      </p>
+      <p className="text-muted-foreground mb-4 text-sm sm:text-base">{t.tasks.description}</p>
 
       {tasks.length === 0 && (
         <div className="text-center py-6">
           <img src="/sprout6.webp" alt="" aria-hidden="true" className="mx-auto mb-3" style={{ width: 72, height: 72, objectFit: "contain" }} />
           <div className="space-y-1">
-            <p className="text-foreground" style={{ fontWeight: 700 }}>{t.tasks.emptyTitle}</p>
-            <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>{t.tasks.emptySubtitle}</p>
+            <p className="text-foreground" style={{ fontWeight: 700 }}>
+              {t.tasks.emptyTitle}
+            </p>
+            <p className="text-muted-foreground" style={{ fontSize: "0.88rem" }}>
+              {t.tasks.emptySubtitle}
+            </p>
           </div>
         </div>
       )}
 
       {tasks.length > 0 && todayTasks.length === 0 && (
-        <p className="text-muted-foreground text-center py-4" style={{ fontSize: "0.88rem" }}>{t.tasks.noneToday}</p>
+        <p className="text-muted-foreground text-center py-4" style={{ fontSize: "0.88rem" }}>
+          {t.tasks.noneToday}
+        </p>
       )}
 
       <Reorder.Group axis="y" values={sortedTasks} onReorder={setTasks} className="space-y-2 mb-4">
@@ -502,251 +481,251 @@ export function TaskList({
                 {t.tasks.completedHeading}
               </p>
             )}
-          <ReorderRow
-            value={task}
-            values={sortedTasks}
-            onReorder={setTasks}
-            moveUpLabel={t.common.moveUp}
-            moveDownLabel={t.common.moveDown}
-            dragDisabled={editingId === task.id}
-            className="flex items-center flex-wrap gap-1 rounded-xl hover:brightness-95 py-2 group"
-            style={{
-              backgroundColor: task.done
-                ? "var(--green-bg)"
-                : "var(--surface-1)",
-            }}
-          >
-            {pendingDeleteId !== task.id && (
-              <button
-                onClick={() => toggle(task.id)}
-                disabled={task.done}
-                aria-pressed={task.done}
-                className="flex-shrink-0 rounded-full flex items-center justify-center disabled:cursor-default"
-                style={{ width: 44, height: 44 }}
-                aria-label={task.done ? t.tasks.completedHeading : t.tasks.markComplete}
-              >
-                <span
-                  className="rounded-full border-2 flex items-center justify-center"
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderColor: task.done
-                      ? "var(--primary)"
-                      : "var(--muted-foreground)",
-                    backgroundColor: task.done
-                      ? "var(--primary)"
-                      : "transparent",
-                    transition: "background-color 0.2s, border-color 0.2s",
-                  }}
-                >
-                  {task.done && (
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      fill="none"
-                    >
-                      <path
-                        d="M2.5 7L5.5 10L11.5 4"
-                        stroke="white"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </span>
-              </button>
-            )}
-            {pendingDeleteId === task.id ? null : editingId === task.id ? (
-              <div className="flex-1 min-w-0 flex items-center gap-1.5" style={{ flexBasis: 140 }}>
-                <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary" />
+            <ReorderRow
+              value={task}
+              values={sortedTasks}
+              onReorder={setTasks}
+              moveUpLabel={t.common.moveUp}
+              moveDownLabel={t.common.moveDown}
+              dragDisabled={editingId === task.id}
+              className="flex items-center flex-wrap gap-1 rounded-xl hover:brightness-95 py-2 group"
+              style={{
+                backgroundColor: task.done ? "var(--green-bg)" : "var(--surface-1)",
+              }}
+            >
+              {pendingDeleteId !== task.id && (
                 <button
-                  onClick={() => setRecurrenceModalOpen("edit")}
-                  className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
-                  style={{
-                    borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
-                    backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
-                    color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
-                    transition: "all 0.15s",
-                  }}
-                  aria-label={recurrenceLabel(editRecurrence)}
-                  title={recurrenceLabel(editRecurrence)}
+                  onClick={() => toggle(task.id)}
+                  disabled={task.done}
+                  aria-pressed={task.done}
+                  className="flex-shrink-0 rounded-full flex items-center justify-center disabled:cursor-default"
+                  style={{ width: 44, height: 44 }}
+                  aria-label={task.done ? t.tasks.completedHeading : t.tasks.markComplete}
                 >
-                  <Repeat size={14} aria-hidden="true" />
-                </button>
-              </div>
-            ) : (
-              // Name and recurrence badge stack instead of sharing a row — on narrow phones,
-              // splitting the width between them left almost nothing for the name itself.
-              // Stacking gives the name the row's full width, which it truncates within
-              // (rather than wrapping) — a single clean ellipsis line reads better here
-              // than the name growing to multiple lines.
-              <div className="flex-1 min-w-0 flex flex-col gap-0.5" style={{ flexBasis: 140 }}>
-                <span
-                  className="truncate"
-                  style={{
-                    color: task.done ? "var(--green-text)" : "var(--foreground)",
-                    textDecoration: task.done ? "line-through" : "none",
-                    opacity: task.done ? 0.75 : 1,
-                  }}
-                >
-                  {task.text}
-                </span>
-                {task.recurrence && (
                   <span
-                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 flex-shrink-0 self-start max-w-full"
-                    style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
-                    title={recurrenceTitle(task)}
-                  >
-                    <Repeat size={10} aria-hidden="true" />
-                    {recurrenceBadge(task.recurrence)}
-                  </span>
-                )}
-              </div>
-            )}
-            {pendingDeleteId === task.id ? (
-              <div className="flex-1 min-w-0">
-                <DeleteConfirm task={task} showOccurrenceOption />
-              </div>
-            ) : (
-              <div className="flex items-center gap-1 flex-shrink-0 pr-1">
-                {editingId !== task.id && (task.subtasks?.length ?? 0) > 0 && (
-                  <IconButton
-                    size="pill"
-                    tone="default"
-                    onClick={() => toggleExpanded(task.id)}
-                    aria-label={`${t.tasks.subtasksLabel}: ${task.subtasks!.filter((s) => s.done).length}/${task.subtasks!.length}`}
-                    aria-expanded={expandedIds.has(task.id)}
-                    style={{ fontSize: "0.75rem", fontWeight: 700 }}
-                  >
-                    <ListTree size={13} aria-hidden="true" />
-                    {task.subtasks!.filter((s) => s.done).length}/{task.subtasks!.length}
-                  </IconButton>
-                )}
-                {(!task.done || editingId === task.id) && (
-                  <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
-                    {editingId === task.id ? (
-                      <Check size={16} />
-                    ) : (
-                      <>
-                        <Pencil size={14} className="sm:hidden" />
-                        <span className="hidden sm:inline">{t.tasks.editLabel}</span>
-                      </>
-                    )}
-                  </IconButton>
-                )}
-                <IconButton
-                  size="md"
-                  tone="destructive"
-                  onClick={() => requestRemove(task)}
-                  aria-label={`${t.tasks.remove}: ${task.text}`}
-                >
-                  <X size={16} />
-                </IconButton>
-              </div>
-            )}
-            {/* flexBasis 100% forces this onto its own row within the flex-wrap parent —
-                same pattern as Routines' sub-step panel. */}
-            {editingId === task.id && (
-              <div className="space-y-1.5 pl-9 pr-1" style={{ flexBasis: "100%" }}>
-                <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--muted-foreground)" }}>
-                  {t.tasks.subtasksLabel}
-                </p>
-                {task.subtasks?.map((sub) => (
-                  <div key={sub.id} className="flex items-center gap-2">
-                    <button
-                      onClick={() => toggleSubtask(task.id, sub.id)}
-                      aria-pressed={sub.done}
-                      aria-label={sub.text}
-                      className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
-                      style={{
-                        width: 18, height: 18,
-                        borderColor: sub.done ? "var(--primary)" : "var(--muted-foreground)",
-                        backgroundColor: sub.done ? "var(--primary)" : "transparent",
-                      }}
-                    >
-                      {sub.done && <Check size={11} color="white" />}
-                    </button>
-                    <span
-                      className="flex-1 min-w-0 truncate"
-                      style={{ fontSize: "0.88rem", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? 0.6 : 1 }}
-                    >
-                      {sub.text}
-                    </span>
-                    <IconButton size="sm" tone="destructive" onClick={() => deleteSubtask(task.id, sub.id)} aria-label={`${t.tasks.remove}: ${sub.text}`}>
-                      <X size={12} />
-                    </IconButton>
-                  </div>
-                ))}
-                <div className="flex gap-1.5">
-                  <input
-                    type="text"
-                    value={newSubtaskDraft}
-                    onChange={(e) => setNewSubtaskDraft(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key !== "Enter") return;
-                      const trimmed = newSubtaskDraft.trim();
-                      if (!trimmed) return;
-                      addSubtask(task.id, trimmed);
-                      setNewSubtaskDraft("");
+                    className="rounded-full border-2 flex items-center justify-center"
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderColor: task.done ? "var(--primary)" : "var(--muted-foreground)",
+                      backgroundColor: task.done ? "var(--primary)" : "transparent",
+                      transition: "background-color 0.2s, border-color 0.2s",
                     }}
-                    placeholder={t.tasks.addSubtaskPlaceholder}
-                    className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
-                    style={{ fontSize: "0.85rem" }}
+                  >
+                    {task.done && (
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M2.5 7L5.5 10L11.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </span>
+                </button>
+              )}
+              {pendingDeleteId === task.id ? null : editingId === task.id ? (
+                <div className="flex-1 min-w-0 flex items-center gap-1.5" style={{ flexBasis: 140 }}>
+                  <input
+                    autoFocus
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") saveEdit(task.id);
+                      if (e.key === "Escape") setEditingId(null);
+                    }}
+                    className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                   />
                   <button
-                    onClick={() => {
-                      const trimmed = newSubtaskDraft.trim();
-                      if (!trimmed) return;
-                      addSubtask(task.id, trimmed);
-                      setNewSubtaskDraft("");
+                    onClick={() => setRecurrenceModalOpen("edit")}
+                    className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
+                    style={{
+                      borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
+                      backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
+                      color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
+                      transition: "all 0.15s",
                     }}
-                    className="rounded-lg px-2.5 border border-border text-muted-foreground hover:bg-muted flex-shrink-0"
-                    aria-label={t.tasks.addSubtaskPlaceholder.replace("…", "")}
+                    aria-label={recurrenceLabel(editRecurrence)}
+                    title={recurrenceLabel(editRecurrence)}
                   >
-                    <Plus size={14} />
+                    <Repeat size={14} aria-hidden="true" />
                   </button>
                 </div>
-              </div>
-            )}
-            {editingId !== task.id && expandedIds.has(task.id) && (task.subtasks?.length ?? 0) > 0 && (
-              <div className="space-y-1.5 pl-9 pr-1" style={{ flexBasis: "100%" }}>
-                {task.subtasks?.map((sub) => (
-                  <div key={sub.id} className="flex items-center gap-2">
-                    <button
-                      onClick={() => toggleSubtask(task.id, sub.id)}
-                      aria-pressed={sub.done}
-                      aria-label={sub.text}
-                      className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
-                      style={{
-                        width: 18, height: 18,
-                        borderColor: sub.done ? "var(--primary)" : "var(--muted-foreground)",
-                        backgroundColor: sub.done ? "var(--primary)" : "transparent",
-                      }}
-                    >
-                      {sub.done && <Check size={11} color="white" />}
-                    </button>
+              ) : (
+                // Name and recurrence badge stack instead of sharing a row — on narrow phones,
+                // splitting the width between them left almost nothing for the name itself.
+                // Stacking gives the name the row's full width, which it truncates within
+                // (rather than wrapping) — a single clean ellipsis line reads better here
+                // than the name growing to multiple lines.
+                <div className="flex-1 min-w-0 flex flex-col gap-0.5" style={{ flexBasis: 140 }}>
+                  <span
+                    className="truncate"
+                    style={{
+                      color: task.done ? "var(--green-text)" : "var(--foreground)",
+                      textDecoration: task.done ? "line-through" : "none",
+                      opacity: task.done ? 0.75 : 1,
+                    }}
+                  >
+                    {task.text}
+                  </span>
+                  {task.recurrence && (
                     <span
-                      className="flex-1 min-w-0 truncate"
-                      style={{ fontSize: "0.88rem", color: "var(--muted-foreground)", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? 0.6 : 1 }}
+                      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 flex-shrink-0 self-start max-w-full"
+                      style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
+                      title={recurrenceTitle(task)}
                     >
-                      {sub.text}
+                      <Repeat size={10} aria-hidden="true" />
+                      {recurrenceBadge(task.recurrence)}
                     </span>
+                  )}
+                </div>
+              )}
+              {pendingDeleteId === task.id ? (
+                <div className="flex-1 min-w-0">
+                  <DeleteConfirm task={task} showOccurrenceOption />
+                </div>
+              ) : (
+                <div className="flex items-center gap-1 flex-shrink-0 pr-1">
+                  {editingId !== task.id && (task.subtasks?.length ?? 0) > 0 && (
+                    <IconButton
+                      size="pill"
+                      tone="default"
+                      onClick={() => toggleExpanded(task.id)}
+                      aria-label={`${t.tasks.subtasksLabel}: ${task.subtasks!.filter((s) => s.done).length}/${task.subtasks!.length}`}
+                      aria-expanded={expandedIds.has(task.id)}
+                      style={{ fontSize: "0.75rem", fontWeight: 700 }}
+                    >
+                      <ListTree size={13} aria-hidden="true" />
+                      {task.subtasks!.filter((s) => s.done).length}/{task.subtasks!.length}
+                    </IconButton>
+                  )}
+                  {(!task.done || editingId === task.id) && (
+                    <IconButton
+                      size="pill"
+                      tone="primary"
+                      onClick={() => (editingId === task.id ? saveEdit(task.id) : startEditing(task))}
+                      style={{ fontSize: "0.78rem", fontWeight: 700 }}
+                      aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}
+                    >
+                      {editingId === task.id ? (
+                        <Check size={16} />
+                      ) : (
+                        <>
+                          <Pencil size={14} className="sm:hidden" />
+                          <span className="hidden sm:inline">{t.tasks.editLabel}</span>
+                        </>
+                      )}
+                    </IconButton>
+                  )}
+                  <IconButton size="md" tone="destructive" onClick={() => requestRemove(task)} aria-label={`${t.tasks.remove}: ${task.text}`}>
+                    <X size={16} />
+                  </IconButton>
+                </div>
+              )}
+              {/* flexBasis 100% forces this onto its own row within the flex-wrap parent —
+                same pattern as Routines' sub-step panel. */}
+              {editingId === task.id && (
+                <div className="space-y-1.5 pl-7 pr-1" style={{ flexBasis: "100%" }}>
+                  <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--muted-foreground)" }}>{t.tasks.subtasksLabel}</p>
+                  {task.subtasks?.map((sub) => (
+                    <div key={sub.id} className="flex items-center gap-2">
+                      <button
+                        onClick={() => toggleSubtask(task.id, sub.id)}
+                        aria-pressed={sub.done}
+                        aria-label={sub.text}
+                        className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
+                        style={{
+                          width: 18,
+                          height: 18,
+                          borderColor: sub.done ? "var(--primary)" : "var(--muted-foreground)",
+                          backgroundColor: sub.done ? "var(--primary)" : "transparent",
+                        }}
+                      >
+                        {sub.done && <Check size={11} color="white" />}
+                      </button>
+                      <span
+                        className="flex-1 min-w-0 truncate"
+                        style={{ fontSize: "0.88rem", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? 0.6 : 1 }}
+                      >
+                        {sub.text}
+                      </span>
+                      <IconButton
+                        size="sm"
+                        tone="destructive"
+                        onClick={() => deleteSubtask(task.id, sub.id)}
+                        aria-label={`${t.tasks.remove}: ${sub.text}`}
+                      >
+                        <X size={12} />
+                      </IconButton>
+                    </div>
+                  ))}
+                  <div className="flex gap-1.5">
+                    <input
+                      type="text"
+                      value={newSubtaskDraft}
+                      onChange={(e) => setNewSubtaskDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key !== "Enter") return;
+                        const trimmed = newSubtaskDraft.trim();
+                        if (!trimmed) return;
+                        addSubtask(task.id, trimmed);
+                        setNewSubtaskDraft("");
+                      }}
+                      placeholder={t.tasks.addSubtaskPlaceholder}
+                      className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+                      style={{ fontSize: "0.85rem" }}
+                    />
+                    <button
+                      onClick={() => {
+                        const trimmed = newSubtaskDraft.trim();
+                        if (!trimmed) return;
+                        addSubtask(task.id, trimmed);
+                        setNewSubtaskDraft("");
+                      }}
+                      className="rounded-lg px-2.5 border border-border text-muted-foreground hover:bg-muted flex-shrink-0"
+                      aria-label={t.tasks.addSubtaskPlaceholder.replace("…", "")}
+                    >
+                      <Plus size={14} />
+                    </button>
                   </div>
-                ))}
-              </div>
-            )}
-          </ReorderRow>
+                </div>
+              )}
+              {editingId !== task.id && expandedIds.has(task.id) && (task.subtasks?.length ?? 0) > 0 && (
+                <div className="space-y-1.5 pl-7 pr-1" style={{ flexBasis: "100%" }}>
+                  {task.subtasks?.map((sub) => (
+                    <div key={sub.id} className="flex items-center gap-2">
+                      <button
+                        onClick={() => toggleSubtask(task.id, sub.id)}
+                        aria-pressed={sub.done}
+                        aria-label={sub.text}
+                        className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
+                        style={{
+                          width: 18,
+                          height: 18,
+                          borderColor: sub.done ? "var(--primary)" : "var(--muted-foreground)",
+                          backgroundColor: sub.done ? "var(--primary)" : "transparent",
+                        }}
+                      >
+                        {sub.done && <Check size={11} color="white" />}
+                      </button>
+                      <span
+                        className="flex-1 min-w-0 truncate"
+                        style={{
+                          fontSize: "0.88rem",
+                          color: "var(--muted-foreground)",
+                          textDecoration: sub.done ? "line-through" : "none",
+                          opacity: sub.done ? 0.6 : 1,
+                        }}
+                      >
+                        {sub.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </ReorderRow>
           </div>
         ))}
       </Reorder.Group>
 
       {todayTasks.length > 0 && remaining === 0 && (
-        <div
-          className="rounded-xl px-4 py-3 flex items-center gap-3 mb-4"
-          style={{ backgroundColor: "var(--orange-bg)" }}
-        >
+        <div className="rounded-xl px-4 py-3 flex items-center gap-3 mb-4" style={{ backgroundColor: "var(--orange-bg)" }}>
           <CheckCircle2
             size={20}
             style={{
@@ -785,51 +764,70 @@ export function TaskList({
                   {pendingDeleteId === task.id ? (
                     <DeleteConfirm task={task} />
                   ) : (
-                  <div className="flex items-center flex-wrap gap-2">
-                    {editingId === task.id ? (
-                      <div className="flex-1 min-w-0 flex items-center gap-1.5" style={{ flexBasis: 140 }}>
-                        <input autoFocus value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") saveEdit(task.id); if (e.key === "Escape") setEditingId(null); }} className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary" />
-                        <button
-                          onClick={() => setRecurrenceModalOpen("edit")}
-                          className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
-                          style={{
-                            borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
-                            backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
-                            color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
-                            transition: "all 0.15s",
-                          }}
-                          aria-label={recurrenceLabel(editRecurrence)}
-                          title={recurrenceLabel(editRecurrence)}
+                    <div className="flex items-center flex-wrap gap-2">
+                      {editingId === task.id ? (
+                        <div className="flex-1 min-w-0 flex items-center gap-1.5" style={{ flexBasis: 140 }}>
+                          <input
+                            autoFocus
+                            value={editText}
+                            onChange={(e) => setEditText(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") saveEdit(task.id);
+                              if (e.key === "Escape") setEditingId(null);
+                            }}
+                            className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+                          />
+                          <button
+                            onClick={() => setRecurrenceModalOpen("edit")}
+                            className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
+                            style={{
+                              borderColor: editRecurrence ? "var(--primary)" : "var(--border)",
+                              backgroundColor: editRecurrence ? "var(--green-bg)" : "transparent",
+                              color: editRecurrence ? "var(--green-text)" : "var(--muted-foreground)",
+                              transition: "all 0.15s",
+                            }}
+                            aria-label={recurrenceLabel(editRecurrence)}
+                            title={recurrenceLabel(editRecurrence)}
+                          >
+                            <Repeat size={14} aria-hidden="true" />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="flex-1 min-w-0 text-foreground truncate" style={{ opacity: 0.85, flexBasis: 140 }}>
+                          {task.text}
+                        </span>
+                      )}
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <IconButton
+                          size="pill"
+                          tone="primary"
+                          onClick={() => (editingId === task.id ? saveEdit(task.id) : startEditing(task))}
+                          style={{ fontSize: "0.78rem", fontWeight: 700 }}
+                          aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}
                         >
-                          <Repeat size={14} aria-hidden="true" />
-                        </button>
+                          {editingId === task.id ? (
+                            <Check size={16} />
+                          ) : (
+                            <>
+                              <Pencil size={14} className="sm:hidden" />
+                              <span className="hidden sm:inline">{t.tasks.editLabel}</span>
+                            </>
+                          )}
+                        </IconButton>
+                        <IconButton size="md" tone="destructive" onClick={() => requestRemove(task)} aria-label={`${t.tasks.remove}: ${task.text}`}>
+                          <X size={16} />
+                        </IconButton>
                       </div>
-                    ) : (
-                      <span className="flex-1 min-w-0 text-foreground truncate" style={{ opacity: 0.85, flexBasis: 140 }}>{task.text}</span>
-                    )}
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <IconButton size="pill" tone="primary" onClick={() => editingId === task.id ? saveEdit(task.id) : startEditing(task)} style={{ fontSize: "0.78rem", fontWeight: 700 }} aria-label={`${editingId === task.id ? t.tasks.saveEdit : t.tasks.edit}: ${task.text}`}>
-                        {editingId === task.id ? (
-                          <Check size={16} />
-                        ) : (
-                          <>
-                            <Pencil size={14} className="sm:hidden" />
-                            <span className="hidden sm:inline">{t.tasks.editLabel}</span>
-                          </>
-                        )}
-                      </IconButton>
-                      <IconButton size="md" tone="destructive" onClick={() => requestRemove(task)} aria-label={`${t.tasks.remove}: ${task.text}`}>
-                        <X size={16} />
-                      </IconButton>
                     </div>
-                  </div>
                   )}
                   {editingId !== task.id && pendingDeleteId !== task.id && (
                     <span
                       className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 self-start max-w-full min-w-0"
                       style={{ backgroundColor: "var(--surface-2)", color: "var(--muted-foreground)", fontSize: "0.7rem", fontWeight: 700 }}
                     >
-                      <span className="truncate">{t.tasks.otherRecurringDue} {dueBadge(task)}</span>
+                      <span className="truncate">
+                        {t.tasks.otherRecurringDue} {dueBadge(task)}
+                      </span>
                     </span>
                   )}
                 </div>
@@ -883,7 +881,9 @@ export function TaskList({
         <div
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
           style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
-          onClick={(e) => { if (e.target === e.currentTarget) setRecurrenceModalOpen(null); }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setRecurrenceModalOpen(null);
+          }}
         >
           <div
             role="dialog"
@@ -946,7 +946,10 @@ export function TaskList({
                     style={{ boxSizing: "border-box", maxWidth: "100%", WebkitAppearance: "none" }}
                   />
                   {modalNextDate && (
-                    <p className="rounded-lg px-3 py-2" style={{ backgroundColor: "var(--green-bg)", color: "var(--green-text)", fontSize: "0.85rem", fontWeight: 700 }}>
+                    <p
+                      className="rounded-lg px-3 py-2"
+                      style={{ backgroundColor: "var(--green-bg)", color: "var(--green-text)", fontSize: "0.85rem", fontWeight: 700 }}
+                    >
                       {t.tasks.nextOccurrenceLabel}: {formatDueDate(modalNextDate)}
                     </p>
                   )}
@@ -956,7 +959,9 @@ export function TaskList({
                 <div className="pt-3 space-y-3">
                   <WeekdayPicker value={modalWeekdays} onChange={setModalWeekdays} />
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>{t.tasks.repeatEveryLabel}</span>
+                    <span className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>
+                      {t.tasks.repeatEveryLabel}
+                    </span>
                     <div className="flex items-center gap-1">
                       <button
                         type="button"
@@ -964,7 +969,14 @@ export function TaskList({
                         disabled={modalWeeklyInterval <= 1}
                         aria-label={t.tasks.decreaseInterval}
                         className="rounded-lg flex items-center justify-center hover:opacity-85 disabled:opacity-40"
-                        style={{ width: 32, height: 32, fontSize: "1rem", fontWeight: 700, backgroundColor: "var(--surface-1)", color: "var(--foreground)" }}
+                        style={{
+                          width: 32,
+                          height: 32,
+                          fontSize: "1rem",
+                          fontWeight: 700,
+                          backgroundColor: "var(--surface-1)",
+                          color: "var(--foreground)",
+                        }}
                       >
                         −
                       </button>
@@ -987,7 +999,14 @@ export function TaskList({
                         disabled={modalWeeklyInterval >= 52}
                         aria-label={t.tasks.increaseInterval}
                         className="rounded-lg flex items-center justify-center hover:opacity-85 disabled:opacity-40"
-                        style={{ width: 32, height: 32, fontSize: "1rem", fontWeight: 700, backgroundColor: "var(--surface-1)", color: "var(--foreground)" }}
+                        style={{
+                          width: 32,
+                          height: 32,
+                          fontSize: "1rem",
+                          fontWeight: 700,
+                          backgroundColor: "var(--surface-1)",
+                          color: "var(--foreground)",
+                        }}
                       >
                         +
                       </button>

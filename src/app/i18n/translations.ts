@@ -532,6 +532,9 @@ const en = {
     characters: "characters",
     save: "Save",
     saved: "Saved ✓",
+    voiceStart: "Add by voice",
+    voiceStop: "Stop recording",
+    voiceListening: "Listening...",
   },
 
   dates: {
@@ -1255,6 +1258,9 @@ const da: typeof en = {
     characters: "tegn",
     save: "Gem",
     saved: "Gemt ✓",
+    voiceStart: "Tilføj med stemme",
+    voiceStop: "Stop optagelse",
+    voiceListening: "Lytter...",
   },
 
   dates: {

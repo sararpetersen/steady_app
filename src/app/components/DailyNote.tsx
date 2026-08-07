@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
+import { useSpeechToText } from "../hooks/useSpeechToText";
 import { useLang } from "../i18n/LangContext";
-import { Save, Trash2, Check } from "lucide-react";
+import { Save, Trash2, Check, Mic, Square } from "lucide-react";
 import { IconButton } from "./ui/IconButton";
+
+function appendSpeech(prev: string, chunk: string): string {
+  if (!prev) return chunk;
+  return prev + (prev.endsWith(" ") || prev.endsWith("\n") ? "" : " ") + chunk;
+}
 
 export interface NoteEntry {
   id: number;
@@ -27,6 +33,15 @@ export function DailyNote() {
 
   const today = useToday();
   const todayEntry = entries.find((e) => e.date === today);
+
+  const composeSpeech = useSpeechToText(t.dateLocale, (chunk) => setDraft((prev) => appendSpeech(prev, chunk)));
+  const editSpeech = useSpeechToText(t.dateLocale, (chunk) => setEditDraft((prev) => appendSpeech(prev, chunk)));
+
+  // Stop listening if the entry being dictated into is no longer on screen.
+  useEffect(() => {
+    if (editingId === null) editSpeech.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingId]);
 
   // A new day means a fresh, empty compose box — yesterday's writing already lives in the list below.
   useEffect(() => {
@@ -97,14 +112,33 @@ export function DailyNote() {
             <span className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>
               {draft.length} {t.note.characters}
             </span>
-            <button
-              onClick={save}
-              className="flex items-center gap-2 rounded-xl px-4 py-2 bg-primary text-primary-foreground hover:opacity-90"
-              style={{ fontWeight: 700, transition: "opacity 0.15s" }}
-            >
-              <Save size={15} />
-              {t.note.save}
-            </button>
+            <div className="flex items-center gap-2">
+              {composeSpeech.supported && (
+                <button
+                  onClick={() => (composeSpeech.listening ? composeSpeech.stop() : composeSpeech.start())}
+                  aria-pressed={composeSpeech.listening}
+                  aria-label={composeSpeech.listening ? t.note.voiceStop : t.note.voiceStart}
+                  className="flex items-center gap-2 rounded-xl px-3 py-2 border border-border hover:opacity-90"
+                  style={{
+                    fontWeight: 700,
+                    transition: "opacity 0.15s",
+                    backgroundColor: composeSpeech.listening ? "var(--destructive)" : "transparent",
+                    color: composeSpeech.listening ? "var(--destructive-foreground)" : "var(--foreground)",
+                  }}
+                >
+                  {composeSpeech.listening ? <Square size={14} /> : <Mic size={15} />}
+                  {composeSpeech.listening && t.note.voiceListening}
+                </button>
+              )}
+              <button
+                onClick={save}
+                className="flex items-center gap-2 rounded-xl px-4 py-2 bg-primary text-primary-foreground hover:opacity-90"
+                style={{ fontWeight: 700, transition: "opacity 0.15s" }}
+              >
+                <Save size={15} />
+                {t.note.save}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -166,15 +200,35 @@ export function DailyNote() {
                       </p>
                     )}
                     {editing ? (
-                      <textarea
-                        autoFocus
-                        value={editDraft}
-                        onChange={(e) => setEditDraft(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === "Escape") setEditingId(null); }}
-                        rows={3}
-                        className="w-full rounded-xl px-3 py-2 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary resize-none"
-                        style={{ fontSize: "0.9rem", lineHeight: 1.6 }}
-                      />
+                      <div>
+                        <textarea
+                          autoFocus
+                          value={editDraft}
+                          onChange={(e) => setEditDraft(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Escape") setEditingId(null); }}
+                          rows={3}
+                          className="w-full rounded-xl px-3 py-2 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary resize-none"
+                          style={{ fontSize: "0.9rem", lineHeight: 1.6 }}
+                        />
+                        {editSpeech.supported && (
+                          <button
+                            onClick={() => (editSpeech.listening ? editSpeech.stop() : editSpeech.start())}
+                            aria-pressed={editSpeech.listening}
+                            aria-label={editSpeech.listening ? t.note.voiceStop : t.note.voiceStart}
+                            className="flex items-center gap-2 rounded-xl px-3 py-1.5 mt-2 border border-border hover:opacity-90"
+                            style={{
+                              fontSize: "0.8rem",
+                              fontWeight: 700,
+                              transition: "opacity 0.15s",
+                              backgroundColor: editSpeech.listening ? "var(--destructive)" : "transparent",
+                              color: editSpeech.listening ? "var(--destructive-foreground)" : "var(--foreground)",
+                            }}
+                          >
+                            {editSpeech.listening ? <Square size={13} /> : <Mic size={13} />}
+                            {editSpeech.listening && t.note.voiceListening}
+                          </button>
+                        )}
+                      </div>
                     ) : (
                       <p className="text-foreground" style={{ fontSize: "0.9rem", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
                         {entry.text}

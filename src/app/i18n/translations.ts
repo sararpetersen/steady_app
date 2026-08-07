@@ -93,7 +93,7 @@ const en = {
     },
     dateReminders: {
       label: "Remind me about upcoming dates",
-      description: "A gentle nudge on Home when a date is coming up in the next few days – never a push notification.",
+      description: "A little nudge on 'Home' when a date is coming up in the next few days (not sent as a push notification).",
     },
     darkMode: { label: "Dark mode", description: "Switch to a dark colour theme" },
     fontSize: { label: "Text size", normal: "Normal", large: "Large", xlarge: "Extra large" },
@@ -869,7 +869,7 @@ const da: typeof en = {
     },
     dateReminders: {
       label: "Mind mig om kommende datoer",
-      description: "Et blidt praj på Hjem, når en dato nærmer sig i de kommende dage – aldrig en push-notifikation.",
+      description: "Et lille ryk på 'Hjem', når en dato nærmer sig i de kommende dage (sendes ikke som push-notifikation).",
     },
     darkMode: { label: "Mørk tilstand", description: "Skift til et mørkt farvetema" },
     fontSize: { label: "Tekststørrelse", normal: "Normal", large: "Stor", xlarge: "Ekstra stor" },

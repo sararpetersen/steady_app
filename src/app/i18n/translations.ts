@@ -170,6 +170,19 @@ const en = {
     sampleSize: (n: number) => `Based on ${n} days of your own check-ins.`,
   },
 
+  weeklyRecap: {
+    heading: "Your Week",
+    description: "A gentle look back – not a report card.",
+    notEnoughData: "Check in a few more times this week and a small recap will show up here.",
+    checkedIn: (n: number) => `You checked in ${n} time${n === 1 ? "" : "s"} this week.`,
+    moodMostly: (label: string) => `Mostly feeling ${label.toLowerCase()}.`,
+    habitCompletionsSentence: (n: number) => `You completed a habit ${n} time${n === 1 ? "" : "s"} this week.`,
+    topHabit: (label: string, n: number) => `${label} came up the most, ${n} times.`,
+    reflections: (n: number) => `You wrote ${n} reflection${n === 1 ? "" : "s"} this week.`,
+    somethingYouWrote: "Something you wrote this week",
+    closing: "However this week went, you showed up. That counts.",
+  },
+
   strengths: {
     heading: "My Strengths",
     description: "Things that tend to come naturally to you.",
@@ -831,6 +844,19 @@ const da: typeof en = {
       "Dine humør-check-ins ligger typisk lidt lavere på dage, hvor du har lavet en vane – det er bare information, ikke en regel du skal følge.",
     similar: "Dit humør ser nogenlunde ens ud begge veje. Vaner og humør hænger ikke tæt sammen for dig lige nu, og det er helt fint.",
     sampleSize: (n: number) => `Baseret på ${n} dage af dine egne check-ins.`,
+  },
+
+  weeklyRecap: {
+    heading: "Din uge",
+    description: "Et blidt tilbageblik – ikke et karakterblad.",
+    notEnoughData: "Tjek ind et par gange mere i denne uge, så dukker der en lille opsummering op her.",
+    checkedIn: (n: number) => `Du tjekkede ind ${n} gang${n === 1 ? "" : "e"} i denne uge.`,
+    moodMostly: (label: string) => `Din stemning var oftest ${label.toLowerCase()}.`,
+    habitCompletionsSentence: (n: number) => `Du gennemførte en vane ${n} gang${n === 1 ? "" : "e"} i denne uge.`,
+    topHabit: (label: string, n: number) => `${label} gik igen flest gange, ${n} gange.`,
+    reflections: (n: number) => `Du skrev ${n} refleksion${n === 1 ? "" : "er"} i denne uge.`,
+    somethingYouWrote: "Noget du skrev i denne uge",
+    closing: "Uanset hvordan ugen gik, viste du op. Det tæller.",
   },
 
   strengths: {

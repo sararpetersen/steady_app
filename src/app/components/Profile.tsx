@@ -7,6 +7,7 @@ import type { MoodEntry } from "./MoodCheck";
 import { normalizePronoun, type ProfileData } from "./profileTypes";
 import { EmojiPicker } from "./ui/EmojiPicker";
 import { GentleInsights } from "./GentleInsights";
+import { WeeklyRecap } from "./WeeklyRecap";
 
 interface ProfileProps {
   profile: ProfileData;
@@ -202,6 +203,8 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           {profile.about && <p style={{ fontSize: "0.88rem", color: "var(--purple-text)", fontStyle: "italic" }}>"{profile.about}"</p>}
         </div>
       </div>
+
+      <WeeklyRecap />
 
       {/* Mood History */}
       <div className="steady-card bg-card rounded-2xl p-5 border border-border">

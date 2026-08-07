@@ -83,7 +83,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
               {photo ? (
                 <img src={photo} alt="Your profile" style={{ width: 80, height: 80, objectFit: "cover" }} />
               ) : (
-                <span style={{ fontSize: "3.5rem", lineHeight: 1 }}>{profile.avatar}</span>
+                <span style={{ fontSize: "2.4rem", lineHeight: 1 }}>{profile.avatar}</span>
               )}
             </div>
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
@@ -188,7 +188,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           {photo ? (
             <img src={photo} alt="Profile" style={{ width: 60, height: 60, objectFit: "cover" }} />
           ) : (
-            <span style={{ fontSize: "2.2rem" }}>{profile.avatar}</span>
+            <span style={{ fontSize: "1.7rem" }}>{profile.avatar}</span>
           )}
         </div>
         <div>

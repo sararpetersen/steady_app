@@ -249,28 +249,14 @@ export function StockChecklist() {
       </div>
 
       <div className="space-y-3">
-        <Reorder.Group axis="y" values={locations} onReorder={setLocations} className="space-y-3">
-          {locations.map((location) => (
-            <ReorderRow
-              key={location.id}
-              value={location}
-              values={locations}
-              onReorder={setLocations}
-              moveUpLabel={t.common.moveUp}
-              moveDownLabel={t.common.moveDown}
-              className="flex items-start gap-1"
-              handleSize={18}
-            >
-              <div className="flex-1 min-w-0">
-                <LocationCard
-                  location={location}
-                  onUpdate={(next) => setLocations((prev) => prev.map((l) => (l.id === location.id ? next : l)))}
-                  onDelete={() => setLocations((prev) => prev.filter((l) => l.id !== location.id))}
-                />
-              </div>
-            </ReorderRow>
-          ))}
-        </Reorder.Group>
+        {locations.map((location) => (
+          <LocationCard
+            key={location.id}
+            location={location}
+            onUpdate={(next) => setLocations((prev) => prev.map((l) => (l.id === location.id ? next : l)))}
+            onDelete={() => setLocations((prev) => prev.filter((l) => l.id !== location.id))}
+          />
+        ))}
         <div className="flex items-center gap-1.5">
           <input
             value={newLocationName}

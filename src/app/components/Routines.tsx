@@ -43,6 +43,10 @@ export interface CustomItem {
   // Optional pictogram shown before the step name — same free-text emoji-input pattern
   // already used for habits and important dates, for visual consistency across the app.
   emoji?: string;
+  // Optional lighter alternative text, shown in place of `text` while the routine's "hard
+  // day" toggle is on (e.g. a smoothie instead of a full breakfast) — lets a step swap what
+  // it's asking for without deleting and retyping it each time a rough day comes up.
+  hardDayText?: string;
   // Optional breakdown for a step that needs more specificity than one checkbox covers
   // (e.g. "Get dressed" -> socks, shirt, shoes). Deliberately independent of the parent
   // step's own done state — checking sub-steps doesn't auto-complete the parent, so
@@ -68,6 +72,7 @@ function SectionPanel({
   onToggle,
   customItems,
   tasks,
+  hardDayMode,
   onAddCustom,
   onEditCustom,
   onReorderCustom,
@@ -81,8 +86,9 @@ function SectionPanel({
   onToggle: (id: number) => void;
   customItems: CustomItem[];
   tasks: Task[];
+  hardDayMode: boolean;
   onAddCustom: (text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence) => void;
-  onEditCustom: (id: number, text: string, emoji: string, targetSection: SectionKey) => void;
+  onEditCustom: (id: number, text: string, emoji: string, targetSection: SectionKey, hardDayText: string) => void;
   onReorderCustom: (items: CustomItem[]) => void;
   onDeleteCustom: (id: number) => void;
   onAddSubtask: (id: number, text: string) => void;
@@ -102,6 +108,7 @@ function SectionPanel({
   const [editDraft, setEditDraft] = useState("");
   const [editEmojiDraft, setEditEmojiDraft] = useState("");
   const [editSection, setEditSection] = useState<SectionKey>(sectionKey);
+  const [editHardDayText, setEditHardDayText] = useState("");
   const [newSubtaskDraft, setNewSubtaskDraft] = useState("");
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
 
@@ -148,22 +155,26 @@ function SectionPanel({
     setEditDraft(linkedTask(item)?.text ?? item.text);
     setEditEmojiDraft(item.emoji ?? "");
     setEditSection(sectionKey);
+    setEditHardDayText(item.hardDayText ?? "");
   };
 
   const saveEdit = (id: number) => {
     const trimmed = editDraft.trim();
     if (!trimmed) return;
-    onEditCustom(id, trimmed, editEmojiDraft.trim(), editSection);
+    onEditCustom(id, trimmed, editEmojiDraft.trim(), editSection, editHardDayText.trim());
     setEditingId(null);
     setEditDraft("");
     setEditEmojiDraft("");
+    setEditHardDayText("");
   };
 
   const renderItem = (item: CustomItem) => {
     if (!isScheduledToday(item)) return null;
     const { id } = item;
     const linked = linkedTask(item);
-    const text = linked?.text ?? item.text;
+    const baseText = linked?.text ?? item.text;
+    const usingHardDayText = hardDayMode && !!item.hardDayText;
+    const text = usingHardDayText ? item.hardDayText! : baseText;
     const done = isDone(item);
     const subtasks = item.subtasks ?? [];
     const subtaskDoneCount = subtasks.filter((s) => s.done).length;
@@ -228,6 +239,14 @@ function SectionPanel({
             >
               {text}
             </span>
+            {usingHardDayText && (
+              <span
+                className="rounded-full px-2 py-0.5 flex-shrink-0"
+                style={{ backgroundColor: "var(--yellow-bg)", color: "var(--yellow-text)", fontSize: "0.68rem", fontWeight: 700 }}
+              >
+                {t.routines.hardDayBadge}
+              </span>
+            )}
             {linked && (
               <Link2
                 size={13}
@@ -258,6 +277,23 @@ function SectionPanel({
                 {t.routines.sections[key].label}
               </button>
             ))}
+          </div>
+        )}
+        {editingId === id && (
+          <div style={{ flexBasis: "100%" }} className="pb-1">
+            <input
+              type="text"
+              value={editHardDayText}
+              onChange={(event) => setEditHardDayText(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") saveEdit(id);
+                if (event.key === "Escape") setEditingId(null);
+              }}
+              placeholder={t.routines.hardDayTextLabel}
+              aria-label={t.routines.hardDayTextLabel}
+              className="w-full rounded-lg px-2 py-1.5 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+              style={{ fontSize: "0.82rem" }}
+            />
           </div>
         )}
         {linked && <span className="sr-only">{t.routines.linkedToTasks}</span>}
@@ -531,6 +567,9 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     morning: [], afternoon: [], late: [],
   });
   const [nextId, setNextId] = useLocalStorage<number>("steady-routines-nextid", CUSTOM_NEXT_ID_START);
+  // Opt-in per day rather than a setting that stays on indefinitely — resets at rollover
+  // below so a rough day doesn't silently keep showing lighter alternatives once it's over.
+  const [hardDayMode, setHardDayMode] = useLocalStorage<boolean>("steady-routines-hardday", false);
   const today = useToday();
 
   // Reset checked-off steps when the day rolls over, so routines start fresh each day.
@@ -542,6 +581,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     if (doneDate !== today) {
       setDoneIds([]);
       setDoneDate(today);
+      setHardDayMode(false);
       setCustom((prev) => {
         const next: CustomMap = { morning: [], afternoon: [], late: [] };
         for (const key of SECTION_KEYS) {
@@ -609,7 +649,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     setDoneIds((prev) => prev.filter((x) => x !== id));
   };
 
-  const editCustom = (section: SectionKey, id: number, text: string, emoji: string, targetSection: SectionKey) => {
+  const editCustom = (section: SectionKey, id: number, text: string, emoji: string, targetSection: SectionKey, hardDayText: string) => {
     const item = (custom[section] ?? []).find((i) => i.id === id);
     if (item?.linkedTaskId != null) {
       setTasks((prev) => prev.map((tsk) => (tsk.id === item.linkedTaskId ? { ...tsk, text } : tsk)));
@@ -619,7 +659,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
       setCustom((prev) => {
         const moved = (prev[section] ?? []).find((i) => i.id === id);
         if (!moved) return prev;
-        const updated = { ...moved, text, emoji: emoji || undefined };
+        const updated = { ...moved, text, emoji: emoji || undefined, hardDayText: hardDayText || undefined };
         return {
           ...prev,
           [section]: (prev[section] ?? []).filter((i) => i.id !== id),
@@ -630,7 +670,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     }
     setCustom((prev) => ({
       ...prev,
-      [section]: (prev[section] ?? []).map((i) => i.id === id ? { ...i, text, emoji: emoji || undefined } : i),
+      [section]: (prev[section] ?? []).map((i) => i.id === id ? { ...i, text, emoji: emoji || undefined, hardDayText: hardDayText || undefined } : i),
     }));
   };
 
@@ -686,6 +726,24 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <h2 className="mb-1 text-foreground text-lg">{t.routines.heading}</h2>
       <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>{t.routines.description}</p>
+      <button
+        onClick={() => setHardDayMode((v) => !v)}
+        className="w-full flex items-center justify-between rounded-xl px-4 py-3 mb-4 hover:opacity-85 border-2"
+        style={{
+          backgroundColor: hardDayMode ? "var(--yellow-bg)" : "var(--surface-1)",
+          borderColor: hardDayMode ? "var(--yellow-text)" : "transparent",
+          transition: "all 0.15s",
+        }}
+        aria-pressed={hardDayMode}
+      >
+        <div className="flex-1 mr-4 text-left">
+          <p className="text-foreground" style={{ fontWeight: 600 }}>{t.routines.hardDayLabel}</p>
+          <p className="text-muted-foreground" style={{ fontSize: "0.82rem" }}>{t.routines.hardDayDescription}</p>
+        </div>
+        <div className="flex-shrink-0 rounded-full relative" style={{ width: 44, height: 24, backgroundColor: hardDayMode ? "var(--yellow-text)" : "var(--muted-foreground)" }}>
+          <div className="absolute top-1 rounded-full bg-white" style={{ width: 16, height: 16, left: hardDayMode ? 24 : 4, transition: "left 0.2s" }} />
+        </div>
+      </button>
       <div className="space-y-3">
         {SECTION_KEYS.map((key) => (
           <SectionPanel
@@ -695,8 +753,9 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
             onToggle={toggleDone}
             customItems={custom[key] ?? []}
             tasks={tasks}
+            hardDayMode={hardDayMode}
             onAddCustom={(text, linkToTasks, emoji, recurrence) => addCustom(key, text, linkToTasks, emoji, recurrence)}
-            onEditCustom={(id, text, emoji, targetSection) => editCustom(key, id, text, emoji, targetSection)}
+            onEditCustom={(id, text, emoji, targetSection, hardDayText) => editCustom(key, id, text, emoji, targetSection, hardDayText)}
             onReorderCustom={(items) => reorderCustom(key, items)}
             onDeleteCustom={(id) => deleteCustom(key, id)}
             onAddSubtask={addSubtask}

@@ -632,7 +632,7 @@ const en = {
       "Eating something is better than eating 'right' – any food counts",
       "Keep a few no-decision options in stock so you don't have to plan when you're low on energy",
       "It's okay to eat the same thing on repeat – that's not a failure, it's a strategy",
-      "Little and often can work better than forcing 3 big meals",
+      "Little and often can work better than forcing down 3 big meals",
       "Set a reminder to eat if you tend to lose track of time or miss hunger cues",
       "A snack that actually gets eaten beats a meal that doesn't",
     ],

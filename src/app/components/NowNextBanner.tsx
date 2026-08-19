@@ -17,7 +17,7 @@ interface FlatStep {
 export function NowNextBanner({ tasks }: Props) {
   const t = useLang();
   const today = useToday();
-  const [custom] = useLocalStorage<CustomMap>("steady-routines-custom", { morning: [], afternoon: [], late: [], meals: [] });
+  const [custom] = useLocalStorage<CustomMap>("steady-routines-custom", { morning: [], afternoon: [], late: [] });
   const [doneIds] = useLocalStorage<number[]>("steady-routines-done", []);
   const [doneDate] = useLocalStorage<string | null>("steady-routines-done-date", null);
 

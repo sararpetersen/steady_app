@@ -451,7 +451,6 @@ const en = {
         time: "12:00 - 3:00 PM",
       },
       late: { label: "Evening", time: "6:00 - 10:00 PM" },
-      meals: { label: "Meals", time: "5-6 small meals a day" },
     },
     items: {
       1: "Wake up",
@@ -466,31 +465,6 @@ const en = {
       10: "Wind-down activity (reading/music)",
       11: "Check to-do list",
       12: "Lights out",
-    },
-    mealRhythm: {
-      addButton: "Add meal rhythm",
-      choosePrompt: "Which kind of day is this?",
-      normalDay: "Normal day",
-      hardDay: "Hard day",
-      cancel: "Cancel",
-    },
-    mealRhythmItems: {
-      normal: [
-        { emoji: "🥣", text: "Morning: Oatmeal with banana, or yogurt with oats" },
-        { emoji: "🍞", text: "Mid-morning: Toast with egg or a mild topping" },
-        { emoji: "🍚", text: "Lunch: Rice, pasta or potatoes + egg, chicken or fish + mild vegetables" },
-        { emoji: "🥛", text: "Afternoon: Yogurt, a smoothie, or bread with a topping" },
-        { emoji: "🍽️", text: "Evening: Small portion of rice/pasta/potatoes + lean protein + vegetables" },
-        { emoji: "🍌", text: "Later: Yogurt, banana, or a little oatmeal" },
-      ],
-      hardDay: [
-        { emoji: "🥤", text: "Morning: Mild smoothie — banana + milk/yogurt + oats" },
-        { emoji: "🍌", text: "Mid-morning: A banana, a little yogurt, or half a toast" },
-        { emoji: "🍚", text: "Lunch: Microwaved rice with egg, or toast with egg/topping" },
-        { emoji: "🥛", text: "Afternoon: Drinking yogurt or a small smoothie" },
-        { emoji: "🍳", text: "Evening: Scrambled eggs and toast, or mild soup (no tomato)" },
-        { emoji: "🌙", text: "Later: Whatever's easiest to get down (at least 3 hrs before bed)" },
-      ],
     },
   },
 
@@ -1336,7 +1310,6 @@ const da: typeof en = {
         time: "12:00 - 15:00",
       },
       late: { label: "Aften", time: "18:00 - 22:00" },
-      meals: { label: "Måltider", time: "5-6 små måltider om dagen" },
     },
     items: {
       1: "Vågn op",
@@ -1351,31 +1324,6 @@ const da: typeof en = {
       10: "Afslappende aktivitet (læsning/musik)",
       11: "Tjek opgavelisten",
       12: "Sluk lyset",
-    },
-    mealRhythm: {
-      addButton: "Tilføj madrytme",
-      choosePrompt: "Hvad for en slags dag er det?",
-      normalDay: "Normal dag",
-      hardDay: "Dag med madlede",
-      cancel: "Annuller",
-    },
-    mealRhythmItems: {
-      normal: [
-        { emoji: "🥣", text: "Morgen: Havregrød med banan, eller yoghurt/skyr med havregryn" },
-        { emoji: "🍞", text: "Formiddag: Toast med æg eller mildt pålæg" },
-        { emoji: "🍚", text: "Frokost: Ris/pasta/kartofler + æg, kylling eller fisk + milde grøntsager" },
-        { emoji: "🥛", text: "Eftermiddag: Yoghurt, smoothie eller brød med pålæg" },
-        { emoji: "🍽️", text: "Aften: Lille portion ris/pasta/kartofler + magert protein + grøntsager" },
-        { emoji: "🍌", text: "Senere: Yoghurt, banan eller lidt havregrød" },
-      ],
-      hardDay: [
-        { emoji: "🥤", text: "Morgen: Mild smoothie — banan + mælk/yoghurt + havregryn" },
-        { emoji: "🍌", text: "Formiddag: En banan, lidt yoghurt eller en halv toast" },
-        { emoji: "🍚", text: "Frokost: Mikroris med æg, eller toast med æg/pålæg" },
-        { emoji: "🥛", text: "Eftermiddag: Drikkeyoghurt eller en lille smoothie" },
-        { emoji: "🍳", text: "Aften: Røræg og toast, eller mild suppe uden tomat" },
-        { emoji: "🌙", text: "Senere: Det letteste man kan få ned (mindst 3 timer før sengetid)" },
-      ],
     },
   },
 

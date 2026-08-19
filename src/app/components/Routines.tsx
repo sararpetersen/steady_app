@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree, UtensilsCrossed } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree } from "lucide-react";
 import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
@@ -10,21 +10,19 @@ import { IconButton } from "./ui/IconButton";
 import { PictogramPicker } from "./ui/PictogramPicker";
 import { isTaskScheduledToday, type Task, type TaskRecurrence } from "./TaskList";
 
-export const SECTION_KEYS = ["morning", "afternoon", "late", "meals"] as const;
+export const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
 export type SectionKey = typeof SECTION_KEYS[number];
 
 export const SECTION_ICONS: Record<SectionKey, React.ReactNode> = {
   morning: <Sun size={20} />,
   afternoon: <Sunset size={20} />,
   late: <MoonStar size={20} />,
-  meals: <UtensilsCrossed size={20} />,
 };
 
 const SECTION_COLOR_VARS: Record<SectionKey, string> = {
   morning: "var(--morning-bg)",
   afternoon: "var(--afternoon-bg)",
   late: "var(--late-bg)",
-  meals: "var(--green-bg)",
 };
 
 export interface SubTask {
@@ -537,10 +535,9 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
   const [doneIds, setDoneIds] = useLocalStorage<number[]>("steady-routines-done", []);
   const [doneDate, setDoneDate] = useLocalStorage<string | null>("steady-routines-done-date", null);
   const [custom, setCustom] = useLocalStorage<CustomMap>("steady-routines-custom", {
-    morning: [], afternoon: [], late: [], meals: [],
+    morning: [], afternoon: [], late: [],
   });
   const [nextId, setNextId] = useLocalStorage<number>("steady-routines-nextid", CUSTOM_NEXT_ID_START);
-  const [showMealRhythmChooser, setShowMealRhythmChooser] = useState(false);
   const today = useToday();
 
   // Reset checked-off steps when the day rolls over, so routines start fresh each day.
@@ -553,7 +550,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
       setDoneIds([]);
       setDoneDate(today);
       setCustom((prev) => {
-        const next: CustomMap = { morning: [], afternoon: [], late: [], meals: [] };
+        const next: CustomMap = { morning: [], afternoon: [], late: [] };
         for (const key of SECTION_KEYS) {
           next[key] = (prev[key] ?? []).map((item) =>
             item.subtasks ? { ...item, subtasks: item.subtasks.map((s) => ({ ...s, done: false })) } : item
@@ -582,21 +579,6 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
       return;
     }
     setDoneIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  };
-
-  // Inserts a full day's worth of small, evenly-spaced meal/snack steps into their own Meals
-  // section in one go, instead of typing each one by hand or scattering them into the general
-  // Morning/Afternoon/Evening routine (which mixes meals in with unrelated steps like "Brush
-  // teeth"). The actual need behind the meal plan is eating smaller and more often, not
-  // swapping one meal's text for an "easier" one (see git history for the earlier, reverted
-  // "hard day" text-swap attempt).
-  const insertMealRhythm = (variant: "normal" | "hardDay") => {
-    const entries = t.routines.mealRhythmItems[variant];
-    let id = nextId;
-    const additions = entries.map((entry) => ({ id: id++, text: entry.text, emoji: entry.emoji }));
-    setCustom((prev) => ({ ...prev, meals: [...(prev.meals ?? []), ...additions] }));
-    setNextId(id);
-    setShowMealRhythmChooser(false);
   };
 
   const addCustom = (section: SectionKey, text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence) => {
@@ -711,43 +693,6 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <h2 className="mb-1 text-foreground text-lg">{t.routines.heading}</h2>
       <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>{t.routines.description}</p>
-      <div className="mb-4">
-        {showMealRhythmChooser ? (
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>{t.routines.mealRhythm.choosePrompt}</span>
-            <button
-              onClick={() => insertMealRhythm("normal")}
-              className="rounded-full px-3 py-1.5 bg-primary text-primary-foreground hover:opacity-90"
-              style={{ fontSize: "0.8rem", fontWeight: 700, transition: "opacity 0.15s" }}
-            >
-              {t.routines.mealRhythm.normalDay}
-            </button>
-            <button
-              onClick={() => insertMealRhythm("hardDay")}
-              className="rounded-full px-3 py-1.5 border border-border text-foreground hover:bg-muted"
-              style={{ fontSize: "0.8rem", fontWeight: 700, transition: "background-color 0.15s" }}
-            >
-              {t.routines.mealRhythm.hardDay}
-            </button>
-            <button
-              onClick={() => setShowMealRhythmChooser(false)}
-              className="text-muted-foreground hover:text-foreground"
-              style={{ fontSize: "0.8rem" }}
-            >
-              {t.routines.mealRhythm.cancel}
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setShowMealRhythmChooser(true)}
-            className="flex items-center gap-2 text-muted-foreground hover:text-primary"
-            style={{ fontSize: "0.88rem", fontWeight: 600, transition: "color 0.15s" }}
-          >
-            <UtensilsCrossed size={15} />
-            {t.routines.mealRhythm.addButton}
-          </button>
-        )}
-      </div>
       <div className="space-y-3">
         {SECTION_KEYS.map((key) => (
           <SectionPanel

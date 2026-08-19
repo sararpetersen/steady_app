@@ -162,7 +162,7 @@ function TrafficLightColumn({
 
 export function MealGuide() {
   const t = useLang();
-  const [itemsByCategory, setItemsByCategory] = useLocalStorage<CategoryItems[]>("steady-meal-guide-items", seedItems(t));
+  const [itemsByCategory, setItemsByCategory] = useLocalStorage<CategoryItems[]>("steady-meal-guide-items-v2", seedItems(t));
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
   const editColumn = (index: number, key: "green" | "yellow" | "red") => ({

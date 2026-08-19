@@ -211,7 +211,7 @@ function LocationCard({
 
 export function StockChecklist() {
   const t = useLang();
-  const [locations, setLocations] = useLocalStorage<StockLocation[]>("steady-stock-locations", seedStock(t));
+  const [locations, setLocations] = useLocalStorage<StockLocation[]>("steady-stock-locations-v2", seedStock(t));
   const [nextLocationId, setNextLocationId] = useState(locations.length);
   const [newLocationName, setNewLocationName] = useState("");
 

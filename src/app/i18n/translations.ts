@@ -451,6 +451,7 @@ const en = {
         time: "12:00 - 3:00 PM",
       },
       late: { label: "Evening", time: "6:00 - 10:00 PM" },
+      meals: { label: "Meals", time: "5-6 small meals a day" },
     },
     items: {
       1: "Wake up",
@@ -1310,6 +1311,7 @@ const da: typeof en = {
         time: "12:00 - 15:00",
       },
       late: { label: "Aften", time: "18:00 - 22:00" },
+      meals: { label: "Måltider", time: "5-6 små måltider om dagen" },
     },
     items: {
       1: "Vågn op",

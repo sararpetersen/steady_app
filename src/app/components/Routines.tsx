@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree, UtensilsCrossed } from "lucide-react";
 import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
@@ -10,19 +10,21 @@ import { IconButton } from "./ui/IconButton";
 import { PictogramPicker } from "./ui/PictogramPicker";
 import { isTaskScheduledToday, type Task, type TaskRecurrence } from "./TaskList";
 
-export const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
+export const SECTION_KEYS = ["morning", "afternoon", "late", "meals"] as const;
 export type SectionKey = typeof SECTION_KEYS[number];
 
 export const SECTION_ICONS: Record<SectionKey, React.ReactNode> = {
   morning: <Sun size={20} />,
   afternoon: <Sunset size={20} />,
   late: <MoonStar size={20} />,
+  meals: <UtensilsCrossed size={20} />,
 };
 
 const SECTION_COLOR_VARS: Record<SectionKey, string> = {
   morning: "var(--morning-bg)",
   afternoon: "var(--afternoon-bg)",
   late: "var(--late-bg)",
+  meals: "var(--green-bg)",
 };
 
 export interface SubTask {
@@ -535,7 +537,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
   const [doneIds, setDoneIds] = useLocalStorage<number[]>("steady-routines-done", []);
   const [doneDate, setDoneDate] = useLocalStorage<string | null>("steady-routines-done-date", null);
   const [custom, setCustom] = useLocalStorage<CustomMap>("steady-routines-custom", {
-    morning: [], afternoon: [], late: [],
+    morning: [], afternoon: [], late: [], meals: [],
   });
   const [nextId, setNextId] = useLocalStorage<number>("steady-routines-nextid", CUSTOM_NEXT_ID_START);
   const today = useToday();
@@ -550,7 +552,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
       setDoneIds([]);
       setDoneDate(today);
       setCustom((prev) => {
-        const next: CustomMap = { morning: [], afternoon: [], late: [] };
+        const next: CustomMap = { morning: [], afternoon: [], late: [], meals: [] };
         for (const key of SECTION_KEYS) {
           next[key] = (prev[key] ?? []).map((item) =>
             item.subtasks ? { ...item, subtasks: item.subtasks.map((s) => ({ ...s, done: false })) } : item

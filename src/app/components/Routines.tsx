@@ -475,17 +475,19 @@ function SectionPanel({
                   <X size={16} />
                 </button>
               </div>
-              <label className="flex items-center gap-2 pl-1" style={{ fontSize: "0.85rem", color: "var(--muted-foreground)" }}>
-                <input
-                  type="checkbox"
-                  checked={linkToTasks}
-                  onChange={(e) => setLinkToTasks(e.target.checked)}
-                  className="rounded"
-                  style={{ width: 16, height: 16, accentColor: "var(--primary)" }}
-                />
-                {t.routines.alsoAddToTasks}
-              </label>
-              {linkToTasks && (
+              {sectionKey !== "meals" && (
+                <label className="flex items-center gap-2 pl-1" style={{ fontSize: "0.85rem", color: "var(--muted-foreground)" }}>
+                  <input
+                    type="checkbox"
+                    checked={linkToTasks}
+                    onChange={(e) => setLinkToTasks(e.target.checked)}
+                    className="rounded"
+                    style={{ width: 16, height: 16, accentColor: "var(--primary)" }}
+                  />
+                  {t.routines.alsoAddToTasks}
+                </label>
+              )}
+              {sectionKey !== "meals" && linkToTasks && (
                 <div className="flex items-center gap-1.5 pl-1" role="group" aria-label={t.tasks.repeatButtonLabel}>
                   {(["daily", "weekly", "monthly"] as const).map((option) => (
                     <button

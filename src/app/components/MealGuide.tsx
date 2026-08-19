@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { Reorder } from "motion/react";
 import { ChevronDown, ChevronUp, Check, Pencil, X, Plus } from "lucide-react";
 import { useLang, type T } from "../i18n/LangContext";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { AnimatedCollapse } from "./AnimatedCollapse";
 import { IconButton } from "./ui/IconButton";
+import { ReorderRow } from "./ui/ReorderRow";
 
 interface MealCategory {
   id: string;
@@ -266,16 +268,35 @@ export function MealGuide() {
       <div>
         <p className="mb-2 text-foreground" style={{ fontWeight: 700, fontSize: "0.85rem" }}>{t.mealGuide.trafficLightHeading}</p>
         <div className="space-y-2">
-          {data.categories.map((category) => (
-            <CategoryCard
-              key={category.id}
-              category={category}
-              open={openCategory === category.id}
-              onToggleOpen={() => setOpenCategory(openCategory === category.id ? null : category.id)}
-              onUpdate={(next) => setData((prev) => ({ ...prev, categories: prev.categories.map((c) => (c.id === category.id ? next : c)) }))}
-              onDelete={() => setData((prev) => ({ ...prev, categories: prev.categories.filter((c) => c.id !== category.id) }))}
-            />
-          ))}
+          <Reorder.Group
+            axis="y"
+            values={data.categories}
+            onReorder={(next) => setData((prev) => ({ ...prev, categories: next }))}
+            className="space-y-2"
+          >
+            {data.categories.map((category) => (
+              <ReorderRow
+                key={category.id}
+                value={category}
+                values={data.categories}
+                onReorder={(next) => setData((prev) => ({ ...prev, categories: next }))}
+                moveUpLabel={t.common.moveUp}
+                moveDownLabel={t.common.moveDown}
+                className="flex items-start gap-1"
+                handleSize={18}
+              >
+                <div className="flex-1 min-w-0">
+                  <CategoryCard
+                    category={category}
+                    open={openCategory === category.id}
+                    onToggleOpen={() => setOpenCategory(openCategory === category.id ? null : category.id)}
+                    onUpdate={(next) => setData((prev) => ({ ...prev, categories: prev.categories.map((c) => (c.id === category.id ? next : c)) }))}
+                    onDelete={() => setData((prev) => ({ ...prev, categories: prev.categories.filter((c) => c.id !== category.id) }))}
+                  />
+                </div>
+              </ReorderRow>
+            ))}
+          </Reorder.Group>
           <div className="flex items-center gap-1.5">
             <input
               value={newCategoryName}

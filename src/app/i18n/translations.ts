@@ -689,7 +689,7 @@ const en = {
         red: ["Chili and hot sauces", "Peppermint"],
       },
     ],
-    heartburnRulesHeading: "4 rules that can ease heartburn",
+    heartburnRulesHeading: "Rules that can ease heartburn",
     heartburnRules: [
       "Eat smaller portions and avoid getting completely full",
       "Sit upright during and after eating; avoid lying down or bending forward right after",
@@ -1575,7 +1575,7 @@ const da: typeof en = {
         red: ["Chili og stærke saucer", "Pebermynte"],
       },
     ],
-    heartburnRulesHeading: "4 regler, der kan dæmpe halsbrand",
+    heartburnRulesHeading: "Regler, der kan dæmpe halsbrand",
     heartburnRules: [
       "Spis mindre portioner og undgå at blive helt overfyldt",
       "Sid oprejst under og efter maden; undgå at lægge dig eller bøje dig frem lige bagefter",

@@ -626,6 +626,7 @@ const en = {
   mealGuide: {
     heading: "Meal Guide",
     description: "A quick reference for what to eat, and how to handle a rough day.",
+    addItemPlaceholder: "Add item…",
     tipsHeading: "How to use this",
     tips: [
       "Use it to create calm and find your own triggers",
@@ -685,14 +686,6 @@ const en = {
         yellow: ["Onion, garlic and vinegar in small amounts"],
         red: ["Chili and hot sauces", "Peppermint"],
       },
-    ],
-    hardDayHeading: "Plans for the hard days",
-    hardDayTips: [
-      "Get one thing down: a banana, yogurt, smoothie, toast or egg is enough to start",
-      "Have an easy backup ready: cold water, milk, or still squash is enough",
-      "Split a big portion: if you end up with fast food or a large meal, eat half and save the rest",
-      "If you do have soda: choose a small size, drink it after some food, and not close to bedtime",
-      "If symptoms show up: switch to still water, choose small mild meals, and stay upright",
     ],
   },
 
@@ -1502,6 +1495,7 @@ const da: typeof en = {
   mealGuide: {
     heading: "Madguide",
     description: "Et hurtigt overblik over hvad du kan spise, og hvordan du klarer en svær dag.",
+    addItemPlaceholder: "Tilføj ting…",
     tipsHeading: "Sådan bruges den",
     tips: [
       "Brug den til at skabe ro og finde egne triggere",
@@ -1561,14 +1555,6 @@ const da: typeof en = {
         yellow: ["Løg, hvidløg og eddike i små mængder"],
         red: ["Chili og stærke saucer", "Pebermynte"],
       },
-    ],
-    hardDayHeading: "Planer for de svære dage",
-    hardDayTips: [
-      "Få én ting ned: Banan, yoghurt, smoothie, toast eller æg er nok til at starte",
-      "Hav et nemt alternativ: Koldt vand, mælk eller saftevand uden brus er nok",
-      "Del den store portion: Hvis der endes med fastfood/en stor portion – spis halvdelen og gem resten",
-      "Når der drikkes sodavand: Vælg en lille størrelse, drik den efter lidt mad og ikke tæt på sengetid",
-      "Hvis symptomerne kommer: Skift til vand uden brus, vælg små milde måltider og forbliv oprejst",
     ],
   },
 

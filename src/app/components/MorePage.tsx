@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useLang } from "../i18n/LangContext";
-import { Timer, CalendarHeart, ChevronLeft, ChevronRight } from "lucide-react";
+import { Timer, CalendarHeart, ChevronLeft, ChevronRight, UtensilsCrossed } from "lucide-react";
 import { FocusTimer } from "./FocusTimer";
 import { ImportantDates } from "./ImportantDates";
+import { MealGuide } from "./MealGuide";
 
-type MoreSection = "focus" | "dates";
+type MoreSection = "focus" | "dates" | "mealGuide";
 
 export function MorePage() {
   const t = useLang();
@@ -12,10 +13,12 @@ export function MorePage() {
 
   if (section === "focus") return <BackHeader onBack={() => setSection(null)}><FocusTimer /></BackHeader>;
   if (section === "dates") return <BackHeader onBack={() => setSection(null)}><ImportantDates /></BackHeader>;
+  if (section === "mealGuide") return <BackHeader onBack={() => setSection(null)}><MealGuide /></BackHeader>;
 
   const items: { key: MoreSection; label: string; description: string; icon: React.ReactNode }[] = [
     { key: "focus", label: t.focus.heading, description: t.focus.description, icon: <Timer size={22} /> },
     { key: "dates", label: t.dates.heading, description: t.dates.description, icon: <CalendarHeart size={22} /> },
+    { key: "mealGuide", label: t.mealGuide.heading, description: t.mealGuide.description, icon: <UtensilsCrossed size={22} /> },
   ];
 
   return (

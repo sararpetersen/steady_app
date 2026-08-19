@@ -576,7 +576,11 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
   // Which steps are currently showing their lighter "hard day" alternative — set per step,
   // right where you'd notice it, rather than a standing mode elsewhere that's easy to forget
   // is on (or forget to turn on). Resets at rollover below so nothing carries over silently.
-  const [hardDayIds, setHardDayIds] = useLocalStorage<number[]>("steady-routines-hardday", []);
+  // Deliberately a different key from the earlier "hard day mode" toggle this replaced —
+  // that key could already hold a boolean in someone's browser (the old rollover effect
+  // wrote `false` there every day even if the toggle was never touched), and reusing it here
+  // would have `.includes` called on a boolean and crash the whole page on load.
+  const [hardDayIds, setHardDayIds] = useLocalStorage<number[]>("steady-routines-hardday-ids", []);
   const today = useToday();
 
   // Reset checked-off steps when the day rolls over, so routines start fresh each day.

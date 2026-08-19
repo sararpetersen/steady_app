@@ -20,7 +20,9 @@ export function NowNextBanner({ tasks }: Props) {
   const [custom] = useLocalStorage<CustomMap>("steady-routines-custom", { morning: [], afternoon: [], late: [] });
   const [doneIds] = useLocalStorage<number[]>("steady-routines-done", []);
   const [doneDate] = useLocalStorage<string | null>("steady-routines-done-date", null);
-  const [hardDayIds] = useLocalStorage<number[]>("steady-routines-hardday", []);
+  // Must match the key Routines.tsx uses (see its comment for why it's not the old
+  // "steady-routines-hardday" key, which could hold a stale boolean from an earlier version).
+  const [hardDayIds] = useLocalStorage<number[]>("steady-routines-hardday-ids", []);
 
   // Mirrors Routines.tsx's own per-step hard-day override so the banner and the Routines
   // list never disagree about which version of a step's text is currently showing.

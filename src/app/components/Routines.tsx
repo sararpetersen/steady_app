@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree, UtensilsCrossed } from "lucide-react";
 import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
@@ -538,6 +538,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     morning: [], afternoon: [], late: [],
   });
   const [nextId, setNextId] = useLocalStorage<number>("steady-routines-nextid", CUSTOM_NEXT_ID_START);
+  const [showMealRhythmChooser, setShowMealRhythmChooser] = useState(false);
   const today = useToday();
 
   // Reset checked-off steps when the day rolls over, so routines start fresh each day.
@@ -579,6 +580,25 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
       return;
     }
     setDoneIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  // Inserts a full day's worth of small, evenly-spaced meal/snack steps in one go, instead of
+  // typing each one by hand — the actual need behind the meal plan is eating smaller and more
+  // often, not swapping one meal's text for an "easier" one (see git history for the earlier,
+  // reverted "hard day" text-swap attempt).
+  const insertMealRhythm = (variant: "normal" | "hardDay") => {
+    const itemsBySection = t.routines.mealRhythmItems[variant];
+    let id = nextId;
+    setCustom((prev) => {
+      const next = { ...prev };
+      for (const key of SECTION_KEYS) {
+        const additions = itemsBySection[key].map((entry) => ({ id: id++, text: entry.text, emoji: entry.emoji }));
+        next[key] = [...(prev[key] ?? []), ...additions];
+      }
+      return next;
+    });
+    setNextId(id);
+    setShowMealRhythmChooser(false);
   };
 
   const addCustom = (section: SectionKey, text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence) => {
@@ -693,6 +713,43 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <h2 className="mb-1 text-foreground text-lg">{t.routines.heading}</h2>
       <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>{t.routines.description}</p>
+      <div className="mb-4">
+        {showMealRhythmChooser ? (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>{t.routines.mealRhythm.choosePrompt}</span>
+            <button
+              onClick={() => insertMealRhythm("normal")}
+              className="rounded-full px-3 py-1.5 bg-primary text-primary-foreground hover:opacity-90"
+              style={{ fontSize: "0.8rem", fontWeight: 700, transition: "opacity 0.15s" }}
+            >
+              {t.routines.mealRhythm.normalDay}
+            </button>
+            <button
+              onClick={() => insertMealRhythm("hardDay")}
+              className="rounded-full px-3 py-1.5 border border-border text-foreground hover:bg-muted"
+              style={{ fontSize: "0.8rem", fontWeight: 700, transition: "background-color 0.15s" }}
+            >
+              {t.routines.mealRhythm.hardDay}
+            </button>
+            <button
+              onClick={() => setShowMealRhythmChooser(false)}
+              className="text-muted-foreground hover:text-foreground"
+              style={{ fontSize: "0.8rem" }}
+            >
+              {t.routines.mealRhythm.cancel}
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowMealRhythmChooser(true)}
+            className="flex items-center gap-2 text-muted-foreground hover:text-primary"
+            style={{ fontSize: "0.88rem", fontWeight: 600, transition: "color 0.15s" }}
+          >
+            <UtensilsCrossed size={15} />
+            {t.routines.mealRhythm.addButton}
+          </button>
+        )}
+      </div>
       <div className="space-y-3">
         {SECTION_KEYS.map((key) => (
           <SectionPanel

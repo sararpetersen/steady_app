@@ -625,7 +625,7 @@ const en = {
 
   mealGuide: {
     heading: "Meal Guide",
-    description: "A quick reference for what to eat, and how to handle a rough day. Fully editable — make it match what actually works for you.",
+    description: "A quick reference for what to eat, and how to handle a rough day.",
     addItemPlaceholder: "Add item…",
     addCategoryPlaceholder: "New category name…",
     addCategoryButton: "Add category",
@@ -635,7 +635,9 @@ const en = {
     tips: [
       "Use it to create calm and find your own triggers",
       "Start with about half a normal portion, and have more if it still feels okay after 10 minutes",
-      "Eat small, regular meals and avoid lying down right after eating",
+      "Eat small, regular meals; sit upright during and after eating, and avoid lying down or bending forward right after",
+      "Try to finish dinner 3-4 hours before bed",
+      "Sip drinks steadily between meals; avoid large amounts of liquid together with food",
       "After a few days, you can test one yellow or red thing at a time, in a small amount",
     ],
     trafficLightHeading: "What to choose",
@@ -644,7 +646,7 @@ const en = {
     red: "Red",
     greenHint: "Good default choices",
     yellowHint: "Limit, or test carefully",
-    redHint: "Pause for a few days — this often triggers symptoms",
+    redHint: "Pause for a few days – this often triggers symptoms",
     categories: [
       {
         name: "Drinks",
@@ -689,13 +691,6 @@ const en = {
         red: ["Chili and hot sauces", "Peppermint"],
       },
     ],
-    heartburnRulesHeading: "Rules that can ease heartburn",
-    heartburnRules: [
-      "Eat smaller portions and avoid getting completely full",
-      "Sit upright during and after eating; avoid lying down or bending forward right after",
-      "Try to finish dinner 3-4 hours before bed",
-      "Sip drinks steadily between meals; avoid large amounts of liquid together with food",
-    ],
     hardDayHeading: "Plans for the hard days",
     hardDayTips: [
       "Get one thing down: a banana, yogurt, smoothie, toast or egg is enough to start",
@@ -708,7 +703,7 @@ const en = {
 
   stockChecklist: {
     heading: "Emergency Stock",
-    description: "Try to always have 2-3 safe options ready in each spot. Fully editable.",
+    description: "Try to always have 2-3 safe options ready in each spot.",
     resetLabel: "Uncheck all",
     addItemPlaceholder: "Add item…",
     addLocationPlaceholder: "New location name…",
@@ -1511,7 +1506,7 @@ const da: typeof en = {
 
   mealGuide: {
     heading: "Madguide",
-    description: "Et hurtigt overblik over hvad du kan spise, og hvordan du klarer en svær dag. Kan redigeres frit — tilpas den til det, der faktisk virker for dig.",
+    description: "Et hurtigt overblik over hvad du kan spise, og hvordan du klarer en hård dag.",
     addItemPlaceholder: "Tilføj ting…",
     addCategoryPlaceholder: "Nyt kategorinavn…",
     addCategoryButton: "Tilføj kategori",
@@ -1519,9 +1514,11 @@ const da: typeof en = {
     categoryNameLabel: "Kategorinavn",
     tipsHeading: "Sådan bruges den",
     tips: [
-      "Brug den for at skabe ro og finde egne triggere",
+      "Brug den til at skabe ro og finde egne triggere",
       "Start med ca. en halv normal portion og tag mere, hvis det føles okay efter 10 minutter",
-      "Spis små, regelmæssige måltider og undgå at lægge dig ned lige efter mad",
+      "Spis små, regelmæssige måltider; sid oprejst under og efter maden, og undgå at lægge dig eller bøje dig frem lige bagefter",
+      "Afslut helst aftensmaden 3-4 timer før sengetid",
+      "Drik jævnt mellem måltiderne; undgå meget store mængder væske sammen med maden",
       "Efter et par dage kan der evt. blive testet én gul eller rød ting ad gangen – i en lille mængde",
     ],
     trafficLightHeading: "Hvad der vælges",
@@ -1575,14 +1572,7 @@ const da: typeof en = {
         red: ["Chili og stærke saucer", "Pebermynte"],
       },
     ],
-    heartburnRulesHeading: "Regler, der kan dæmpe halsbrand",
-    heartburnRules: [
-      "Spis mindre portioner og undgå at blive helt overfyldt",
-      "Sid oprejst under og efter maden; undgå at lægge dig eller bøje dig frem lige bagefter",
-      "Afslut helst aftensmaden 3-4 timer før sengetid",
-      "Drik jævnt mellem måltiderne; undgå meget store mængder væske sammen med maden",
-    ],
-    hardDayHeading: "Planer for de svære dage",
+    hardDayHeading: "Planer for de hårde dage",
     hardDayTips: [
       "Få én ting ned: Banan, yoghurt, smoothie, toast eller æg er nok til at starte",
       "Hav et nemt alternativ: Koldt vand, mælk eller saftevand uden brus er nok",
@@ -1594,7 +1584,7 @@ const da: typeof en = {
 
   stockChecklist: {
     heading: "Nød-lageret",
-    description: "Hav altid 2-3 gode muligheder klar i hvert sted. Kan redigeres frit.",
+    description: "Hav altid 2-3 gode muligheder klar ved hvert sted.",
     resetLabel: "Afmarker alle",
     addItemPlaceholder: "Tilføj ting…",
     addLocationPlaceholder: "Nyt stednavn…",

@@ -705,6 +705,30 @@ const en = {
     ],
   },
 
+  stockChecklist: {
+    heading: "Emergency Stock",
+    description: "Try to always have 2-3 safe options ready in each spot.",
+    resetLabel: "Uncheck all",
+    locations: [
+      {
+        name: "Fridge",
+        items: ["Yogurt/skyr", "Eggs", "Milk or a plant-based drink", "A mild topping"],
+      },
+      {
+        name: "Freezer",
+        items: ["Mild vegetables", "Portioned chicken/fish", "Smoothie bananas"],
+      },
+      {
+        name: "Pantry",
+        items: ["Oats", "Toast bread", "Microwave rice", "Pasta", "A mild soup (no tomato)"],
+      },
+      {
+        name: "On the go",
+        items: ["A banana", "A small drinking yogurt", "Half a toast", "A small yogurt cup"],
+      },
+    ],
+  },
+
   more: {
     heading: "More",
     description: "A few extra tools for the days you want them.",
@@ -1558,6 +1582,30 @@ const da: typeof en = {
       "Del den store portion: Hvis der endes med fastfood/en stor portion – spis halvdelen og gem resten",
       "Når der drikkes sodavand: Vælg en lille størrelse, drik den efter lidt mad og ikke tæt på sengetid",
       "Hvis symptomerne kommer: Skift til vand uden brus, vælg små milde måltider og forbliv oprejst",
+    ],
+  },
+
+  stockChecklist: {
+    heading: "Nød-lageret",
+    description: "Hav altid 2-3 gode muligheder klar i hvert sted.",
+    resetLabel: "Afmarker alle",
+    locations: [
+      {
+        name: "Køleskab",
+        items: ["Yoghurt/skyr", "Æg", "Mælk eller plantedrik", "Mildt pålæg"],
+      },
+      {
+        name: "Fryser",
+        items: ["Milde grøntsager", "Portionsanrettet kylling/fisk", "Smoothie-bananer"],
+      },
+      {
+        name: "Skab",
+        items: ["Havregryn", "Toastbrød", "Mikroris", "Pasta", "Mild suppe uden tomat"],
+      },
+      {
+        name: "Tag-med",
+        items: ["Banan", "Lille drikkeyoghurt", "En halv toast", "Lille bæger yoghurt"],
+      },
     ],
   },
 

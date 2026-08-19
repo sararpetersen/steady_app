@@ -634,7 +634,7 @@ const en = {
     tipsHeading: "How to use this",
     tips: [
       "Use it to create calm and find your own triggers",
-      "Start with about half a normal portion, and have more if it still feels okay after 10 minutes",
+      "Start with half a normal portion, and eat more if it still feels okay after 10 minutes",
       "Eat small, regular meals; sit upright during and after eating, and avoid lying down or bending forward right after",
       "Try to finish dinner 3-4 hours before bed",
       "Sip drinks steadily between meals; avoid large amounts of liquid together with food",

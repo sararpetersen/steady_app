@@ -11,6 +11,10 @@ const en = {
     orTypeOwnEmoji: "or type your own:",
     showPassword: "Show password",
     hidePassword: "Hide password",
+    edit: "Edit",
+    delete: "Delete",
+    save: "Save",
+    add: "Add",
   },
 
   greeting: {
@@ -451,7 +455,7 @@ const en = {
         time: "12:00 - 3:00 PM",
       },
       late: { label: "Evening", time: "6:00 - 10:00 PM" },
-      meals: { label: "Meals", time: "5-6 small meals a day" },
+      meals: { label: "Meals", time: "Try to eat 5-6 small meals a day" },
     },
     items: {
       1: "Wake up",
@@ -621,7 +625,12 @@ const en = {
 
   mealGuide: {
     heading: "Meal Guide",
-    description: "A quick reference for what to eat, and how to handle a rough day.",
+    description: "A quick reference for what to eat, and how to handle a rough day. Fully editable — make it match what actually works for you.",
+    addItemPlaceholder: "Add item…",
+    addCategoryPlaceholder: "New category name…",
+    addCategoryButton: "Add category",
+    deleteCategoryLabel: "Delete category",
+    categoryNameLabel: "Category name",
     tipsHeading: "How to use this",
     tips: [
       "Use it to create calm and find your own triggers",
@@ -635,7 +644,7 @@ const en = {
     red: "Red",
     greenHint: "Good default choices",
     yellowHint: "Limit, or test carefully",
-    redHint: "Pause for 2-3 days — this often triggers symptoms",
+    redHint: "Pause for a few days — this often triggers symptoms",
     categories: [
       {
         name: "Drinks",
@@ -707,8 +716,13 @@ const en = {
 
   stockChecklist: {
     heading: "Emergency Stock",
-    description: "Try to always have 2-3 safe options ready in each spot.",
+    description: "Try to always have 2-3 safe options ready in each spot. Fully editable.",
     resetLabel: "Uncheck all",
+    addItemPlaceholder: "Add item…",
+    addLocationPlaceholder: "New location name…",
+    addLocationButton: "Add location",
+    deleteLocationLabel: "Delete location",
+    locationNameLabel: "Location name",
     locations: [
       {
         name: "Fridge",
@@ -892,6 +906,10 @@ const da: typeof en = {
     orTypeOwnEmoji: "eller skriv din egen:",
     showPassword: "Vis adgangskode",
     hidePassword: "Skjul adgangskode",
+    edit: "Rediger",
+    delete: "Slet",
+    save: "Gem",
+    add: "Tilføj",
   },
 
   greeting: {
@@ -1501,7 +1519,12 @@ const da: typeof en = {
 
   mealGuide: {
     heading: "Madguide",
-    description: "Et hurtigt overblik over hvad du kan spise, og hvordan du klarer en svær dag.",
+    description: "Et hurtigt overblik over hvad du kan spise, og hvordan du klarer en svær dag. Kan redigeres frit — tilpas den til det, der faktisk virker for dig.",
+    addItemPlaceholder: "Tilføj ting…",
+    addCategoryPlaceholder: "Nyt kategorinavn…",
+    addCategoryButton: "Tilføj kategori",
+    deleteCategoryLabel: "Slet kategori",
+    categoryNameLabel: "Kategorinavn",
     tipsHeading: "Sådan bruges den",
     tips: [
       "Brug den for at skabe ro og finde egne triggere",
@@ -1587,8 +1610,13 @@ const da: typeof en = {
 
   stockChecklist: {
     heading: "Nød-lageret",
-    description: "Hav altid 2-3 gode muligheder klar i hvert sted.",
+    description: "Hav altid 2-3 gode muligheder klar i hvert sted. Kan redigeres frit.",
     resetLabel: "Afmarker alle",
+    addItemPlaceholder: "Tilføj ting…",
+    addLocationPlaceholder: "Nyt stednavn…",
+    addLocationButton: "Tilføj sted",
+    deleteLocationLabel: "Slet sted",
+    locationNameLabel: "Stednavn",
     locations: [
       {
         name: "Køleskab",

@@ -1280,7 +1280,7 @@ const da: typeof en = {
     editLabel: "Rediger",
     saveStep: "Gem trin",
     noSteps: "Ingen trin endnu. Tryk nedenfor for at tilføje det første.",
-    noStepsToday: "Intet planlagt her i dag — dine andre trin dukker op på deres egen dag.",
+    noStepsToday: "Intet planlagt her i dag – dine andre trin dukker op på deres egen dag.",
     alsoAddToTasks: "Tilføj også til Opgaver",
     linkedToTasks: "Følges også i Opgaver",
     emojiLabel: "Piktogram (valgfrit)",
@@ -1316,7 +1316,7 @@ const da: typeof en = {
         time: "12:00 - 15:00",
       },
       late: { label: "Aften", time: "18:00 - 22:00" },
-      meals: { label: "Måltider", time: "5-6 små måltider om dagen" },
+      meals: { label: "Måltider", time: "Prøv at spise 5-6 små måltider om dagen" },
     },
     items: {
       1: "Vågn op",

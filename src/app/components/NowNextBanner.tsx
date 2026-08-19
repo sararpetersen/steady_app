@@ -20,13 +20,6 @@ export function NowNextBanner({ tasks }: Props) {
   const [custom] = useLocalStorage<CustomMap>("steady-routines-custom", { morning: [], afternoon: [], late: [] });
   const [doneIds] = useLocalStorage<number[]>("steady-routines-done", []);
   const [doneDate] = useLocalStorage<string | null>("steady-routines-done-date", null);
-  // Must match the key Routines.tsx uses (see its comment for why it's not the old
-  // "steady-routines-hardday" key, which could hold a stale boolean from an earlier version).
-  const [hardDayIds] = useLocalStorage<number[]>("steady-routines-hardday-ids", []);
-
-  // Mirrors Routines.tsx's own per-step hard-day override so the banner and the Routines
-  // list never disagree about which version of a step's text is currently showing.
-  const displayText = (item: CustomItem) => (hardDayIds.includes(item.id) && item.hardDayText ? item.hardDayText : item.text);
 
   // Routines.tsx owns the actual rollover write (resetting doneIds at midnight) — this just
   // reads defensively so the banner never shows yesterday's completions before that effect
@@ -81,7 +74,7 @@ export function NowNextBanner({ tasks }: Props) {
           </p>
           <p className="text-foreground truncate" style={{ fontWeight: 700, fontSize: "1.02rem" }}>
             {now.item.emoji && <span aria-hidden="true">{now.item.emoji} </span>}
-            {displayText(now.item)}
+            {now.item.text}
           </p>
         </div>
       </div>
@@ -94,7 +87,7 @@ export function NowNextBanner({ tasks }: Props) {
             </p>
             <p className="text-muted-foreground truncate" style={{ fontSize: "0.9rem" }}>
               {next.item.emoji && <span aria-hidden="true">{next.item.emoji} </span>}
-              {displayText(next.item)}
+              {next.item.text}
             </p>
           </div>
         </div>

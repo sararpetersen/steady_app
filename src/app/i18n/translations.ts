@@ -681,7 +681,7 @@ const en = {
         red: ["Large amounts of candy", "Sour candy", "Chocolate on an empty stomach"],
       },
       {
-        name: "Flavor",
+        name: "Flavour",
         green: ["Mild spices", "A little salt"],
         yellow: ["Onion, garlic and vinegar in small amounts"],
         red: ["Chili and hot sauces", "Peppermint"],

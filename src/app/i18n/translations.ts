@@ -626,11 +626,6 @@ const en = {
   mealGuide: {
     heading: "Meal Guide",
     description: "A quick reference for what to eat, and how to handle a rough day.",
-    addItemPlaceholder: "Add item…",
-    addCategoryPlaceholder: "New category name…",
-    addCategoryButton: "Add category",
-    deleteCategoryLabel: "Delete category",
-    categoryNameLabel: "Category name",
     tipsHeading: "How to use this",
     tips: [
       "Use it to create calm and find your own triggers",
@@ -1506,16 +1501,11 @@ const da: typeof en = {
 
   mealGuide: {
     heading: "Madguide",
-    description: "Et hurtigt overblik over hvad du kan spise, og hvordan du klarer en hård dag.",
-    addItemPlaceholder: "Tilføj ting…",
-    addCategoryPlaceholder: "Nyt kategorinavn…",
-    addCategoryButton: "Tilføj kategori",
-    deleteCategoryLabel: "Slet kategori",
-    categoryNameLabel: "Kategorinavn",
+    description: "Et hurtigt overblik over hvad du kan spise, og hvordan du klarer en svær dag.",
     tipsHeading: "Sådan bruges den",
     tips: [
       "Brug den til at skabe ro og finde egne triggere",
-      "Start med ca. en halv normal portion og tag mere, hvis det føles okay efter 10 minutter",
+      "Start med en halv normal portion og spis mere, hvis det føles okay efter 10 minutter",
       "Spis små, regelmæssige måltider; sid oprejst under og efter maden, og undgå at lægge dig eller bøje dig frem lige bagefter",
       "Afslut helst aftensmaden 3-4 timer før sengetid",
       "Drik jævnt mellem måltiderne; undgå meget store mængder væske sammen med maden",
@@ -1572,7 +1562,7 @@ const da: typeof en = {
         red: ["Chili og stærke saucer", "Pebermynte"],
       },
     ],
-    hardDayHeading: "Planer for de hårde dage",
+    hardDayHeading: "Planer for de svære dage",
     hardDayTips: [
       "Få én ting ned: Banan, yoghurt, smoothie, toast eller æg er nok til at starte",
       "Hav et nemt alternativ: Koldt vand, mælk eller saftevand uden brus er nok",

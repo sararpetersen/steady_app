@@ -239,70 +239,77 @@ function SectionPanel({
           </button>
         )}
         {editingId === id && (
-          <div className="flex items-center gap-1 flex-wrap pb-1" style={{ flexBasis: "100%" }}>
-            {SECTION_KEYS.map((key) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setEditSection(key)}
-                aria-pressed={editSection === key}
-                className="rounded-full px-3 py-1 hover:opacity-85"
-                style={{
-                  fontSize: "0.78rem",
-                  fontWeight: 700,
-                  backgroundColor: editSection === key ? "var(--primary)" : "var(--surface-1)",
-                  color: editSection === key ? "var(--primary-foreground)" : "var(--muted-foreground)",
-                  transition: "all 0.15s",
-                }}
-              >
-                {t.routines.sections[key].label}
-              </button>
-            ))}
+          <div className="flex items-center justify-between gap-2 flex-wrap pb-1" style={{ flexBasis: "100%" }}>
+            <div className="flex items-center gap-1 flex-wrap">
+              {SECTION_KEYS.map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setEditSection(key)}
+                  aria-pressed={editSection === key}
+                  className="rounded-full px-3 py-1 hover:opacity-85"
+                  style={{
+                    fontSize: "0.78rem",
+                    fontWeight: 700,
+                    backgroundColor: editSection === key ? "var(--primary)" : "var(--surface-1)",
+                    color: editSection === key ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  {t.routines.sections[key].label}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-0.5 flex-shrink-0">
+              <IconButton size="md" tone="primary" onClick={() => saveEdit(id)} aria-label={`${t.routines.saveStep}: ${text}`}>
+                <Check size={15} />
+              </IconButton>
+              <IconButton size="md" tone="destructive" onClick={() => onDeleteCustom(id)} aria-label={`${t.routines.deleteStep}: ${text}`}>
+                <X size={14} />
+              </IconButton>
+            </div>
           </div>
         )}
         {linked && <span className="sr-only">{t.routines.linkedToTasks}</span>}
-        <div className="flex items-center gap-0.5 flex-shrink-0">
-          {editingId !== id && subtasks.length > 0 && (
-            <IconButton
-              size="pill"
-              tone="default"
-              onClick={() => toggleExpanded(id)}
-              aria-label={`${t.routines.subtasksLabel}: ${subtaskDoneCount}/${subtasks.length}`}
-              aria-expanded={expanded}
-              style={{ fontSize: "0.75rem", fontWeight: 700 }}
-            >
-              <ListTree size={13} aria-hidden="true" />
-              {subtaskDoneCount}/{subtasks.length}
-            </IconButton>
-          )}
-          <IconButton
-            size="md"
-            tone="primary"
-            onClick={() => editingId === id ? saveEdit(id) : startEditing(item)}
-            aria-label={`${editingId === id ? t.routines.saveStep : t.routines.editStep}: ${text}`}
-          >
-            {editingId === id ? (
-              <Check size={15} />
-            ) : (
-              <>
-                <Pencil size={14} className="sm:hidden" />
-                <span className="hidden sm:inline" style={{ fontSize: "0.75rem", fontWeight: 700 }}>{t.routines.editLabel}</span>
-              </>
+        {editingId !== id && (
+          <div className="flex items-center gap-0.5 flex-shrink-0">
+            {subtasks.length > 0 && (
+              <IconButton
+                size="pill"
+                tone="default"
+                onClick={() => toggleExpanded(id)}
+                aria-label={`${t.routines.subtasksLabel}: ${subtaskDoneCount}/${subtasks.length}`}
+                aria-expanded={expanded}
+                style={{ fontSize: "0.75rem", fontWeight: 700 }}
+              >
+                <ListTree size={13} aria-hidden="true" />
+                {subtaskDoneCount}/{subtasks.length}
+              </IconButton>
             )}
-          </IconButton>
-          <IconButton
-            size="md"
-            tone="destructive"
-            onClick={() => onDeleteCustom(id)}
-            aria-label={`${t.routines.deleteStep}: ${text}`}
-          >
-            <X size={14} />
-          </IconButton>
-        </div>
-        {/* flexBasis 100% forces this onto its own row within the flex-wrap parent,
-            regardless of how much width the row above happened to use. */}
+            <IconButton
+              size="md"
+              tone="primary"
+              onClick={() => startEditing(item)}
+              aria-label={`${t.routines.editStep}: ${text}`}
+            >
+              <Pencil size={14} className="sm:hidden" />
+              <span className="hidden sm:inline" style={{ fontSize: "0.75rem", fontWeight: 700 }}>{t.routines.editLabel}</span>
+            </IconButton>
+            <IconButton
+              size="md"
+              tone="destructive"
+              onClick={() => onDeleteCustom(id)}
+              aria-label={`${t.routines.deleteStep}: ${text}`}
+            >
+              <X size={14} />
+            </IconButton>
+          </div>
+        )}
+        {/* flexBasis 100% forces this onto its own row within the flex-wrap parent; the
+            top border keeps it from visually blending into the save/cancel row above,
+            which belongs to the step itself rather than to sub-steps. */}
         {editingId === id && (
-          <div className="space-y-1.5 pb-1.5" style={{ flexBasis: "100%" }}>
+          <div className="space-y-1.5 pb-1.5 pt-2 mt-1" style={{ flexBasis: "100%", borderTop: "1px solid var(--border)" }}>
             <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--muted-foreground)" }}>
               {t.routines.subtasksLabel}
             </p>

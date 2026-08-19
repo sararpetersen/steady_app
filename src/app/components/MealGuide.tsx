@@ -35,7 +35,9 @@ function seedMealGuide(t: T): MealGuideData {
   };
 }
 
-/** A bullet list where every item can be added, edited in place, deleted, or reordered. */
+/** A bullet list where every item can be added, edited in place, or deleted — and, unless
+ * `reorderable` is false, dragged into a new order. Off for lists that read as a sequence
+ * (e.g. "How to use this") rather than a set of interchangeable items. */
 function EditableList({
   items,
   onAdd,
@@ -43,6 +45,7 @@ function EditableList({
   onDelete,
   onReorder,
   addPlaceholder,
+  reorderable = true,
 }: {
   items: string[];
   onAdd: (text: string) => void;
@@ -50,6 +53,7 @@ function EditableList({
   onDelete: (index: number) => void;
   onReorder: (items: string[]) => void;
   addPlaceholder: string;
+  reorderable?: boolean;
 }) {
   const t = useLang();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -78,6 +82,56 @@ function EditableList({
     onAdd(trimmed);
     setNewText("");
   };
+
+  if (!reorderable) {
+    return (
+      <div className="space-y-1">
+        {items.map((item, i) =>
+          editingIndex === i ? (
+            <div key={i} className="flex items-center gap-1.5">
+              <input
+                autoFocus
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") saveEdit();
+                  if (e.key === "Escape") setEditingIndex(null);
+                }}
+                className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none"
+                style={{ fontSize: "0.82rem" }}
+              />
+              <IconButton size="sm" tone="primary" onClick={saveEdit} aria-label={t.common.save}>
+                <Check size={13} />
+              </IconButton>
+            </div>
+          ) : (
+            <div key={i} className="flex items-center gap-1.5 group">
+              <span className="flex-1 min-w-0" style={{ fontSize: "0.82rem" }}>{item}</span>
+              <IconButton size="sm" tone="default" onClick={() => startEdit(i)} aria-label={`${t.common.edit}: ${item}`}>
+                <Pencil size={12} />
+              </IconButton>
+              <IconButton size="sm" tone="destructive" onClick={() => onDelete(i)} aria-label={`${t.common.delete}: ${item}`}>
+                <X size={12} />
+              </IconButton>
+            </div>
+          )
+        )}
+        <div className="flex items-center gap-1.5">
+          <input
+            value={newText}
+            onChange={(e) => setNewText(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && submitAdd()}
+            placeholder={addPlaceholder}
+            className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+            style={{ fontSize: "0.82rem" }}
+          />
+          <IconButton size="sm" tone="default" onClick={submitAdd} aria-label={t.common.add}>
+            <Plus size={13} />
+          </IconButton>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-1">
@@ -286,7 +340,7 @@ export function MealGuide() {
 
       <div className="rounded-xl p-3 border border-border">
         <p className="mb-1.5 text-foreground" style={{ fontWeight: 700, fontSize: "0.85rem" }}>{t.mealGuide.tipsHeading}</p>
-        <EditableList items={data.tips} addPlaceholder={t.mealGuide.addItemPlaceholder} {...listEditors("tips")} />
+        <EditableList items={data.tips} addPlaceholder={t.mealGuide.addItemPlaceholder} reorderable={false} {...listEditors("tips")} />
       </div>
 
       <div>

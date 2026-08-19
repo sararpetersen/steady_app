@@ -120,58 +120,77 @@ function LocationCard({
         )}
       </div>
       <div className="p-2 space-y-0.5 bg-card">
-        {location.items.map((item) =>
-          editingItemId === item.id ? (
-            <div key={item.id} className="flex items-center gap-1.5 p-1">
-              <input
-                autoFocus
-                value={itemDraft}
-                onChange={(e) => setItemDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") saveItem();
-                  if (e.key === "Escape") setEditingItemId(null);
-                }}
-                className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none"
-                style={{ fontSize: "0.85rem" }}
-              />
-              <IconButton size="sm" tone="primary" onClick={saveItem} aria-label={t.common.save}>
-                <Check size={13} />
-              </IconButton>
-            </div>
-          ) : (
-            <div key={item.id} className="flex items-center gap-1 group">
-              <button
-                onClick={() => toggleItem(item.id)}
-                aria-pressed={item.checked}
-                className="flex-1 min-w-0 flex items-center gap-2.5 rounded-xl p-2 text-left hover:bg-muted"
-                style={{ backgroundColor: item.checked ? "var(--surface-2)" : "transparent", transition: "background-color 0.15s" }}
-              >
-                <span
-                  className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
-                  style={{
-                    width: 20, height: 20,
-                    borderColor: item.checked ? "var(--primary)" : "var(--muted-foreground)",
-                    backgroundColor: item.checked ? "var(--primary)" : "transparent",
-                  }}
-                >
-                  {item.checked && <Check size={12} color="white" />}
-                </span>
-                <span
-                  className="flex-1 min-w-0 text-foreground"
-                  style={{ fontSize: "0.85rem", textDecoration: item.checked ? "line-through" : "none", opacity: item.checked ? 0.55 : 1 }}
-                >
-                  {item.text}
-                </span>
-              </button>
-              <IconButton size="sm" tone="default" onClick={() => startEditItem(item)} aria-label={`${t.common.edit}: ${item.text}`}>
-                <Pencil size={12} />
-              </IconButton>
-              <IconButton size="sm" tone="destructive" onClick={() => deleteItem(item.id)} aria-label={`${t.common.delete}: ${item.text}`}>
-                <X size={12} />
-              </IconButton>
-            </div>
-          )
-        )}
+        <Reorder.Group
+          axis="y"
+          values={location.items}
+          onReorder={(next) => onUpdate({ ...location, items: next })}
+          className="space-y-0.5"
+        >
+          {location.items.map((item) => (
+            <ReorderRow
+              key={item.id}
+              value={item}
+              values={location.items}
+              onReorder={(next) => onUpdate({ ...location, items: next })}
+              moveUpLabel={t.common.moveUp}
+              moveDownLabel={t.common.moveDown}
+              dragDisabled={editingItemId === item.id}
+              className="flex items-center gap-1"
+              handleSize={14}
+            >
+              {editingItemId === item.id ? (
+                <>
+                  <input
+                    autoFocus
+                    value={itemDraft}
+                    onChange={(e) => setItemDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") saveItem();
+                      if (e.key === "Escape") setEditingItemId(null);
+                    }}
+                    className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none"
+                    style={{ fontSize: "0.85rem" }}
+                  />
+                  <IconButton size="sm" tone="primary" onClick={saveItem} aria-label={t.common.save}>
+                    <Check size={13} />
+                  </IconButton>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => toggleItem(item.id)}
+                    aria-pressed={item.checked}
+                    className="flex-1 min-w-0 flex items-center gap-2.5 rounded-xl p-2 text-left hover:bg-muted"
+                    style={{ backgroundColor: item.checked ? "var(--surface-2)" : "transparent", transition: "background-color 0.15s" }}
+                  >
+                    <span
+                      className="flex-shrink-0 rounded-full border-2 flex items-center justify-center"
+                      style={{
+                        width: 20, height: 20,
+                        borderColor: item.checked ? "var(--primary)" : "var(--muted-foreground)",
+                        backgroundColor: item.checked ? "var(--primary)" : "transparent",
+                      }}
+                    >
+                      {item.checked && <Check size={12} color="white" />}
+                    </span>
+                    <span
+                      className="flex-1 min-w-0 text-foreground"
+                      style={{ fontSize: "0.85rem", textDecoration: item.checked ? "line-through" : "none", opacity: item.checked ? 0.55 : 1 }}
+                    >
+                      {item.text}
+                    </span>
+                  </button>
+                  <IconButton size="sm" tone="default" onClick={() => startEditItem(item)} aria-label={`${t.common.edit}: ${item.text}`}>
+                    <Pencil size={12} />
+                  </IconButton>
+                  <IconButton size="sm" tone="destructive" onClick={() => deleteItem(item.id)} aria-label={`${t.common.delete}: ${item.text}`}>
+                    <X size={12} />
+                  </IconButton>
+                </>
+              )}
+            </ReorderRow>
+          ))}
+        </Reorder.Group>
         <div className="flex items-center gap-1.5 p-1">
           <input
             value={newItemText}

@@ -37,24 +37,32 @@ function seedMealGuide(t: T): MealGuideData {
   };
 }
 
-/** A bullet list where every item can be added, edited in place, or deleted. */
+/** A bullet list where every item can be added, edited in place, deleted, or reordered. */
 function EditableList({
   items,
   onAdd,
   onEdit,
   onDelete,
+  onReorder,
   addPlaceholder,
 }: {
   items: string[];
   onAdd: (text: string) => void;
   onEdit: (index: number, text: string) => void;
   onDelete: (index: number) => void;
+  onReorder: (items: string[]) => void;
   addPlaceholder: string;
 }) {
   const t = useLang();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [draft, setDraft] = useState("");
   const [newText, setNewText] = useState("");
+
+  // Wrapping each string with its current index gives ReorderRow/Reorder.Group a stable
+  // object identity to drag by — these are only used for the duration of one render (and
+  // one continuous drag gesture), then translated back to plain strings via reorderRows.
+  const rows = items.map((text, i) => ({ id: i, text }));
+  const reorderRows = (next: { id: number; text: string }[]) => onReorder(next.map((r) => r.text));
 
   const startEdit = (i: number) => {
     setEditingIndex(i);
@@ -75,36 +83,50 @@ function EditableList({
 
   return (
     <div className="space-y-1">
-      {items.map((item, i) =>
-        editingIndex === i ? (
-          <div key={i} className="flex items-center gap-1.5">
-            <input
-              autoFocus
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") saveEdit();
-                if (e.key === "Escape") setEditingIndex(null);
-              }}
-              className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none"
-              style={{ fontSize: "0.82rem" }}
-            />
-            <IconButton size="sm" tone="primary" onClick={saveEdit} aria-label={t.common.save}>
-              <Check size={13} />
-            </IconButton>
-          </div>
-        ) : (
-          <div key={i} className="flex items-center gap-1.5 group">
-            <span className="flex-1 min-w-0" style={{ fontSize: "0.82rem" }}>{item}</span>
-            <IconButton size="sm" tone="default" onClick={() => startEdit(i)} aria-label={`${t.common.edit}: ${item}`}>
-              <Pencil size={12} />
-            </IconButton>
-            <IconButton size="sm" tone="destructive" onClick={() => onDelete(i)} aria-label={`${t.common.delete}: ${item}`}>
-              <X size={12} />
-            </IconButton>
-          </div>
-        )
-      )}
+      <Reorder.Group axis="y" values={rows} onReorder={reorderRows} className="space-y-1">
+        {rows.map((row) => (
+          <ReorderRow
+            key={row.id}
+            value={row}
+            values={rows}
+            onReorder={reorderRows}
+            moveUpLabel={t.common.moveUp}
+            moveDownLabel={t.common.moveDown}
+            dragDisabled={editingIndex === row.id}
+            className="flex items-center gap-1.5"
+            handleSize={14}
+          >
+            {editingIndex === row.id ? (
+              <>
+                <input
+                  autoFocus
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") saveEdit();
+                    if (e.key === "Escape") setEditingIndex(null);
+                  }}
+                  className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none"
+                  style={{ fontSize: "0.82rem" }}
+                />
+                <IconButton size="sm" tone="primary" onClick={saveEdit} aria-label={t.common.save}>
+                  <Check size={13} />
+                </IconButton>
+              </>
+            ) : (
+              <>
+                <span className="flex-1 min-w-0" style={{ fontSize: "0.82rem" }}>{row.text}</span>
+                <IconButton size="sm" tone="default" onClick={() => startEdit(row.id)} aria-label={`${t.common.edit}: ${row.text}`}>
+                  <Pencil size={12} />
+                </IconButton>
+                <IconButton size="sm" tone="destructive" onClick={() => onDelete(row.id)} aria-label={`${t.common.delete}: ${row.text}`}>
+                  <X size={12} />
+                </IconButton>
+              </>
+            )}
+          </ReorderRow>
+        ))}
+      </Reorder.Group>
       <div className="flex items-center gap-1.5">
         <input
           value={newText}
@@ -131,6 +153,7 @@ function TrafficLightColumn({
   onAdd,
   onEdit,
   onDelete,
+  onReorder,
   addPlaceholder,
 }: {
   label: string;
@@ -141,13 +164,14 @@ function TrafficLightColumn({
   onAdd: (text: string) => void;
   onEdit: (index: number, text: string) => void;
   onDelete: (index: number) => void;
+  onReorder: (items: string[]) => void;
   addPlaceholder: string;
 }) {
   return (
     <div className="rounded-xl p-3" style={{ backgroundColor: bg }}>
       <p style={{ fontWeight: 700, fontSize: "0.8rem", color: text }}>{label}</p>
       <p className="mb-2" style={{ fontSize: "0.72rem", color: text, opacity: 0.85 }}>{hint}</p>
-      <EditableList items={items} onAdd={onAdd} onEdit={onEdit} onDelete={onDelete} addPlaceholder={addPlaceholder} />
+      <EditableList items={items} onAdd={onAdd} onEdit={onEdit} onDelete={onDelete} onReorder={onReorder} addPlaceholder={addPlaceholder} />
     </div>
   );
 }
@@ -179,6 +203,7 @@ function CategoryCard({
     onAdd: (text: string) => onUpdate({ ...category, [key]: [...category[key], text] }),
     onEdit: (i: number, text: string) => onUpdate({ ...category, [key]: category[key].map((v, idx) => (idx === i ? text : v)) }),
     onDelete: (i: number) => onUpdate({ ...category, [key]: category[key].filter((_, idx) => idx !== i) }),
+    onReorder: (next: string[]) => onUpdate({ ...category, [key]: next }),
   });
 
   return (
@@ -241,6 +266,7 @@ export function MealGuide() {
     onAdd: (text: string) => setData((prev) => ({ ...prev, [key]: [...prev[key], text] })),
     onEdit: (i: number, text: string) => setData((prev) => ({ ...prev, [key]: prev[key].map((v, idx) => (idx === i ? text : v)) })),
     onDelete: (i: number) => setData((prev) => ({ ...prev, [key]: prev[key].filter((_, idx) => idx !== i) })),
+    onReorder: (next: string[]) => setData((prev) => ({ ...prev, [key]: next })),
   });
 
   const addCategory = () => {

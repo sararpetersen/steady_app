@@ -197,18 +197,18 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
       <span style={{ fontSize: "0.78rem", color: "var(--foreground)" }}>
         {showOccurrenceOption ? t.tasks.deleteRecurringChoice : t.tasks.deleteRecurringConfirm}
       </span>
-      <div className="flex items-center gap-1 flex-wrap">
+      <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:items-center">
         {showOccurrenceOption && (
           <button
             onClick={() => {
               skipToday(task.id);
               setPendingDeleteId(null);
             }}
-            className="rounded-lg px-2.5 py-1.5 hover:opacity-85"
+            className="w-full sm:w-auto rounded-lg px-3 py-2 hover:opacity-85"
             style={{
               backgroundColor: "var(--surface-1)",
               color: "var(--foreground)",
-              fontSize: "0.78rem",
+              fontSize: "0.8rem",
               fontWeight: 700,
               transition: "opacity 0.15s",
             }}
@@ -221,15 +221,15 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
             remove(task.id);
             setPendingDeleteId(null);
           }}
-          className="rounded-lg px-2.5 py-1.5 text-white hover:opacity-85"
-          style={{ backgroundColor: "var(--destructive)", fontSize: "0.78rem", fontWeight: 700, transition: "opacity 0.15s" }}
+          className="w-full sm:w-auto rounded-lg px-3 py-2 text-white hover:opacity-85"
+          style={{ backgroundColor: "var(--destructive)", fontSize: "0.8rem", fontWeight: 700, transition: "opacity 0.15s" }}
         >
           {showOccurrenceOption ? t.tasks.deleteWholeSeries : t.tasks.deleteRecurringYes}
         </button>
         <button
           onClick={() => setPendingDeleteId(null)}
-          className="rounded-lg px-2.5 py-1.5 border border-border text-foreground hover:bg-muted"
-          style={{ fontSize: "0.78rem", fontWeight: 600, transition: "background-color 0.15s" }}
+          className="w-full sm:w-auto rounded-lg px-3 py-2 border border-border text-foreground hover:bg-muted"
+          style={{ fontSize: "0.8rem", fontWeight: 600, transition: "background-color 0.15s" }}
         >
           {t.tasks.deleteRecurringNo}
         </button>

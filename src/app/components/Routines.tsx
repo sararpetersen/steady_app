@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree, ArrowLeftRight } from "lucide-react";
 import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
@@ -72,7 +72,8 @@ function SectionPanel({
   onToggle,
   customItems,
   tasks,
-  hardDayMode,
+  hardDayIds,
+  onToggleHardDay,
   onAddCustom,
   onEditCustom,
   onReorderCustom,
@@ -86,7 +87,8 @@ function SectionPanel({
   onToggle: (id: number) => void;
   customItems: CustomItem[];
   tasks: Task[];
-  hardDayMode: boolean;
+  hardDayIds: number[];
+  onToggleHardDay: (id: number) => void;
   onAddCustom: (text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence) => void;
   onEditCustom: (id: number, text: string, emoji: string, targetSection: SectionKey, hardDayText: string) => void;
   onReorderCustom: (items: CustomItem[]) => void;
@@ -173,7 +175,7 @@ function SectionPanel({
     const { id } = item;
     const linked = linkedTask(item);
     const baseText = linked?.text ?? item.text;
-    const usingHardDayText = hardDayMode && !!item.hardDayText;
+    const usingHardDayText = hardDayIds.includes(id) && !!item.hardDayText;
     const text = usingHardDayText ? item.hardDayText! : baseText;
     const done = isDone(item);
     const subtasks = item.subtasks ?? [];
@@ -239,14 +241,6 @@ function SectionPanel({
             >
               {text}
             </span>
-            {usingHardDayText && (
-              <span
-                className="rounded-full px-2 py-0.5 flex-shrink-0"
-                style={{ backgroundColor: "var(--yellow-bg)", color: "var(--yellow-text)", fontSize: "0.68rem", fontWeight: 700 }}
-              >
-                {t.routines.hardDayBadge}
-              </span>
-            )}
             {linked && (
               <Link2
                 size={13}
@@ -298,6 +292,18 @@ function SectionPanel({
         )}
         {linked && <span className="sr-only">{t.routines.linkedToTasks}</span>}
         <div className="flex items-center gap-0.5 flex-shrink-0">
+          {editingId !== id && item.hardDayText && (
+            <IconButton
+              size="pill"
+              tone={usingHardDayText ? "primary" : "default"}
+              onClick={() => onToggleHardDay(id)}
+              aria-pressed={usingHardDayText}
+              aria-label={usingHardDayText ? t.routines.hardDaySwapOff : t.routines.hardDaySwapOn}
+              style={usingHardDayText ? { backgroundColor: "var(--yellow-bg)", color: "var(--yellow-text)" } : undefined}
+            >
+              <ArrowLeftRight size={13} aria-hidden="true" />
+            </IconButton>
+          )}
           {editingId !== id && subtasks.length > 0 && (
             <IconButton
               size="pill"
@@ -567,9 +573,10 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     morning: [], afternoon: [], late: [],
   });
   const [nextId, setNextId] = useLocalStorage<number>("steady-routines-nextid", CUSTOM_NEXT_ID_START);
-  // Opt-in per day rather than a setting that stays on indefinitely — resets at rollover
-  // below so a rough day doesn't silently keep showing lighter alternatives once it's over.
-  const [hardDayMode, setHardDayMode] = useLocalStorage<boolean>("steady-routines-hardday", false);
+  // Which steps are currently showing their lighter "hard day" alternative — set per step,
+  // right where you'd notice it, rather than a standing mode elsewhere that's easy to forget
+  // is on (or forget to turn on). Resets at rollover below so nothing carries over silently.
+  const [hardDayIds, setHardDayIds] = useLocalStorage<number[]>("steady-routines-hardday", []);
   const today = useToday();
 
   // Reset checked-off steps when the day rolls over, so routines start fresh each day.
@@ -581,7 +588,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     if (doneDate !== today) {
       setDoneIds([]);
       setDoneDate(today);
-      setHardDayMode(false);
+      setHardDayIds([]);
       setCustom((prev) => {
         const next: CustomMap = { morning: [], afternoon: [], late: [] };
         for (const key of SECTION_KEYS) {
@@ -612,6 +619,10 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
       return;
     }
     setDoneIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  const toggleHardDay = (id: number) => {
+    setHardDayIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
   const addCustom = (section: SectionKey, text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence) => {
@@ -726,24 +737,6 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <h2 className="mb-1 text-foreground text-lg">{t.routines.heading}</h2>
       <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>{t.routines.description}</p>
-      <button
-        onClick={() => setHardDayMode((v) => !v)}
-        className="w-full flex items-center justify-between rounded-xl px-4 py-3 mb-4 hover:opacity-85 border-2"
-        style={{
-          backgroundColor: hardDayMode ? "var(--yellow-bg)" : "var(--surface-1)",
-          borderColor: hardDayMode ? "var(--yellow-text)" : "transparent",
-          transition: "all 0.15s",
-        }}
-        aria-pressed={hardDayMode}
-      >
-        <div className="flex-1 mr-4 text-left">
-          <p className="text-foreground" style={{ fontWeight: 600 }}>{t.routines.hardDayLabel}</p>
-          <p className="text-muted-foreground" style={{ fontSize: "0.82rem" }}>{t.routines.hardDayDescription}</p>
-        </div>
-        <div className="flex-shrink-0 rounded-full relative" style={{ width: 44, height: 24, backgroundColor: hardDayMode ? "var(--yellow-text)" : "var(--muted-foreground)" }}>
-          <div className="absolute top-1 rounded-full bg-white" style={{ width: 16, height: 16, left: hardDayMode ? 24 : 4, transition: "left 0.2s" }} />
-        </div>
-      </button>
       <div className="space-y-3">
         {SECTION_KEYS.map((key) => (
           <SectionPanel
@@ -753,7 +746,8 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
             onToggle={toggleDone}
             customItems={custom[key] ?? []}
             tasks={tasks}
-            hardDayMode={hardDayMode}
+            hardDayIds={hardDayIds}
+            onToggleHardDay={toggleHardDay}
             onAddCustom={(text, linkToTasks, emoji, recurrence) => addCustom(key, text, linkToTasks, emoji, recurrence)}
             onEditCustom={(id, text, emoji, targetSection, hardDayText) => editCustom(key, id, text, emoji, targetSection, hardDayText)}
             onReorderCustom={(items) => reorderCustom(key, items)}

@@ -10,19 +10,21 @@ import { IconButton } from "./ui/IconButton";
 import { PictogramPicker } from "./ui/PictogramPicker";
 import { isTaskScheduledToday, type Task, type TaskRecurrence } from "./TaskList";
 
-export const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
+export const SECTION_KEYS = ["morning", "afternoon", "late", "meals"] as const;
 export type SectionKey = typeof SECTION_KEYS[number];
 
 export const SECTION_ICONS: Record<SectionKey, React.ReactNode> = {
   morning: <Sun size={20} />,
   afternoon: <Sunset size={20} />,
   late: <MoonStar size={20} />,
+  meals: <UtensilsCrossed size={20} />,
 };
 
 const SECTION_COLOR_VARS: Record<SectionKey, string> = {
   morning: "var(--morning-bg)",
   afternoon: "var(--afternoon-bg)",
   late: "var(--late-bg)",
+  meals: "var(--green-bg)",
 };
 
 export interface SubTask {
@@ -535,7 +537,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
   const [doneIds, setDoneIds] = useLocalStorage<number[]>("steady-routines-done", []);
   const [doneDate, setDoneDate] = useLocalStorage<string | null>("steady-routines-done-date", null);
   const [custom, setCustom] = useLocalStorage<CustomMap>("steady-routines-custom", {
-    morning: [], afternoon: [], late: [],
+    morning: [], afternoon: [], late: [], meals: [],
   });
   const [nextId, setNextId] = useLocalStorage<number>("steady-routines-nextid", CUSTOM_NEXT_ID_START);
   const [showMealRhythmChooser, setShowMealRhythmChooser] = useState(false);
@@ -551,7 +553,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
       setDoneIds([]);
       setDoneDate(today);
       setCustom((prev) => {
-        const next: CustomMap = { morning: [], afternoon: [], late: [] };
+        const next: CustomMap = { morning: [], afternoon: [], late: [], meals: [] };
         for (const key of SECTION_KEYS) {
           next[key] = (prev[key] ?? []).map((item) =>
             item.subtasks ? { ...item, subtasks: item.subtasks.map((s) => ({ ...s, done: false })) } : item
@@ -582,21 +584,17 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     setDoneIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
-  // Inserts a full day's worth of small, evenly-spaced meal/snack steps in one go, instead of
-  // typing each one by hand — the actual need behind the meal plan is eating smaller and more
-  // often, not swapping one meal's text for an "easier" one (see git history for the earlier,
-  // reverted "hard day" text-swap attempt).
+  // Inserts a full day's worth of small, evenly-spaced meal/snack steps into their own Meals
+  // section in one go, instead of typing each one by hand or scattering them into the general
+  // Morning/Afternoon/Evening routine (which mixes meals in with unrelated steps like "Brush
+  // teeth"). The actual need behind the meal plan is eating smaller and more often, not
+  // swapping one meal's text for an "easier" one (see git history for the earlier, reverted
+  // "hard day" text-swap attempt).
   const insertMealRhythm = (variant: "normal" | "hardDay") => {
-    const itemsBySection = t.routines.mealRhythmItems[variant];
+    const entries = t.routines.mealRhythmItems[variant];
     let id = nextId;
-    setCustom((prev) => {
-      const next = { ...prev };
-      for (const key of SECTION_KEYS) {
-        const additions = itemsBySection[key].map((entry) => ({ id: id++, text: entry.text, emoji: entry.emoji }));
-        next[key] = [...(prev[key] ?? []), ...additions];
-      }
-      return next;
-    });
+    const additions = entries.map((entry) => ({ id: id++, text: entry.text, emoji: entry.emoji }));
+    setCustom((prev) => ({ ...prev, meals: [...(prev.meals ?? []), ...additions] }));
     setNextId(id);
     setShowMealRhythmChooser(false);
   };

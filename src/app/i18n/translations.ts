@@ -696,14 +696,6 @@ const en = {
       "Try to finish dinner 3-4 hours before bed",
       "Sip drinks steadily between meals; avoid large amounts of liquid together with food",
     ],
-    sodaHeading: "Soda — a realistic rule",
-    sodaRules: [
-      "Starting goal: at most 3 sodas a day — not a demand to stop overnight",
-      "Fixed times: drink them at two set times instead of sipping all day",
-      "Eat a little first: avoid soda on an empty stomach and in the last 3 hours before bed",
-      "Prefer caffeine-free: zero removes the sugar, but not the fizz or the acid",
-      "Swap one at a time: if you're drinking more, replace one with water, milk, or still squash",
-    ],
     hardDayHeading: "Plans for the hard days",
     hardDayTips: [
       "Get one thing down: a banana, yogurt, smoothie, toast or egg is enough to start",
@@ -1589,14 +1581,6 @@ const da: typeof en = {
       "Sid oprejst under og efter maden; undgå at lægge dig eller bøje dig frem lige bagefter",
       "Afslut helst aftensmaden 3-4 timer før sengetid",
       "Drik jævnt mellem måltiderne; undgå meget store mængder væske sammen med maden",
-    ],
-    sodaHeading: "Sodavand – en realistisk regel",
-    sodaRules: [
-      "Startmål: Højst 3 sodavand om dagen – ikke et krav om at stoppe fra den ene dag til den anden",
-      "Faste tidspunkter: Drik dem på to tidspunkter i stedet for at smådrikke hele dagen",
-      "Spis lidt først: Undgå sodavand på tom mave og de sidste 3 timer før sengetid",
-      "Vælg helst koffeinfri: Zero fjerner sukkeret, men ikke kulsyren eller syren",
-      "Skift én ad gangen: Hvis der drikkes mere – erstat én med vand, mælk eller saftevand uden brus",
     ],
     hardDayHeading: "Planer for de svære dage",
     hardDayTips: [

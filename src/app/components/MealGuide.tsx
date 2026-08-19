@@ -17,7 +17,6 @@ interface MealGuideData {
   tips: string[];
   categories: MealCategory[];
   heartburnRules: string[];
-  sodaRules: string[];
   hardDayTips: string[];
 }
 
@@ -32,7 +31,6 @@ function seedMealGuide(t: T): MealGuideData {
       red: [...c.red],
     })),
     heartburnRules: [...t.mealGuide.heartburnRules],
-    sodaRules: [...t.mealGuide.sodaRules],
     hardDayTips: [...t.mealGuide.hardDayTips],
   };
 }
@@ -237,7 +235,7 @@ export function MealGuide() {
   const [nextCategoryId, setNextCategoryId] = useState(data.categories.length);
   const [newCategoryName, setNewCategoryName] = useState("");
 
-  const listEditors = (key: "tips" | "heartburnRules" | "sodaRules" | "hardDayTips") => ({
+  const listEditors = (key: "tips" | "heartburnRules" | "hardDayTips") => ({
     onAdd: (text: string) => setData((prev) => ({ ...prev, [key]: [...prev[key], text] })),
     onEdit: (i: number, text: string) => setData((prev) => ({ ...prev, [key]: prev[key].map((v, idx) => (idx === i ? text : v)) })),
     onDelete: (i: number) => setData((prev) => ({ ...prev, [key]: prev[key].filter((_, idx) => idx !== i) })),
@@ -302,11 +300,6 @@ export function MealGuide() {
       <div className="rounded-xl p-3 border border-border">
         <p className="mb-1.5 text-foreground" style={{ fontWeight: 700, fontSize: "0.85rem" }}>{t.mealGuide.heartburnRulesHeading}</p>
         <EditableList items={data.heartburnRules} addPlaceholder={t.mealGuide.addItemPlaceholder} {...listEditors("heartburnRules")} />
-      </div>
-
-      <div className="rounded-xl p-3 border border-border">
-        <p className="mb-1.5 text-foreground" style={{ fontWeight: 700, fontSize: "0.85rem" }}>{t.mealGuide.sodaHeading}</p>
-        <EditableList items={data.sodaRules} addPlaceholder={t.mealGuide.addItemPlaceholder} {...listEditors("sodaRules")} />
       </div>
 
       <div className="rounded-xl p-3 border border-border">

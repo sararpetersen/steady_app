@@ -363,7 +363,7 @@ const en = {
 
   tasks: {
     heading: "Today's Tasks",
-    description: "One-off things to do today — add anything, and it won't carry over tomorrow like Routines do.",
+    description: "One-off things to do today — add anything, and it won't carry over tomorrow.",
     left: "left",
     placeholder: "Add a new task...",
     add: "Add",
@@ -479,7 +479,7 @@ const en = {
 
   habits: {
     heading: "Habit Tracker",
-    description: "For habits you're building on purpose — checking one off grows your tree on Overview and builds a streak over time. Different from Routines: pick just the few things you're actively working on.",
+    description: "For habits you're building on purpose — checking one off grows your tree on Overview and builds a streak over time.",
     addHabit: "Add a habit",
     namePlaceholder: "Habit name…",
     deleteHabit: "Delete habit",
@@ -1227,7 +1227,7 @@ const da: typeof en = {
 
   tasks: {
     heading: "Dagens opgaver",
-    description: "Engangsting til i dag — tilføj hvad som helst, og det gentages ikke i morgen, som Rutiner gør.",
+    description: "Engangsting til i dag — tilføj hvad som helst, og det gentages ikke i morgen.",
     left: "tilbage",
     placeholder: "Tilføj en ny opgave...",
     add: "Tilføj",
@@ -1344,7 +1344,7 @@ const da: typeof en = {
 
   habits: {
     heading: "Vanesporing",
-    description: "Til vaner, du bevidst er ved at opbygge — når du sætter kryds, vokser dit træ på Overblik, og du bygger en stribe over tid. Anderledes end Rutiner: vælg kun de få ting, du aktivt arbejder på.",
+    description: "Til vaner, du bevidst er ved at opbygge — når du sætter kryds, vokser dit træ på Overblik, og du bygger en stribe over tid.",
     addHabit: "Tilføj en vane",
     namePlaceholder: "Vanenavn…",
     deleteHabit: "Slet vane",

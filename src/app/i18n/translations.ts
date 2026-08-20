@@ -343,6 +343,7 @@ const en = {
     "Needs structure": "Your Routines break the day into sections – use them as your scaffolding today.",
     "Needs flexibility": "There's no single right order – skip around your Tasks and Routines however works today.",
     "Prefers small groups": "It's okay to keep today's plans small and low-key if that feels better.",
+    "Clear role at home": "Knowing what's yours to handle at home – and what isn't – can take the pressure off the rest.",
     default: "You're doing well. Take it one small step at a time.",
   } as Record<string, string>,
 
@@ -895,6 +896,11 @@ const en = {
           label: "Prefers small groups",
           emoji: "🧑‍🤝‍🧑",
         },
+        {
+          key: "Clear role at home",
+          label: "Clear role at home",
+          emoji: "🏷️",
+        },
       ],
     },
 
@@ -1293,6 +1299,7 @@ const da: typeof en = {
     "Needs structure": "Dine rutiner deler dagen op i sektioner – brug dem som din struktur i dag.",
     "Needs flexibility": "Der er ikke én rigtig rækkefølge – spring rundt i dine opgaver og rutiner, som det passer dig i dag.",
     "Prefers small groups": "Det er okay at holde dagens planer små og rolige, hvis det føles bedre.",
+    "Clear role at home": "At vide, hvad der er dit ansvar derhjemme – og hvad der ikke er – kan tage presset af resten.",
     default: "Du klarer dig godt. Tag det ét lille skridt ad gangen.",
   } as Record<string, string>,
 
@@ -1841,6 +1848,11 @@ const da: typeof en = {
           key: "Prefers small groups",
           label: "Foretrækker små grupper",
           emoji: "🧑‍🤝‍🧑",
+        },
+        {
+          key: "Clear role at home",
+          label: "Tydelig rolle derhjemme",
+          emoji: "🏷️",
         },
       ],
     },

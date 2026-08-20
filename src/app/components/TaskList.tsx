@@ -902,7 +902,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
             </div>
             <div className="overflow-y-auto px-5 py-4 space-y-1" style={{ overflowX: "hidden", WebkitOverflowScrolling: "touch" }}>
               <div role="radiogroup" aria-label={t.tasks.repeatModalTitle} className="space-y-1">
-                {([undefined, "daily", "weekly", "monthly"] as const).map((option) => {
+                {([undefined, "weekly", "monthly"] as const).map((option) => {
                   const active = modalRecurrence === option;
                   return (
                     <button

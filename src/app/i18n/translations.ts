@@ -316,6 +316,10 @@ const en = {
     personalizeText: "Answer a couple of quick questions about what helps and what's tricky for you – totally optional.",
     personalizeButton: "Personalise my tips",
     personalizeDismiss: "Dismiss",
+    notesNudgeTitle: "Try Reflect",
+    notesNudgeText: "A private space to jot down anything on your mind – no pressure, no right way to do it.",
+    notesNudgeButton: "Open Reflect",
+    notesNudgeDismiss: "Dismiss",
     syncingData: "Loading your data…",
     nowNext: {
       nowLabel: "Right now",
@@ -1176,6 +1180,10 @@ const da: typeof en = {
     personalizeText: "Svar på et par hurtige spørgsmål om, hvad der hjælper, og hvad der kan være svært for dig – helt valgfrit.",
     personalizeButton: "Personalisér mine tips",
     personalizeDismiss: "Afvis",
+    notesNudgeTitle: "Prøv Refleksion",
+    notesNudgeText: "Et privat sted til at skrive ned, hvad du har på hjerte – intet pres, ingen rigtig måde at gøre det på.",
+    notesNudgeButton: "Åbn Refleksion",
+    notesNudgeDismiss: "Afvis",
     syncingData: "Indlæser dine data…",
     nowNext: {
       nowLabel: "Lige nu",

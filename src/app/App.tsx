@@ -7,6 +7,7 @@ import { NowNextBanner } from "./components/NowNextBanner";
 import { UpcomingDateReminder } from "./components/UpcomingDateReminder";
 import { HabitTracker, type Habit } from "./components/HabitTracker";
 import { DailyNote } from "./components/DailyNote";
+import { NotesNudge } from "./components/NotesNudge";
 import { MorePage } from "./components/MorePage";
 import { Profile } from "./components/Profile";
 import { DEFAULT_PROFILE, type ProfileData } from "./components/profileTypes";
@@ -108,6 +109,29 @@ export default function App() {
   const [tasks, setTasks] = useLocalStorage<Task[]>("steady-tasks", []);
   const [nextId, setNextId] = useLocalStorage<number>("steady-task-nextid", 1);
   const [tasksDate, setTasksDate] = useLocalStorage<string | null>("steady-tasks-date", null);
+
+  // "Daily" recurrence duplicated what Routines already does, so it's no longer offered
+  // when creating/editing a task — but existing daily tasks shouldn't just vanish or break.
+  // Converting them to "every day of the week" (weekly, all 7 days) keeps the exact same
+  // firing behavior under the surviving recurrence type, one time, on load.
+  useEffect(() => {
+    setTasks((prev) => {
+      let changed = false;
+      const next = prev.map((task) => {
+        if (task.recurrence !== "daily") return task;
+        changed = true;
+        return {
+          ...task,
+          recurrence: "weekly" as const,
+          weeklyWeekdays: [0, 1, 2, 3, 4, 5, 6],
+          weeklyIntervalWeeks: 1,
+          weeklyAnchorDate: task.recurrenceStartDate ?? today,
+        };
+      });
+      return changed ? next : prev;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Completed one-off tasks clear at rollover so the list doesn't grow forever, but
   // unfinished ones carry over — nothing gets silently forgotten just because the day
@@ -843,6 +867,7 @@ export default function App() {
                     <NowNextBanner tasks={tasks} />
                     <MoodCheck />
                     <PersonalizedTip support={profile.support} sensory={profile.sensory} onPersonalize={() => setActiveTab("profile")} />
+                    <NotesNudge onOpenNotes={() => setActiveTab("note")} />
                     <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
                   </>
                 )}

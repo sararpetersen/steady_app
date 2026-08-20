@@ -335,6 +335,14 @@ const en = {
     "Written instructions": "Writing down what you need to do today can make things feel more manageable.",
     "Extra time to process": "It's okay to take your time. You don't need to rush.",
     "Visual cues": "Your colour-coded routines are ready when you need a visual guide.",
+    Reassurance: "You're allowed to check in with yourself and confirm you're doing okay – you are.",
+    "Clear instructions": "Break today's routine steps down as small and specific as you need to.",
+    Predictability: "Your Routines are the same steps in the same order every day – lean on that when things feel uncertain.",
+    "Needs breaks": "It's okay to pause between tasks. A short break counts as progress too.",
+    "Prefers written communication": "Jotting things down in Reflect or Tasks can feel easier than saying them out loud.",
+    "Needs structure": "Your Routines break the day into sections – use them as your scaffolding today.",
+    "Needs flexibility": "There's no single right order – skip around your Tasks and Routines however works today.",
+    "Prefers small groups": "It's okay to keep today's plans small and low-key if that feels better.",
     default: "You're doing well. Take it one small step at a time.",
   } as Record<string, string>,
 
@@ -349,6 +357,8 @@ const en = {
     "Crowd-sensitive": "👥 If today feels crowded, it's okay to step outside for a breather.",
     "Taste-sensitive": "👅 Stick to foods that feel safe today – there's no need to push yourself.",
     "Touch-averse": "✋ It's okay to say no to hugs or touch today, even from people you love.",
+    "Sensitive to change": "🔄 If today looks different than usual, it's okay to take a moment to adjust before diving in.",
+    "Needs low sensory load": "🌫️ It's okay to dim the lights, lower the volume, or step somewhere quieter today.",
   } as Record<string, string>,
 
   mood: {
@@ -802,6 +812,16 @@ const en = {
           label: "Touch-averse",
           emoji: "✋",
         },
+        {
+          key: "Sensitive to change",
+          label: "Sensitive to change",
+          emoji: "🔄",
+        },
+        {
+          key: "Needs low sensory load",
+          label: "Needs low sensory load",
+          emoji: "🌫️",
+        },
       ],
     },
 
@@ -834,6 +854,46 @@ const en = {
           key: "Visual cues",
           label: "Visual cues",
           emoji: "👁️",
+        },
+        {
+          key: "Reassurance",
+          label: "Reassurance",
+          emoji: "🫶",
+        },
+        {
+          key: "Clear instructions",
+          label: "Clear instructions",
+          emoji: "📃",
+        },
+        {
+          key: "Predictability",
+          label: "Predictability",
+          emoji: "📅",
+        },
+        {
+          key: "Needs breaks",
+          label: "Needs breaks",
+          emoji: "⏸️",
+        },
+        {
+          key: "Prefers written communication",
+          label: "Prefers written communication",
+          emoji: "💬",
+        },
+        {
+          key: "Needs structure",
+          label: "Needs structure",
+          emoji: "🗂️",
+        },
+        {
+          key: "Needs flexibility",
+          label: "Needs flexibility",
+          emoji: "🔀",
+        },
+        {
+          key: "Prefers small groups",
+          label: "Prefers small groups",
+          emoji: "🧑‍🤝‍🧑",
         },
       ],
     },
@@ -1225,6 +1285,14 @@ const da: typeof en = {
     "Written instructions": "At skrive ned, hvad du skal i dag, kan gøre tingene nemmere at overskue.",
     "Extra time to process": "Det er okay at tage din tid. Du behøver ikke skynde dig.",
     "Visual cues": "Dine farvekodede rutiner er klar, når du har brug for et visuelt overblik.",
+    Reassurance: "Du må gerne tjekke ind med dig selv og bekræfte, at du klarer det – det gør du.",
+    "Clear instructions": "Del dagens rutinetrin op så småt og konkret, som du har brug for.",
+    Predictability: "Dine rutiner er de samme trin i samme rækkefølge hver dag – læn dig op ad det, når noget føles usikkert.",
+    "Needs breaks": "Det er okay at holde pause mellem opgaver. En kort pause tæller også som fremskridt.",
+    "Prefers written communication": "At skrive tingene ned i Refleksion eller Opgaver kan føles lettere end at sige dem højt.",
+    "Needs structure": "Dine rutiner deler dagen op i sektioner – brug dem som din struktur i dag.",
+    "Needs flexibility": "Der er ikke én rigtig rækkefølge – spring rundt i dine opgaver og rutiner, som det passer dig i dag.",
+    "Prefers small groups": "Det er okay at holde dagens planer små og rolige, hvis det føles bedre.",
     default: "Du klarer dig godt. Tag det ét lille skridt ad gangen.",
   } as Record<string, string>,
 
@@ -1239,6 +1307,8 @@ const da: typeof en = {
     "Crowd-sensitive": "👥 Hvis i dag føles fyldt med mennesker, er det okay at gå udenfor og trække vejret.",
     "Taste-sensitive": "👅 Hold dig til mad, der føles trygt i dag – du behøver ikke presse dig selv.",
     "Touch-averse": "✋ Det er okay at sige nej til kram eller berøring i dag, selv fra folk du elsker.",
+    "Sensitive to change": "🔄 Hvis i dag ser anderledes ud end normalt, er det okay at tage et øjeblik til at omstille dig, før du går i gang.",
+    "Needs low sensory load": "🌫️ Det er okay at dæmpe lyset, skrue ned for lyden, eller finde et roligere sted i dag.",
   } as Record<string, string>,
 
   mood: {
@@ -1689,6 +1759,16 @@ const da: typeof en = {
           label: "Berøringsafvisende",
           emoji: "✋",
         },
+        {
+          key: "Sensitive to change",
+          label: "Følsom over for forandringer",
+          emoji: "🔄",
+        },
+        {
+          key: "Needs low sensory load",
+          label: "Har brug for lav sensorisk belastning",
+          emoji: "🌫️",
+        },
       ],
     },
 
@@ -1721,6 +1801,46 @@ const da: typeof en = {
           key: "Visual cues",
           label: "Visuelle signaler",
           emoji: "👁️",
+        },
+        {
+          key: "Reassurance",
+          label: "Bekræftelse",
+          emoji: "🫶",
+        },
+        {
+          key: "Clear instructions",
+          label: "Klare instruktioner",
+          emoji: "📃",
+        },
+        {
+          key: "Predictability",
+          label: "Forudsigelighed",
+          emoji: "📅",
+        },
+        {
+          key: "Needs breaks",
+          label: "Har brug for pauser",
+          emoji: "⏸️",
+        },
+        {
+          key: "Prefers written communication",
+          label: "Foretrækker skriftlig kommunikation",
+          emoji: "💬",
+        },
+        {
+          key: "Needs structure",
+          label: "Har brug for struktur",
+          emoji: "🗂️",
+        },
+        {
+          key: "Needs flexibility",
+          label: "Har brug for fleksibilitet",
+          emoji: "🔀",
+        },
+        {
+          key: "Prefers small groups",
+          label: "Foretrækker små grupper",
+          emoji: "🧑‍🤝‍🧑",
         },
       ],
     },

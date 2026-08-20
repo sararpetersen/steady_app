@@ -363,7 +363,7 @@ const en = {
 
   tasks: {
     heading: "Today's Tasks",
-    description: "One-off things to do today — add anything, and it won't carry over tomorrow.",
+    description: "Add anything you need to get done, and check it off whenever you get to it.",
     left: "left",
     placeholder: "Add a new task...",
     add: "Add",
@@ -1227,7 +1227,7 @@ const da: typeof en = {
 
   tasks: {
     heading: "Dagens opgaver",
-    description: "Engangsting til i dag — tilføj hvad som helst, og det gentages ikke i morgen.",
+    description: "Tilføj det, du skal have gjort, og sæt kryds, når du når det.",
     left: "tilbage",
     placeholder: "Tilføj en ny opgave...",
     add: "Tilføj",

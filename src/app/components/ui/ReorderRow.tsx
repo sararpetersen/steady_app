@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
-import { Reorder } from "motion/react";
+import { Reorder, useDragControls } from "motion/react";
 import { GripVertical, ChevronUp, ChevronDown } from "lucide-react";
 
 interface ReorderRowProps<T> {
@@ -30,6 +30,7 @@ export function ReorderRow<T>({
   children,
 }: ReorderRowProps<T>) {
   const index = values.indexOf(value);
+  const dragControls = useDragControls();
 
   const move = (delta: number) => {
     const target = index + delta;
@@ -42,12 +43,30 @@ export function ReorderRow<T>({
   return (
     <Reorder.Item
       value={value}
-      dragListener={!dragDisabled}
+      dragListener={false}
+      dragControls={dragControls}
       whileDrag={{ scale: 1.02, zIndex: 10 }}
       className={className}
       style={style}
     >
-      <span className="p-1 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none" aria-hidden="true">
+      {/* Drag is triggered only from this handle (via dragControls), not by touching
+          anywhere on the row — a row-wide drag listener meant a touch that started on the
+          text or an edit/delete button, and moved even slightly before lifting, could get
+          swallowed as a drag instead of a tap, or lose to the page's own scroll gesture
+          fighting Framer Motion for the same touch. Restricting the trigger to this handle
+          (already touch-none, so the browser never treats a press here as a scroll) makes
+          drag reliably start from a touch that begins here specifically. */}
+      {/* p-2.5 -m-1.5 grows the touch/click hit area past the icon's own visual footprint
+          (a real fingertip easily misses a bare 14-19px icon) without pushing the row's
+          other content over — the negative margin pulls the extra padding back out of the
+          flex layout while leaving it fully hit-testable. */}
+      <span
+        className="p-2.5 -m-1.5 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
+        aria-hidden="true"
+        onPointerDown={(e) => {
+          if (!dragDisabled) dragControls.start(e);
+        }}
+      >
         <GripVertical size={handleSize} />
       </span>
       {/* Drag is mouse/touch-only — these give keyboard users a way to reorder too. Dropped

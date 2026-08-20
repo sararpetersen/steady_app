@@ -337,11 +337,11 @@ const en = {
     "Visual cues": "Your colour-coded routines are ready when you need a visual guide.",
     Reassurance: "You're allowed to check in with yourself and confirm you're doing okay – you are.",
     "Clear instructions": "Break today's routine steps down as small and specific as you need to.",
-    Predictability: "Your Routines are the same steps in the same order every day – lean on that when things feel uncertain.",
+    Predictability: "Your 'Routines' are the same steps in the same order every day – lean on that when things feel uncertain.",
     "Needs breaks": "It's okay to pause between tasks. A short break counts as progress too.",
-    "Prefers written communication": "Jotting things down in Reflect or Tasks can feel easier than saying them out loud.",
-    "Needs structure": "Your Routines break the day into sections – use them as your scaffolding today.",
-    "Needs flexibility": "There's no single right order – skip around your Tasks and Routines however works today.",
+    "Prefers written communication": "Jotting things down in 'Reflect' or 'Tasks' can feel easier than saying them out loud.",
+    "Needs structure": "Your 'Routines' break the day into sections – use them as your scaffolding today.",
+    "Needs flexibility": "There's no single right order – skip around your 'Tasks' and 'Routines' however works today.",
     "Prefers small groups": "It's okay to keep today's plans small and low-key if that feels better.",
     "Clear role at home": "Knowing what's yours to handle at home – and what isn't – can take the pressure off the rest.",
     default: "You're doing well. Take it one small step at a time.",
@@ -352,7 +352,7 @@ const en = {
     "Light-sensitive": "🌙 Dark mode is on. You can also lower your screen brightness.",
     "Need lots of movement": "🚶 Short movement breaks can help – take one whenever you feel like it.",
     "Need stillness": "🧘 Find a calm spot when you can – stillness can make it easier to settle in.",
-    "Texture-sensitive": "🤲 Wear comfortable clothing today - comfort supports focus.",
+    "Texture-sensitive": "🤲 Wear comfortable clothing today – comfort supports focus.",
     "Smell-sensitive": "🪟 Opening a window for fresh air can help clear your head.",
     "Temperature-sensitive": "🌡️ Keep a layer nearby so you can adjust to the room's temperature.",
     "Crowd-sensitive": "👥 If today feels crowded, it's okay to step outside for a breather.",
@@ -827,7 +827,7 @@ const en = {
     },
 
     support: {
-      heading: "What Helps Me",
+      heading: "What Helps Me?",
       description: "Good to know what works for you. Select all that apply.",
       options: [
         {
@@ -847,6 +847,11 @@ const en = {
           emoji: "📋",
         },
         {
+          key: "Clear instructions",
+          label: "Clear instructions",
+          emoji: "🧾",
+        },
+        {
           key: "Extra time to process",
           label: "Extra time to process",
           emoji: "⏳",
@@ -860,11 +865,6 @@ const en = {
           key: "Reassurance",
           label: "Reassurance",
           emoji: "🫶",
-        },
-        {
-          key: "Clear instructions",
-          label: "Clear instructions",
-          emoji: "🧾",
         },
         {
           key: "Predictability",
@@ -1285,7 +1285,7 @@ const da: typeof en = {
   },
 
   supportTips: {
-    "Gentle reminders": "En rolig påmindelse: tag et øjeblik til at tjekke din rutine-oversigt.",
+    "Gentle reminders": "Tag et øjeblik til at tjekke din rutine-oversigt.",
     Checklists: "Prøv at dele din største opgave i dag op i 3 små trin.",
     "Quiet focus time": "Når du vil have lidt ro, kan du slå notifikationer fra og prøve fokus-timeren.",
     "Written instructions": "At skrive ned, hvad du skal i dag, kan gøre tingene nemmere at overskue.",
@@ -1295,11 +1295,11 @@ const da: typeof en = {
     "Clear instructions": "Del dagens rutinetrin op så småt og konkret, som du har brug for.",
     Predictability: "Dine rutiner er de samme trin i samme rækkefølge hver dag – læn dig op ad det, når noget føles usikkert.",
     "Needs breaks": "Det er okay at holde pause mellem opgaver. En kort pause tæller også som fremskridt.",
-    "Prefers written communication": "At skrive tingene ned i Refleksion eller Opgaver kan føles lettere end at sige dem højt.",
+    "Prefers written communication": "At skrive tingene ned i 'Refleksion' eller 'Opgaver' kan føles lettere end at sige dem højt.",
     "Needs structure": "Dine rutiner deler dagen op i sektioner – brug dem som din struktur i dag.",
     "Needs flexibility": "Der er ikke én rigtig rækkefølge – spring rundt i dine opgaver og rutiner, som det passer dig i dag.",
     "Prefers small groups": "Det er okay at holde dagens planer små og rolige, hvis det føles bedre.",
-    "Clear role at home": "At vide, hvad der er dit ansvar derhjemme – og hvad der ikke er – kan tage presset af resten.",
+    "Clear role at home": "At vide, hvad der er dit ansvar derhjemme— og hvad der ikke er —kan tage presset af resten.",
     default: "Du klarer dig godt. Tag det ét lille skridt ad gangen.",
   } as Record<string, string>,
 
@@ -1800,6 +1800,11 @@ const da: typeof en = {
           emoji: "📋",
         },
         {
+          key: "Clear instructions",
+          label: "Klare instruktioner",
+          emoji: "🧾",
+        },
+        {
           key: "Extra time to process",
           label: "Ekstra tid til bearbejdning",
           emoji: "⏳",
@@ -1813,11 +1818,6 @@ const da: typeof en = {
           key: "Reassurance",
           label: "Bekræftelse",
           emoji: "🫶",
-        },
-        {
-          key: "Clear instructions",
-          label: "Klare instruktioner",
-          emoji: "🧾",
         },
         {
           key: "Predictability",

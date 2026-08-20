@@ -359,7 +359,7 @@ const en = {
     "Taste-sensitive": "👅 Stick to foods that feel safe today – there's no need to push yourself.",
     "Touch-averse": "✋ It's okay to say no to hugs or touch today, even from people you love.",
     "Sensitive to change": "🔄 If today looks different than usual, it's okay to take a moment to adjust before diving in.",
-    "Needs low sensory load": "🌫️ It's okay to dim the lights, lower the volume, or step somewhere quieter today.",
+    "Needs low sensory load": "🔅 It's okay to dim the lights, lower the volume, or step somewhere quieter today.",
   } as Record<string, string>,
 
   mood: {
@@ -821,7 +821,7 @@ const en = {
         {
           key: "Needs low sensory load",
           label: "Needs low sensory load",
-          emoji: "🌫️",
+          emoji: "🔅",
         },
       ],
     },
@@ -864,7 +864,7 @@ const en = {
         {
           key: "Clear instructions",
           label: "Clear instructions",
-          emoji: "📃",
+          emoji: "🧾",
         },
         {
           key: "Predictability",
@@ -1315,7 +1315,7 @@ const da: typeof en = {
     "Taste-sensitive": "👅 Hold dig til mad, der føles trygt i dag – du behøver ikke presse dig selv.",
     "Touch-averse": "✋ Det er okay at sige nej til kram eller berøring i dag, selv fra folk du elsker.",
     "Sensitive to change": "🔄 Hvis i dag ser anderledes ud end normalt, er det okay at tage et øjeblik til at omstille dig, før du går i gang.",
-    "Needs low sensory load": "🌫️ Det er okay at dæmpe lyset, skrue ned for lyden, eller finde et roligere sted i dag.",
+    "Needs low sensory load": "🔅 Det er okay at dæmpe lyset, skrue ned for lyden, eller finde et roligere sted i dag.",
   } as Record<string, string>,
 
   mood: {
@@ -1774,7 +1774,7 @@ const da: typeof en = {
         {
           key: "Needs low sensory load",
           label: "Har brug for lav sensorisk belastning",
-          emoji: "🌫️",
+          emoji: "🔅",
         },
       ],
     },
@@ -1817,7 +1817,7 @@ const da: typeof en = {
         {
           key: "Clear instructions",
           label: "Klare instruktioner",
-          emoji: "📃",
+          emoji: "🧾",
         },
         {
           key: "Predictability",

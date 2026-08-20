@@ -275,7 +275,7 @@ function SectionPanel({
         {linked && <span className="sr-only">{t.routines.linkedToTasks}</span>}
         {editingId !== id && (
           <div className="flex items-center gap-0.5 flex-shrink-0">
-            {subtasks.length > 0 && (
+            {sectionKey !== "meals" && subtasks.length > 0 && (
               <IconButton
                 size="pill"
                 tone="default"
@@ -310,7 +310,7 @@ function SectionPanel({
         {/* flexBasis 100% forces this onto its own row within the flex-wrap parent; the
             top border keeps it from visually blending into the save/cancel row above,
             which belongs to the step itself rather than to sub-steps. */}
-        {editingId === id && (
+        {editingId === id && sectionKey !== "meals" && (
           <div className="space-y-1.5 pb-1.5 pt-2 mt-1" style={{ flexBasis: "100%", borderTop: "1px solid var(--border)" }}>
             <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--muted-foreground)" }}>
               {t.routines.subtasksLabel}
@@ -372,7 +372,7 @@ function SectionPanel({
             </div>
           </div>
         )}
-        {editingId !== id && expanded && subtasks.length > 0 && (
+        {editingId !== id && sectionKey !== "meals" && expanded && subtasks.length > 0 && (
           <div className="space-y-1.5 pl-9 pb-1.5" style={{ flexBasis: "100%" }}>
             {subtasks.map((sub) => (
               <div key={sub.id} className="flex items-center gap-2">

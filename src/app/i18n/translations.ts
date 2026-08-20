@@ -359,7 +359,7 @@ const en = {
 
   tasks: {
     heading: "Today's Tasks",
-    description: "Check things off as you go. One step at a time is enough.",
+    description: "One-off things to do today — add anything, and it won't carry over tomorrow like Routines do.",
     left: "left",
     placeholder: "Add a new task...",
     add: "Add",
@@ -411,7 +411,7 @@ const en = {
 
   routines: {
     heading: "Daily Routines",
-    description: "Your day broken into easy steps. Tap a section to open it.",
+    description: "The things you repeat every day, broken into easy steps by time of day. Tap a section to open it.",
     addStepPlaceholder: "Add a step…",
     addStepButton: "Add",
     deleteStep: "Delete step",
@@ -475,7 +475,7 @@ const en = {
 
   habits: {
     heading: "Habit Tracker",
-    description: "Tap to mark a habit done for today. One is more than enough.",
+    description: "For habits you're building on purpose — checking one off grows your tree on Overview and builds a streak over time. Different from Routines: pick just the few things you're actively working on.",
     addHabit: "Add a habit",
     namePlaceholder: "Habit name…",
     deleteHabit: "Delete habit",
@@ -1219,7 +1219,7 @@ const da: typeof en = {
 
   tasks: {
     heading: "Dagens opgaver",
-    description: "Sæt kryds efterhånden som du fuldfører opgaver. Ét skridt ad gangen er nok.",
+    description: "Engangsting til i dag — tilføj hvad som helst, og det gentages ikke i morgen, som Rutiner gør.",
     left: "tilbage",
     placeholder: "Tilføj en ny opgave...",
     add: "Tilføj",
@@ -1272,7 +1272,7 @@ const da: typeof en = {
 
   routines: {
     heading: "Daglige rutiner",
-    description: "Din dag opdelt i nemme trin. Tryk på en sektion for at åbne den.",
+    description: "De ting, du gentager hver dag, opdelt i nemme trin efter tidspunkt på dagen. Tryk på en sektion for at åbne den.",
     addStepPlaceholder: "Tilføj et trin…",
     addStepButton: "Tilføj",
     deleteStep: "Slet trin",
@@ -1336,7 +1336,7 @@ const da: typeof en = {
 
   habits: {
     heading: "Vanesporing",
-    description: "Tryk for at markere en vane som gennemført i dag. Én er mere end nok.",
+    description: "Til vaner, du bevidst er ved at opbygge — når du sætter kryds, vokser dit træ på Overblik, og du bygger en stribe over tid. Anderledes end Rutiner: vælg kun de få ting, du aktivt arbejder på.",
     addHabit: "Tilføj en vane",
     namePlaceholder: "Vanenavn…",
     deleteHabit: "Slet vane",

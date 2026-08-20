@@ -3,7 +3,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
 import { useSpeechToText } from "../hooks/useSpeechToText";
 import { useLang } from "../i18n/LangContext";
-import { Save, Trash2, Check, Mic, Square } from "lucide-react";
+import { Save, Trash2, Check, Mic, Square, Dices, X } from "lucide-react";
 import { IconButton } from "./ui/IconButton";
 
 function appendSpeech(prev: string, chunk: string): string {
@@ -28,6 +28,7 @@ export function DailyNote() {
   const [entries, setEntries] = useLocalStorage<NoteEntry[]>("steady-notes", []);
   const [nextId, setNextId] = useLocalStorage<number>("steady-notes-nextid", 1);
   const [draft, setDraft] = useState("");
+  const [showPrompt, setShowPrompt] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editDraft, setEditDraft] = useState("");
 
@@ -46,6 +47,7 @@ export function DailyNote() {
   // A new day means a fresh, empty compose box — yesterday's writing already lives in the list below.
   useEffect(() => {
     setDraft("");
+    setShowPrompt(false);
     setEditingId(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [today]);
@@ -55,7 +57,7 @@ export function DailyNote() {
   const save = () => {
     const trimmed = draft.trim();
     if (!trimmed) return;
-    const prompt = t.note.prompts[promptIndex];
+    const prompt = showPrompt ? t.note.prompts[promptIndex] : undefined;
     if (todayEntry) {
       setEntries((prev) => prev.map((e) => (e.date === today ? { ...e, text: trimmed, prompt } : e)));
     } else {
@@ -93,13 +95,29 @@ export function DailyNote() {
           <p className="text-muted-foreground mb-3" style={{ fontSize: "0.95rem" }}>
             {t.note.description}
           </p>
-          <p
-            className="mb-6 rounded-xl px-4 py-3"
-            style={{ backgroundColor: "var(--purple-bg)", fontSize: "0.95rem", color: "var(--purple-text)", fontStyle: "italic" }}
-          >
-            <span aria-hidden="true">💭 </span>
-            {t.note.prompts[promptIndex]}
-          </p>
+          {showPrompt ? (
+            <div
+              className="mb-6 rounded-xl px-4 py-3 flex items-start justify-between gap-3"
+              style={{ backgroundColor: "var(--purple-bg)" }}
+            >
+              <p style={{ fontSize: "0.95rem", color: "var(--purple-text)", fontStyle: "italic" }}>
+                <span aria-hidden="true">💭 </span>
+                {t.note.prompts[promptIndex]}
+              </p>
+              <IconButton size="sm" onClick={() => setShowPrompt(false)} aria-label={t.note.hidePromptButton}>
+                <X size={14} />
+              </IconButton>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowPrompt(true)}
+              className="mb-6 flex items-center gap-2 rounded-xl px-4 py-2.5 border border-border hover:opacity-90"
+              style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--foreground)", transition: "opacity 0.15s" }}
+            >
+              <Dices size={16} aria-hidden="true" />
+              {t.note.promptButton}
+            </button>
+          )}
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}

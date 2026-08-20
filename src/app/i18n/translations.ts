@@ -316,9 +316,9 @@ const en = {
     personalizeText: "Answer a couple of quick questions about what helps and what's tricky for you – totally optional.",
     personalizeButton: "Personalise my tips",
     personalizeDismiss: "Dismiss",
-    notesNudgeTitle: "Try Reflect",
+    notesNudgeTitle: "Try 'Reflect'",
     notesNudgeText: "A private space to jot down anything on your mind – no pressure, no right way to do it.",
-    notesNudgeButton: "Open Reflect",
+    notesNudgeButton: "Open 'Reflect'",
     notesNudgeDismiss: "Dismiss",
     syncingData: "Loading your data…",
     nowNext: {
@@ -345,6 +345,10 @@ const en = {
     "Need stillness": "🧘 Find a calm spot when you can – stillness can make it easier to settle in.",
     "Texture-sensitive": "🤲 Wear comfortable clothing today - comfort supports focus.",
     "Smell-sensitive": "🪟 Opening a window for fresh air can help clear your head.",
+    "Temperature-sensitive": "🌡️ Keep a layer nearby so you can adjust to the room's temperature.",
+    "Crowd-sensitive": "👥 If today feels crowded, it's okay to step outside for a breather.",
+    "Taste-sensitive": "👅 Stick to foods that feel safe today – there's no need to push yourself.",
+    "Touch-averse": "✋ It's okay to say no to hugs or touch today, even from people you love.",
   } as Record<string, string>,
 
   mood: {
@@ -578,6 +582,8 @@ const en = {
       "If today had a colour, what would it be and why?",
       "What's something you're curious about lately?",
     ],
+    promptButton: "🎲 Give me a prompt",
+    hidePromptButton: "Hide prompt",
     placeholder: "Write anything here...",
     characters: "characters",
     save: "Save",
@@ -775,6 +781,26 @@ const en = {
           key: "Smell-sensitive",
           label: "Smell-sensitive",
           emoji: "👃",
+        },
+        {
+          key: "Temperature-sensitive",
+          label: "Temperature-sensitive",
+          emoji: "🌡️",
+        },
+        {
+          key: "Crowd-sensitive",
+          label: "Crowd-sensitive",
+          emoji: "👥",
+        },
+        {
+          key: "Taste-sensitive",
+          label: "Taste-sensitive",
+          emoji: "👅",
+        },
+        {
+          key: "Touch-averse",
+          label: "Touch-averse",
+          emoji: "✋",
         },
       ],
     },
@@ -1180,9 +1206,9 @@ const da: typeof en = {
     personalizeText: "Svar på et par hurtige spørgsmål om, hvad der hjælper, og hvad der kan være svært for dig – helt valgfrit.",
     personalizeButton: "Personalisér mine tips",
     personalizeDismiss: "Afvis",
-    notesNudgeTitle: "Prøv Refleksion",
+    notesNudgeTitle: "Prøv 'Refleksion'",
     notesNudgeText: "Et privat sted til at skrive ned, hvad du har på hjerte – intet pres, ingen rigtig måde at gøre det på.",
-    notesNudgeButton: "Åbn Refleksion",
+    notesNudgeButton: "Åbn 'Refleksion'",
     notesNudgeDismiss: "Afvis",
     syncingData: "Indlæser dine data…",
     nowNext: {
@@ -1209,6 +1235,10 @@ const da: typeof en = {
     "Need stillness": "🧘 Find et roligt sted, når du kan – stilhed kan gøre det lettere at falde til ro.",
     "Texture-sensitive": "🤲 Hav behageligt tøj på i dag – komfort støtter fokus.",
     "Smell-sensitive": "🪟 At åbne et vindue for frisk luft kan hjælpe med at rydde hovedet.",
+    "Temperature-sensitive": "🌡️ Hav et lag tøj i nærheden, så du kan justere til temperaturen i rummet.",
+    "Crowd-sensitive": "👥 Hvis i dag føles fyldt med mennesker, er det okay at gå udenfor og trække vejret.",
+    "Taste-sensitive": "👅 Hold dig til mad, der føles trygt i dag – du behøver ikke presse dig selv.",
+    "Touch-averse": "✋ Det er okay at sige nej til kram eller berøring i dag, selv fra folk du elsker.",
   } as Record<string, string>,
 
   mood: {
@@ -1344,7 +1374,7 @@ const da: typeof en = {
 
   habits: {
     heading: "Vanesporing",
-    description: "Til vaner, du bevidst er ved at opbygge — når du sætter kryds, vokser dit træ på Overblik, og du bygger en stribe over tid.",
+    description: "Til vaner, du bevidst er ved at opbygge – når du sætter kryds, vokser dit træ på 'Overblik', og du bygger en stribe over tid.",
     addHabit: "Tilføj en vane",
     namePlaceholder: "Vanenavn…",
     deleteHabit: "Slet vane",
@@ -1439,6 +1469,8 @@ const da: typeof en = {
       "Hvis i dag havde en farve, hvilken ville det være, og hvorfor?",
       "Hvad er noget, du er nysgerrig på for tiden?",
     ],
+    promptButton: "🎲 Giv mig et emne",
+    hidePromptButton: "Skjul emne",
     placeholder: "Skriv hvad som helst her...",
     characters: "tegn",
     save: "Gem",
@@ -1636,6 +1668,26 @@ const da: typeof en = {
           key: "Smell-sensitive",
           label: "Lugtefølsom",
           emoji: "👃",
+        },
+        {
+          key: "Temperature-sensitive",
+          label: "Temperaturfølsom",
+          emoji: "🌡️",
+        },
+        {
+          key: "Crowd-sensitive",
+          label: "Følsom over for mængder af mennesker",
+          emoji: "👥",
+        },
+        {
+          key: "Taste-sensitive",
+          label: "Smagsfølsom",
+          emoji: "👅",
+        },
+        {
+          key: "Touch-averse",
+          label: "Berøringsafvisende",
+          emoji: "✋",
         },
       ],
     },

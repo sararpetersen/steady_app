@@ -18,11 +18,11 @@ export function NotesNudge({ onOpenNotes }: Props) {
   if (entries.length > 0 || dismissed) return null;
 
   return (
-    <div className="rounded-2xl p-4 border border-border flex items-start gap-3" style={{ backgroundColor: "var(--purple-bg)" }}>
-      <NotebookPen size={18} style={{ color: "var(--purple-text)", flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
+    <div className="rounded-2xl p-4 border border-border flex items-start gap-3" style={{ backgroundColor: "var(--orange-bg)" }}>
+      <NotebookPen size={18} style={{ color: "var(--orange-text)", flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
       <div className="flex-1 min-w-0">
-        <p style={{ fontWeight: 700, color: "var(--purple-text)", marginBottom: 2 }}>{t.overview.notesNudgeTitle}</p>
-        <p style={{ color: "var(--purple-text)", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: 10 }}>{t.overview.notesNudgeText}</p>
+        <p style={{ fontWeight: 700, color: "var(--orange-text)", marginBottom: 2 }}>{t.overview.notesNudgeTitle}</p>
+        <p style={{ color: "var(--orange-text)", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: 10 }}>{t.overview.notesNudgeText}</p>
         <button
           onClick={onOpenNotes}
           className="rounded-lg px-3 py-1.5 hover:opacity-90"

@@ -266,7 +266,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
                 style={{
                   borderColor: active ? "var(--primary)" : "transparent",
                   backgroundColor: active ? "var(--green-bg)" : "var(--surface-1)",
-                  fontWeight: active ? 700 : 500,
+                  fontWeight: 600,
                   color: active ? "var(--green-text)" : "var(--foreground)",
                   transition: "all 0.15s",
                 }}
@@ -297,7 +297,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
                 style={{
                   borderColor: active ? "var(--primary)" : "transparent",
                   backgroundColor: active ? "var(--green-bg)" : "var(--surface-1)",
-                  fontWeight: active ? 700 : 500,
+                  fontWeight: 600,
                   color: active ? "var(--green-text)" : "var(--foreground)",
                   transition: "all 0.15s",
                 }}
@@ -328,7 +328,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
                 style={{
                   borderColor: active ? "var(--purple-vivid)" : "transparent",
                   backgroundColor: active ? "var(--purple-bg)" : "var(--surface-1)",
-                  fontWeight: active ? 700 : 500,
+                  fontWeight: 600,
                   color: active ? "var(--purple-text)" : "var(--foreground)",
                   transition: "all 0.15s",
                 }}

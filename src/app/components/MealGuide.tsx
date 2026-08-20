@@ -7,18 +7,38 @@ import { AnimatedCollapse } from "./AnimatedCollapse";
 import { IconButton } from "./ui/IconButton";
 import { ReorderRow } from "./ui/ReorderRow";
 
+interface MealItem {
+  id: number;
+  text: string;
+}
+
 interface CategoryItems {
-  green: string[];
-  yellow: string[];
-  red: string[];
+  green: MealItem[];
+  yellow: MealItem[];
+  red: MealItem[];
 }
 
 // Indexed to match t.mealGuide.categories, rather than keyed by category name, so it stays
 // aligned with the (fixed-order, always-present) static categories even across a language
 // switch — the category names themselves are read straight from translations and aren't
 // stored here, only the editable green/yellow/red items are.
+//
+// Each item carries a real, persistent id assigned once here and never recomputed from
+// array position afterward — Reorder.Group's onReorder fires continuously while dragging
+// (not just on drop), so an id derived from the item's current index would change on every
+// one of those in-flight updates, remounting the dragged row's DOM node mid-gesture and
+// killing the drag. A stable id (same pattern as Emergency Stock's items) avoids that.
 function seedItems(t: T): CategoryItems[] {
-  return t.mealGuide.categories.map((c) => ({ green: [...c.green], yellow: [...c.yellow], red: [...c.red] }));
+  let id = 0;
+  return t.mealGuide.categories.map((c) => ({
+    green: c.green.map((text) => ({ id: id++, text })),
+    yellow: c.yellow.map((text) => ({ id: id++, text })),
+    red: c.red.map((text) => ({ id: id++, text })),
+  }));
+}
+
+function seedNextId(t: T): number {
+  return t.mealGuide.categories.reduce((sum, c) => sum + c.green.length + c.yellow.length + c.red.length, 0);
 }
 
 /** A bullet list where every item can be added, edited in place, deleted, or reordered. */
@@ -30,33 +50,27 @@ function EditableList({
   onReorder,
   addPlaceholder,
 }: {
-  items: string[];
+  items: MealItem[];
   onAdd: (text: string) => void;
-  onEdit: (index: number, text: string) => void;
-  onDelete: (index: number) => void;
-  onReorder: (items: string[]) => void;
+  onEdit: (id: number, text: string) => void;
+  onDelete: (id: number) => void;
+  onReorder: (items: MealItem[]) => void;
   addPlaceholder: string;
 }) {
   const t = useLang();
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [draft, setDraft] = useState("");
   const [newText, setNewText] = useState("");
 
-  // Wrapping each string with its current index gives ReorderRow/Reorder.Group a stable
-  // object identity to drag by — these are only used for the duration of one render (and
-  // one continuous drag gesture), then translated back to plain strings via reorderRows.
-  const rows = items.map((text, i) => ({ id: i, text }));
-  const reorderRows = (next: { id: number; text: string }[]) => onReorder(next.map((r) => r.text));
-
-  const startEdit = (i: number) => {
-    setEditingIndex(i);
-    setDraft(items[i]);
+  const startEdit = (item: MealItem) => {
+    setEditingId(item.id);
+    setDraft(item.text);
   };
   const saveEdit = () => {
-    if (editingIndex === null) return;
+    if (editingId === null) return;
     const trimmed = draft.trim();
-    if (trimmed) onEdit(editingIndex, trimmed);
-    setEditingIndex(null);
+    if (trimmed) onEdit(editingId, trimmed);
+    setEditingId(null);
   };
   const submitAdd = () => {
     const trimmed = newText.trim();
@@ -67,20 +81,20 @@ function EditableList({
 
   return (
     <div className="space-y-1">
-      <Reorder.Group axis="y" values={rows} onReorder={reorderRows} className="space-y-1">
-        {rows.map((row) => (
+      <Reorder.Group axis="y" values={items} onReorder={onReorder} className="space-y-1">
+        {items.map((item) => (
           <ReorderRow
-            key={row.id}
-            value={row}
-            values={rows}
-            onReorder={reorderRows}
+            key={item.id}
+            value={item}
+            values={items}
+            onReorder={onReorder}
             moveUpLabel={t.common.moveUp}
             moveDownLabel={t.common.moveDown}
-            dragDisabled={editingIndex === row.id}
+            dragDisabled={editingId === item.id}
             className="flex items-center gap-1.5"
             handleSize={14}
           >
-            {editingIndex === row.id ? (
+            {editingId === item.id ? (
               <>
                 <input
                   autoFocus
@@ -88,7 +102,7 @@ function EditableList({
                   onChange={(e) => setDraft(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") saveEdit();
-                    if (e.key === "Escape") setEditingIndex(null);
+                    if (e.key === "Escape") setEditingId(null);
                   }}
                   className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none"
                   style={{ fontSize: "0.82rem" }}
@@ -99,11 +113,11 @@ function EditableList({
               </>
             ) : (
               <>
-                <span className="flex-1 min-w-0" style={{ fontSize: "0.82rem" }}>{row.text}</span>
-                <IconButton size="sm" tone="default" onClick={() => startEdit(row.id)} aria-label={`${t.common.edit}: ${row.text}`}>
+                <span className="flex-1 min-w-0" style={{ fontSize: "0.82rem" }}>{item.text}</span>
+                <IconButton size="sm" tone="default" onClick={() => startEdit(item)} aria-label={`${t.common.edit}: ${item.text}`}>
                   <Pencil size={12} />
                 </IconButton>
-                <IconButton size="sm" tone="destructive" onClick={() => onDelete(row.id)} aria-label={`${t.common.delete}: ${row.text}`}>
+                <IconButton size="sm" tone="destructive" onClick={() => onDelete(item.id)} aria-label={`${t.common.delete}: ${item.text}`}>
                   <X size={12} />
                 </IconButton>
               </>
@@ -142,13 +156,13 @@ function TrafficLightColumn({
 }: {
   label: string;
   hint: string;
-  items: string[];
+  items: MealItem[];
   bg: string;
   text: string;
   onAdd: (text: string) => void;
-  onEdit: (index: number, text: string) => void;
-  onDelete: (index: number) => void;
-  onReorder: (items: string[]) => void;
+  onEdit: (id: number, text: string) => void;
+  onDelete: (id: number) => void;
+  onReorder: (items: MealItem[]) => void;
   addPlaceholder: string;
 }) {
   return (
@@ -162,19 +176,24 @@ function TrafficLightColumn({
 
 export function MealGuide() {
   const t = useLang();
-  const [itemsByCategory, setItemsByCategory] = useLocalStorage<CategoryItems[]>("steady-meal-guide-items-v2", seedItems(t));
+  const [itemsByCategory, setItemsByCategory] = useLocalStorage<CategoryItems[]>("steady-meal-guide-items-v3", seedItems(t));
+  const [nextItemId, setNextItemId] = useLocalStorage<number>("steady-meal-guide-next-id-v3", seedNextId(t));
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
   const editColumn = (index: number, key: "green" | "yellow" | "red") => ({
-    onAdd: (text: string) =>
-      setItemsByCategory((prev) => prev.map((c, i) => (i === index ? { ...c, [key]: [...c[key], text] } : c))),
-    onEdit: (itemIndex: number, text: string) =>
+    onAdd: (text: string) => {
       setItemsByCategory((prev) =>
-        prev.map((c, i) => (i === index ? { ...c, [key]: c[key].map((v, idx) => (idx === itemIndex ? text : v)) } : c))
+        prev.map((c, i) => (i === index ? { ...c, [key]: [...c[key], { id: nextItemId, text }] } : c))
+      );
+      setNextItemId((n) => n + 1);
+    },
+    onEdit: (id: number, text: string) =>
+      setItemsByCategory((prev) =>
+        prev.map((c, i) => (i === index ? { ...c, [key]: c[key].map((v) => (v.id === id ? { ...v, text } : v)) } : c))
       ),
-    onDelete: (itemIndex: number) =>
-      setItemsByCategory((prev) => prev.map((c, i) => (i === index ? { ...c, [key]: c[key].filter((_, idx) => idx !== itemIndex) } : c))),
-    onReorder: (next: string[]) => setItemsByCategory((prev) => prev.map((c, i) => (i === index ? { ...c, [key]: next } : c))),
+    onDelete: (id: number) =>
+      setItemsByCategory((prev) => prev.map((c, i) => (i === index ? { ...c, [key]: c[key].filter((v) => v.id !== id) } : c))),
+    onReorder: (next: MealItem[]) => setItemsByCategory((prev) => prev.map((c, i) => (i === index ? { ...c, [key]: next } : c))),
   });
 
   return (

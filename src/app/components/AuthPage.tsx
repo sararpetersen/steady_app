@@ -180,7 +180,7 @@ export function AuthPage({ onAuth }: Props) {
           <p
             role="alert"
             className="rounded-xl px-4 py-2.5"
-            style={{ backgroundColor: "rgba(192,57,43,0.1)", color: "var(--destructive)", fontSize: "0.88rem", fontWeight: 600 }}
+            style={{ backgroundColor: "var(--destructive-bg)", color: "var(--destructive)", fontSize: "0.88rem", fontWeight: 600 }}
           >
             {error}
           </p>

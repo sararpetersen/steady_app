@@ -57,6 +57,11 @@
   --yellow-text: #7a5a00;
   --orange-bg: #ffe4cc;
   --orange-text: #8a4a12;
+  /* Solid tint for inline error banners (was `rgba(192,57,43,0.1)` fixed to the light-mode
+     --destructive hex) — that hardcoded overlay didn't adapt in dark mode, where the paired
+     --destructive text switches to a much lighter red-orange and dropped below 4.5:1 against
+     the still-light-mode-tinted background. */
+  --destructive-bg: #fbe9e7;
   /* Saturation nudged back up (25% -> ~45%) from the muted value chosen after the earlier
      "clashes with the off-white background" complaint — that fix overcorrected, leaving blue
      the only card color in the palette below ~35% saturation (green/purple/yellow/orange all
@@ -129,6 +134,7 @@
   --yellow-text: #d4b050;
   --orange-bg: #382518;
   --orange-text: #e8a468;
+  --destructive-bg: #3a1712;
   --blue-bg: #17323d;
   --blue-text: #7ec4de;
   --morning-bg: #3a3018;

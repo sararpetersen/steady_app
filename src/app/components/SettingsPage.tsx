@@ -286,7 +286,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
         </div>
 
         {signUpError && (
-          <p role="alert" className="rounded-xl px-3 py-2" style={{ backgroundColor: "rgba(192,57,43,0.1)", color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>
+          <p role="alert" className="rounded-xl px-3 py-2" style={{ backgroundColor: "var(--destructive-bg)", color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>
             {signUpError}
           </p>
         )}

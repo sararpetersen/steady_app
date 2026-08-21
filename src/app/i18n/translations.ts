@@ -423,6 +423,25 @@ const en = {
     deleteWholeSeries: "Delete whole series",
     subtasksLabel: "Sub-steps",
     addSubtaskPlaceholder: "Add a sub-step…",
+    prep: {
+      buttonLabel: "Break it down",
+      modalTitle: "Break it down",
+      modalIntro: "Optional — answer any of these to make the task clearer before you start. Skip whatever doesn't apply.",
+      modalDone: "Done",
+      viewHeading: "Breakdown",
+      fields: {
+        what: "What do I need to do?",
+        why: "Why does it matter?",
+        how: "How do I do it?",
+        where: "Where does it happen?",
+        when: "When does it start?",
+        howLong: "How long will it take?",
+        who: "Who's doing it with me?",
+        howMuch: "How much / how many?",
+        help: "Who can I ask for help?",
+        after: "What happens after?",
+      },
+    },
   },
 
   routines: {
@@ -1380,6 +1399,25 @@ const da: typeof en = {
     deleteWholeSeries: "Slet hele opgaven",
     subtasksLabel: "Undertrin",
     addSubtaskPlaceholder: "Tilføj et undertrin…",
+    prep: {
+      buttonLabel: "Bryd den ned",
+      modalTitle: "Bryd den ned",
+      modalIntro: "Valgfrit – besvar det, der giver mening, for at gøre opgaven tydeligere, inden du går i gang. Spring resten over.",
+      modalDone: "Færdig",
+      viewHeading: "Nedbrydning",
+      fields: {
+        what: "Hvad skal jeg lave?",
+        why: "Hvorfor skal jeg lave det?",
+        how: "Hvordan skal jeg lave det?",
+        where: "Hvor skal jeg lave det?",
+        when: "Hvornår skal jeg lave det?",
+        howLong: "Hvor længe skal jeg lave det?",
+        who: "Hvem skal jeg lave det med?",
+        howMuch: "Hvor meget skal jeg lave?",
+        help: "Hvem kan jeg få hjælp af?",
+        after: "Hvad skal jeg bagefter?",
+      },
+    },
   },
 
   routines: {

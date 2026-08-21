@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLang } from "../i18n/LangContext";
 import { useToday } from "../hooks/useToday";
 import { Reorder } from "motion/react";
-import { Plus, X, CheckCircle2, Check, Pencil, Repeat, ChevronDown, ChevronUp, ListTree } from "lucide-react";
+import { Plus, X, CheckCircle2, Check, Pencil, Repeat, ChevronDown, ChevronUp, ListTree, ListChecks, Info } from "lucide-react";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 import { AnimatedCollapse } from "./AnimatedCollapse";
@@ -13,6 +13,24 @@ export interface SubTask {
   id: number;
   text: string;
   done: boolean;
+}
+
+// "De 10 H'er" — a structure/predictability framework already used by Danish pædagoger
+// (schools, bosteder, kommunale støttepersoner) working with autism/ADHD, not something
+// invented for this app. Answering these ahead of time is what reduces the anxiety of not
+// knowing what a task actually involves — same underlying goal Steady already has, just
+// giving it a named, recognized shape. Every field is optional; skip whatever doesn't apply.
+export const TEN_H_KEYS = ["what", "why", "how", "where", "when", "howLong", "who", "howMuch", "help", "after"] as const;
+export type TenHKey = (typeof TEN_H_KEYS)[number];
+export type TenHPrep = Partial<Record<TenHKey, string>>;
+
+export function hasPrepContent(prep: TenHPrep | undefined): boolean {
+  if (!prep) return false;
+  return TEN_H_KEYS.some((k) => (prep[k] ?? "").trim().length > 0);
+}
+
+function emptyPrep(): Record<TenHKey, string> {
+  return { what: "", why: "", how: "", where: "", when: "", howLong: "", who: "", howMuch: "", help: "", after: "" };
 }
 
 export interface Task {
@@ -50,6 +68,11 @@ export interface Task {
   // same pattern as Routine steps' sub-steps. Independent of the parent task's own done
   // state, so checking sub-steps doesn't auto-complete the parent.
   subtasks?: SubTask[];
+  // Optional "De 10 H'er" breakdown — answers to a fixed set of orienting questions
+  // (what/why/how/where/when/...), filled in ahead of time to make the task itself less
+  // ambiguous. Independent of subtasks: this is about understanding the task, not splitting
+  // it into pieces.
+  prep?: TenHPrep;
 }
 
 function startOfWeekMs(dateStr: string): number {
@@ -124,7 +147,15 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
   const [editStartDate, setEditStartDate] = useState(today);
   const [newSubtaskDraft, setNewSubtaskDraft] = useState("");
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
+  const [prepExpandedIds, setPrepExpandedIds] = useState<Set<number>>(new Set());
   const [otherOpen, setOtherOpen] = useState(false);
+  const [newPrep, setNewPrep] = useState<Record<TenHKey, string>>(emptyPrep());
+  const [editPrep, setEditPrep] = useState<Record<TenHKey, string>>(emptyPrep());
+  // Same modal-over-inline-editing pattern as the Repeat picker above, for the same reason —
+  // 10 optional fields would overwhelm the row's own layout if shown inline.
+  const [prepModalOpen, setPrepModalOpen] = useState<"new" | "edit" | null>(null);
+  const modalPrep = prepModalOpen === "new" ? newPrep : editPrep;
+  const setModalPrep = prepModalOpen === "new" ? setNewPrep : setEditPrep;
   // The weekday/day-of-month picker used to expand inline inside the row it belonged to,
   // which fought with the row's own flex layout (drag handle, checkbox, edit/delete
   // buttons) and produced broken-looking spacing once the picker grew wide. Moving it into
@@ -301,6 +332,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
     setEditWeeklyInterval(task.weeklyIntervalWeeks ?? 1);
     setEditMonthlyDays(task.monthlyDays && task.monthlyDays.length > 0 ? task.monthlyDays : [todayDayOfMonth]);
     setEditStartDate(task.recurrenceStartDate ?? task.weeklyAnchorDate ?? today);
+    setEditPrep({ ...emptyPrep(), ...task.prep });
   };
 
   const saveEdit = (id: number) => {
@@ -318,6 +350,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
               weeklyIntervalWeeks: editRecurrence === "weekly" ? editWeeklyInterval : undefined,
               weeklyAnchorDate: editRecurrence === "weekly" ? editStartDate : undefined,
               monthlyDays: editRecurrence === "monthly" ? editMonthlyDays : undefined,
+              prep: hasPrepContent(editPrep) ? editPrep : undefined,
             }
           : task,
       ),
@@ -327,6 +360,15 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
 
   const toggleExpanded = (id: number) => {
     setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const togglePrepExpanded = (id: number) => {
+    setPrepExpandedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -368,6 +410,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
         weeklyIntervalWeeks: newRecurrence === "weekly" ? newWeeklyInterval : undefined,
         weeklyAnchorDate: newRecurrence === "weekly" ? newStartDate : undefined,
         monthlyDays: newRecurrence === "monthly" ? newMonthlyDays : undefined,
+        prep: hasPrepContent(newPrep) ? newPrep : undefined,
       },
     ]);
     setNextId((n) => n + 1);
@@ -377,6 +420,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
     setNewWeeklyInterval(1);
     setNewMonthlyDays([todayDayOfMonth]);
     setNewStartDate(today);
+    setNewPrep(emptyPrep());
   };
 
   const modalTask: Task = {
@@ -546,6 +590,20 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                   >
                     <Repeat size={14} aria-hidden="true" />
                   </button>
+                  <button
+                    onClick={() => setPrepModalOpen("edit")}
+                    className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
+                    style={{
+                      borderColor: hasPrepContent(editPrep) ? "var(--primary)" : "var(--border)",
+                      backgroundColor: hasPrepContent(editPrep) ? "var(--green-bg)" : "transparent",
+                      color: hasPrepContent(editPrep) ? "var(--green-text)" : "var(--muted-foreground)",
+                      transition: "all 0.15s",
+                    }}
+                    aria-label={t.tasks.prep.buttonLabel}
+                    title={t.tasks.prep.buttonLabel}
+                  >
+                    <ListChecks size={14} aria-hidden="true" />
+                  </button>
                 </div>
               ) : (
                 // Name and recurrence badge stack instead of sharing a row — on narrow phones,
@@ -593,6 +651,18 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                     >
                       <ListTree size={13} aria-hidden="true" />
                       {task.subtasks!.filter((s) => s.done).length}/{task.subtasks!.length}
+                    </IconButton>
+                  )}
+                  {editingId !== task.id && hasPrepContent(task.prep) && (
+                    <IconButton
+                      size="pill"
+                      tone="default"
+                      onClick={() => togglePrepExpanded(task.id)}
+                      aria-label={t.tasks.prep.viewHeading}
+                      aria-expanded={prepExpandedIds.has(task.id)}
+                      style={{ fontSize: "0.75rem", fontWeight: 700 }}
+                    >
+                      <Info size={13} aria-hidden="true" />
                     </IconButton>
                   )}
                   {(!task.done || editingId === task.id) && (
@@ -715,6 +785,16 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                       >
                         {sub.text}
                       </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editingId !== task.id && prepExpandedIds.has(task.id) && hasPrepContent(task.prep) && (
+                <div className="space-y-2 pl-7 pr-2" style={{ flexBasis: "100%" }}>
+                  {TEN_H_KEYS.filter((k) => (task.prep?.[k] ?? "").trim().length > 0).map((k) => (
+                    <div key={k}>
+                      <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--muted-foreground)" }}>{t.tasks.prep.fields[k]}</p>
+                      <p style={{ fontSize: "0.88rem", color: "var(--foreground)", whiteSpace: "pre-wrap" }}>{task.prep![k]}</p>
                     </div>
                   ))}
                 </div>
@@ -863,6 +943,22 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
         >
           <Repeat size={16} aria-hidden="true" />
           {newRecurrence && <span className="hidden sm:inline">{recurrenceBadge(newRecurrence)}</span>}
+        </button>
+        <button
+          onClick={() => setPrepModalOpen("new")}
+          className="rounded-xl px-3 py-3 border-2 flex items-center gap-1.5 hover:opacity-85 flex-shrink-0"
+          style={{
+            borderColor: hasPrepContent(newPrep) ? "var(--primary)" : "var(--border)",
+            backgroundColor: hasPrepContent(newPrep) ? "var(--green-bg)" : "transparent",
+            color: hasPrepContent(newPrep) ? "var(--green-text)" : "var(--muted-foreground)",
+            fontWeight: 700,
+            fontSize: "0.8rem",
+            transition: "all 0.15s",
+          }}
+          aria-label={t.tasks.prep.buttonLabel}
+          title={t.tasks.prep.buttonLabel}
+        >
+          <ListChecks size={16} aria-hidden="true" />
         </button>
         <button
           onClick={add}
@@ -1030,6 +1126,64 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                 style={{ fontWeight: 700, transition: "opacity 0.15s" }}
               >
                 {t.tasks.repeatModalDone}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {prepModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setPrepModalOpen(null);
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="prep-dialog-title"
+            className="w-full max-w-sm rounded-2xl border border-border flex flex-col steady-modal-dialog"
+            style={{ backgroundColor: "var(--card)" }}
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
+              <h3 id="prep-dialog-title" className="text-foreground" style={{ fontFamily: "var(--app-font-heading, Nunito)" }}>
+                {t.tasks.prep.modalTitle}
+              </h3>
+              <IconButton size="md" onClick={() => setPrepModalOpen(null)} aria-label={t.tasks.prep.modalDone}>
+                <X size={18} />
+              </IconButton>
+            </div>
+            <div className="overflow-y-auto px-5 py-4 space-y-3" style={{ overflowX: "hidden", WebkitOverflowScrolling: "touch" }}>
+              <p className="text-muted-foreground" style={{ fontSize: "0.85rem", lineHeight: 1.5 }}>{t.tasks.prep.modalIntro}</p>
+              {TEN_H_KEYS.map((k) => (
+                <div key={k}>
+                  <label
+                    htmlFor={`prep-field-${k}`}
+                    className="block text-foreground mb-1"
+                    style={{ fontSize: "0.82rem", fontWeight: 700 }}
+                  >
+                    {t.tasks.prep.fields[k]}
+                  </label>
+                  <input
+                    id={`prep-field-${k}`}
+                    type="text"
+                    value={modalPrep[k]}
+                    onChange={(e) => setModalPrep((prev) => ({ ...prev, [k]: e.target.value }))}
+                    className="w-full rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground outline-none focus:border-primary"
+                    style={{ boxSizing: "border-box", fontSize: "0.9rem" }}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="px-5 py-4 border-t border-border flex-shrink-0">
+              <button
+                onClick={() => setPrepModalOpen(null)}
+                className="w-full rounded-xl py-3 bg-primary text-primary-foreground hover:opacity-90"
+                style={{ fontWeight: 700, transition: "opacity 0.15s" }}
+              >
+                {t.tasks.prep.modalDone}
               </button>
             </div>
           </div>

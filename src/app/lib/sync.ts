@@ -28,6 +28,12 @@ interface SteadyUserDataRow {
   routines_custom: unknown;
   routines_next_id: number;
   onboarded: boolean;
+  important_dates: unknown;
+  date_reminders_enabled: boolean;
+  focus_sessions: unknown;
+  meal_guide_items: unknown;
+  meal_guide_next_id: number;
+  stock_locations: unknown;
 }
 
 function collectLocalRow(): SteadyUserDataRow {
@@ -46,6 +52,12 @@ function collectLocalRow(): SteadyUserDataRow {
     routines_custom: readJSON("steady-routines-custom", { morning: [], afternoon: [], late: [] }),
     routines_next_id: readJSON("steady-routines-nextid", 100),
     onboarded: readJSON("steady-onboarded", false),
+    important_dates: readJSON("steady-important-dates", []),
+    date_reminders_enabled: readJSON("steady-date-reminders-enabled", true),
+    focus_sessions: readJSON("steady-focus-sessions", {}),
+    meal_guide_items: readJSON("steady-meal-guide-items-v3", []),
+    meal_guide_next_id: readJSON("steady-meal-guide-next-id-v3", 0),
+    stock_locations: readJSON("steady-stock-locations-v2", []),
   };
 }
 
@@ -64,6 +76,12 @@ function applyRowToLocal(row: SteadyUserDataRow) {
   writeJSON("steady-routines-custom", row.routines_custom);
   writeJSON("steady-routines-nextid", row.routines_next_id);
   writeJSON("steady-onboarded", row.onboarded);
+  writeJSON("steady-important-dates", row.important_dates);
+  writeJSON("steady-date-reminders-enabled", row.date_reminders_enabled);
+  writeJSON("steady-focus-sessions", row.focus_sessions);
+  writeJSON("steady-meal-guide-items-v3", row.meal_guide_items);
+  writeJSON("steady-meal-guide-next-id-v3", row.meal_guide_next_id);
+  writeJSON("steady-stock-locations-v2", row.stock_locations);
 }
 
 export async function pushLocalToRemote(userId: string): Promise<void> {

@@ -491,7 +491,7 @@ const en = {
 
   habits: {
     heading: "Habit Tracker",
-    description: "For habits you're building on purpose – checking one off grows your tree on 'Overview' and builds a streak over time.",
+    description: "For habits you're building on purpose – checking one off grows your tree and builds a streak over time.",
     addHabit: "Add a habit",
     namePlaceholder: "Habit name…",
     deleteHabit: "Delete habit",
@@ -1448,7 +1448,7 @@ const da: typeof en = {
 
   habits: {
     heading: "Vanesporing",
-    description: "Til vaner, du bevidst er ved at opbygge – når du sætter kryds, vokser dit træ på 'Overblik', og du bygger en stribe over tid.",
+    description: "Til vaner, du bevidst er ved at opbygge – når du sætter kryds, vokser dit træ, og du bygger en stribe over tid.",
     addHabit: "Tilføj en vane",
     namePlaceholder: "Vanenavn…",
     deleteHabit: "Slet vane",

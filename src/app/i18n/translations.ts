@@ -326,7 +326,7 @@ const en = {
   },
 
   supportTips: {
-    "Gentle reminders": "A gentle nudge: take a moment to check your routine list.",
+    "Gentle reminders": "Take a moment to check your routine list.",
     Checklists: "Try breaking your biggest task today into 3 small checkable steps.",
     "Quiet focus time": "When you want some quiet, try silencing notifications and using the focus timer.",
     "Written instructions": "Writing down what you need to do today can make things feel more manageable.",

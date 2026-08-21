@@ -393,7 +393,18 @@ export default function App() {
   useEffect(() => {
     if (!authState || authState.isGuest || !authState.userId) return;
     const userId = authState.userId;
-    const interval = setInterval(() => pushLocalToRemote(userId), 30000);
+    // Pulling only on visibilitychange/focus assumes this tab actually loses and regains
+    // OS-level focus — it doesn't if e.g. it's sitting visibly on a second monitor and you
+    // only ever look at it without clicking into it. Checking for a newer remote copy on
+    // the same interval as the push is a straightforward safety net that doesn't depend on
+    // that: within 30s of a change landing on either device, the other picks it up.
+    // pullIfNewer only reloads when the remote copy actually changed, so most ticks are a
+    // no-op read rather than a disruptive reload.
+    const interval = setInterval(async () => {
+      await pushLocalToRemote(userId);
+      const changed = await pullIfNewer(userId);
+      if (changed) window.location.reload();
+    }, 30000);
     const onHide = () => pushLocalToRemote(userId);
     // The one-time pull on login only ever ran once per browser session — reopening a tab
     // (or, on mobile, just switching back to an already-running installed app, which

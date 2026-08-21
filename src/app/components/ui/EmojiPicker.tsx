@@ -1,3 +1,5 @@
+import { useLang } from "../../i18n/LangContext";
+
 export const AVATAR_EMOJIS = ["🌱", "🌻", "🌊", "🍂", "⭐", "🌙", "🦋", "🐢", "🌈", "🎨"];
 
 interface EmojiPickerProps {
@@ -9,6 +11,7 @@ interface EmojiPickerProps {
 }
 
 export function EmojiPicker({ value, onChange, layout = "wrap", groupLabel }: EmojiPickerProps) {
+  const t = useLang();
   const isGrid = layout === "grid";
   return (
     <div
@@ -25,7 +28,7 @@ export function EmojiPicker({ value, onChange, layout = "wrap", groupLabel }: Em
         <button
           key={emoji}
           onClick={() => onChange(emoji)}
-          aria-label={emoji}
+          aria-label={t.common.avatarEmojiLabels[emoji] ?? emoji}
           aria-pressed={value === emoji}
           className={`avatar-option flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isGrid ? "rounded-2xl" : "rounded-xl"}`}
           style={{

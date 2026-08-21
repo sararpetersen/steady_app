@@ -433,7 +433,7 @@ export default function App() {
         await pushLocalToRemote(userId);
         return;
       }
-      const changed = await pullIfNewer(userId);
+      const changed = await pullIfNewer(userId, recentlyInteracted);
       if (changed) {
         window.location.reload();
         return;
@@ -452,7 +452,7 @@ export default function App() {
         onHide();
       } else if (document.visibilityState === "visible") {
         if (recentlyInteracted()) return;
-        pullIfNewer(userId).then((changed) => {
+        pullIfNewer(userId, recentlyInteracted).then((changed) => {
           if (changed) window.location.reload();
         });
       }

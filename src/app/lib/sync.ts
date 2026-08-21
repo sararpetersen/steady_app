@@ -123,7 +123,14 @@ export async function pullRemoteToLocal(userId: string): Promise<boolean> {
 // Only applies the remote copy if it's actually newer than what this device last synced —
 // used when the app regains focus, so switching back to a device you left open picks up
 // changes made elsewhere without reloading (and discarding whatever's mid-edit) every time.
-export async function pullIfNewer(userId: string): Promise<boolean> {
+//
+// `shouldAbort` is checked again right before the overwrite actually happens, not just at
+// the start — the network round-trip to fetch the remote row takes real time (a couple
+// hundred ms is enough), and a tap/keystroke landing in that window still needs to win.
+// Checking only up front left that gap open: e.g. opening the app kicks off a pull, and a
+// mood tap made in the moment right after would get silently overwritten when the pull
+// resolved a beat later, even though the interaction happened first from the user's POV.
+export async function pullIfNewer(userId: string, shouldAbort?: () => boolean): Promise<boolean> {
   const { data, error } = await supabase
     .from("steady_user_data")
     .select("*")
@@ -133,6 +140,7 @@ export async function pullIfNewer(userId: string): Promise<boolean> {
   const row = data as SteadyUserDataRow;
   const localSyncedAt = getLastSyncedAt();
   if (row.updated_at && localSyncedAt && row.updated_at <= localSyncedAt) return false;
+  if (shouldAbort?.()) return false;
   applyRowToLocal(row);
   if (row.updated_at) setLastSyncedAt(row.updated_at);
   return true;

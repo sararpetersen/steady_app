@@ -1,29 +1,29 @@
 import { Sparkles, X } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
 import { useToday } from "../hooks/useToday";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 import { IconButton } from "./ui/IconButton";
 
 interface Props {
   support: string[];
   sensory: string[];
   onPersonalize: () => void;
+  suppressNudge?: boolean;
+  dismissed: boolean;
+  onDismiss: () => void;
 }
 
-export function PersonalizedTip({ support, sensory, onPersonalize }: Props) {
+export function PersonalizedTip({ support, sensory, onPersonalize, suppressNudge, dismissed, onDismiss }: Props) {
   const t = useLang();
   const today = useToday();
-  const [dismissed, setDismissed] = useLocalStorage("steady-personalize-dismissed", false);
 
-  // Pick one sensory tip if any active sensory sensitivity applies
-  const sensoryTip = sensory.find((s) => t.sensoryTips[s]);
-
-  // Pick the support tip whose key matches a selection; rotate by day if multiple
-  const matchedSupport = support.filter((s) => t.supportTips[s]);
-  const supportTip =
-    matchedSupport.length > 0
-      ? t.supportTips[matchedSupport[new Date(`${today}T00:00:00`).getDate() % matchedSupport.length]]
-      : null;
+  // Sensory and support tips used to render as two separate cards even though they're the
+  // same idea (a bit of static, personalized advice) just drawn from two different profile
+  // questions — that read as redundant rather than as two distinct features. Pooling them
+  // into one rotating tip means there's only ever one "tip" card, whichever kind it is.
+  const sensoryTips = sensory.filter((s) => t.sensoryTips[s]).map((s) => t.sensoryTips[s]);
+  const supportTips = support.filter((s) => t.supportTips[s]).map((s) => t.supportTips[s]);
+  const allTips = [...sensoryTips, ...supportTips];
+  const tip = allTips.length > 0 ? allTips[new Date(`${today}T00:00:00`).getDate() % allTips.length] : null;
 
   // No sensory/support answers on file — likely skipped onboarding (e.g. guest
   // "skip setup"). Don't show a generic fallback tip alongside the nudge to
@@ -32,17 +32,7 @@ export function PersonalizedTip({ support, sensory, onPersonalize }: Props) {
 
   return (
     <div className="space-y-3">
-      {sensoryTip && (
-        <div
-          className="rounded-2xl px-4 py-3 border border-border"
-          style={{ backgroundColor: "var(--surface-1)" }}
-        >
-          <p className="text-muted-foreground" style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>
-            {t.sensoryTips[sensoryTip]}
-          </p>
-        </div>
-      )}
-      {supportTip && (
+      {tip && (
         <div
           className="rounded-2xl p-4 border border-border"
           style={{ backgroundColor: "var(--purple-bg)" }}
@@ -51,11 +41,11 @@ export function PersonalizedTip({ support, sensory, onPersonalize }: Props) {
             {t.overview.tipForYou}
           </p>
           <p style={{ color: "var(--purple-text)", fontSize: "0.95rem", lineHeight: 1.6 }}>
-            {supportTip}
+            {tip}
           </p>
         </div>
       )}
-      {!hasPersonalization && !dismissed && (
+      {!hasPersonalization && !dismissed && !suppressNudge && (
         <div
           className="rounded-2xl p-4 border border-border flex items-start gap-3"
           style={{ backgroundColor: "var(--yellow-bg)" }}
@@ -76,7 +66,7 @@ export function PersonalizedTip({ support, sensory, onPersonalize }: Props) {
               {t.overview.personalizeButton}
             </button>
           </div>
-          <IconButton size="sm" onClick={() => setDismissed(true)} aria-label={t.overview.personalizeDismiss}>
+          <IconButton size="sm" onClick={onDismiss} aria-label={t.overview.personalizeDismiss}>
             <X size={14} />
           </IconButton>
         </div>

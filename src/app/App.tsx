@@ -109,6 +109,7 @@ export default function App() {
   const [tasks, setTasks] = useLocalStorage<Task[]>("steady-tasks", []);
   const [nextId, setNextId] = useLocalStorage<number>("steady-task-nextid", 1);
   const [tasksDate, setTasksDate] = useLocalStorage<string | null>("steady-tasks-date", null);
+  const [personalizeDismissed, setPersonalizeDismissed] = useLocalStorage("steady-personalize-dismissed", false);
 
   // "Daily" recurrence duplicated what Routines already does, so it's no longer offered
   // when creating/editing a task — but existing daily tasks shouldn't just vanish or break.
@@ -276,6 +277,11 @@ export default function App() {
   };
 
   const t = translations[profile.a11y.language ?? "en"];
+
+  // Mirrors PersonalizedTip's own "should the personalize nudge show" check, read here too
+  // so NotesNudge knows to step aside when it would — only one nudge-style card at a time.
+  const showPersonalizeNudge =
+    profile.support.length === 0 && profile.sensory.length === 0 && !personalizeDismissed;
 
   // Migrate old localStorage profile missing required fields
   useEffect(() => {
@@ -886,8 +892,14 @@ export default function App() {
                     <UpcomingDateReminder />
                     <NowNextBanner tasks={tasks} />
                     <MoodCheck />
-                    <PersonalizedTip support={profile.support} sensory={profile.sensory} onPersonalize={() => setActiveTab("profile")} />
-                    <NotesNudge onOpenNotes={() => setActiveTab("note")} />
+                    <PersonalizedTip
+                      support={profile.support}
+                      sensory={profile.sensory}
+                      onPersonalize={() => setActiveTab("profile")}
+                      dismissed={personalizeDismissed}
+                      onDismiss={() => setPersonalizeDismissed(true)}
+                    />
+                    <NotesNudge onOpenNotes={() => setActiveTab("note")} suppressed={showPersonalizeNudge} />
                     <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
                   </>
                 )}

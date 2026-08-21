@@ -1,6 +1,6 @@
+import { useRef } from "react";
 import { Sparkles, X } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
-import { useToday } from "../hooks/useToday";
 import { IconButton } from "./ui/IconButton";
 
 interface Props {
@@ -14,7 +14,6 @@ interface Props {
 
 export function PersonalizedTip({ support, sensory, onPersonalize, suppressNudge, dismissed, onDismiss }: Props) {
   const t = useLang();
-  const today = useToday();
 
   // Sensory and support tips used to render as two separate cards even though they're the
   // same idea (a bit of static, personalized advice) just drawn from two different profile
@@ -23,7 +22,18 @@ export function PersonalizedTip({ support, sensory, onPersonalize, suppressNudge
   const sensoryTips = sensory.filter((s) => t.sensoryTips[s]).map((s) => t.sensoryTips[s]);
   const supportTips = support.filter((s) => t.supportTips[s]).map((s) => t.supportTips[s]);
   const allTips = [...sensoryTips, ...supportTips];
-  const tip = allTips.length > 0 ? allTips[new Date(`${today}T00:00:00`).getDate() % allTips.length] : null;
+
+  // Was previously keyed off the day of month, which meant checking this card twice in the
+  // same day (the normal way anyone would notice whether it "works") always showed the exact
+  // same tip — reads as broken even though it was technically rotating, just once every 24h.
+  // Picking a fresh index per mount instead means every visit to Home can show something
+  // different, without needing to wait for a day to roll over. Stored in a ref (not state) so
+  // it stays fixed for the lifetime of this mount rather than reshuffling on every re-render.
+  const pickRef = useRef<number | null>(null);
+  if (pickRef.current === null || pickRef.current >= allTips.length) {
+    pickRef.current = allTips.length > 0 ? Math.floor(Math.random() * allTips.length) : 0;
+  }
+  const tip = allTips.length > 0 ? allTips[pickRef.current] : null;
 
   // No sensory/support answers on file — likely skipped onboarding (e.g. guest
   // "skip setup"). Don't show a generic fallback tip alongside the nudge to

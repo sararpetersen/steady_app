@@ -168,7 +168,7 @@ function TrafficLightColumn({
   return (
     <div className="rounded-xl p-3" style={{ backgroundColor: bg }}>
       <p style={{ fontWeight: 700, fontSize: "0.8rem", color: text }}>{label}</p>
-      <p className="mb-2" style={{ fontSize: "0.72rem", color: text, opacity: 0.85 }}>{hint}</p>
+      <p className="mb-2" style={{ fontSize: "0.72rem", color: text }}>{hint}</p>
       <EditableList items={items} onAdd={onAdd} onEdit={onEdit} onDelete={onDelete} onReorder={onReorder} addPlaceholder={addPlaceholder} />
     </div>
   );

@@ -19,7 +19,7 @@ import { FeedbackForm } from "./components/FeedbackForm";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useToday } from "./hooks/useToday";
 import { supabase } from "./lib/supabaseClient";
-import { pushLocalToRemote, pullRemoteToLocal, pullIfNewer } from "./lib/sync";
+import { pushLocalToRemote, pullRemoteToLocal } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
@@ -396,77 +396,29 @@ export default function App() {
   // Habits/notes/routines are written directly to localStorage by their own tabs rather
   // than through top-level state, so also push periodically and when the tab loses focus
   // to make sure those changes eventually reach the account.
+  //
+  // Deliberately push-only — no background pull, no reload. A pull that finds newer remote
+  // data overwrites this device's ENTIRE local state (there's no field-level merge), which
+  // in practice meant background syncing could silently cancel or remove whatever you were
+  // doing on a device, no matter how carefully the timing was guarded. That kept happening
+  // in ways that were more disruptive than useful, so this device now only ever pushes its
+  // own changes up; it picks up other devices' changes on next sign-in, not continuously.
   useEffect(() => {
     if (!authState || authState.isGuest || !authState.userId) return;
     const userId = authState.userId;
-    // A pull that finds newer remote data overwrites ALL local state and reloads — there's
-    // no field-level merge, so that's destructive to anything typed/tapped on this device
-    // that hasn't been pushed yet. Without a guard, a pull landing mid-edit (e.g. the 30s
-    // interval firing while you're typing a task name, or right after a mood tap that
-    // hasn't reached the debounced push yet) reads as your change getting silently
-    // cancelled or removed. Skipping pulls for a few seconds after any local interaction
-    // gives in-flight edits a chance to actually push before a pull can clobber them.
-    const RECENT_INTERACTION_MS = 6000;
-    const lastInteractionRef = { current: 0 };
-    const markInteraction = () => {
-      lastInteractionRef.current = Date.now();
-    };
-    window.addEventListener("pointerdown", markInteraction, { passive: true });
-    window.addEventListener("keydown", markInteraction);
-    const recentlyInteracted = () => Date.now() - lastInteractionRef.current < RECENT_INTERACTION_MS;
-    // Pulling only on visibilitychange/focus assumes this tab actually loses and regains
-    // OS-level focus — it doesn't if e.g. it's sitting visibly on a second monitor and you
-    // only ever look at it without clicking into it. Checking for a newer remote copy on
-    // the same interval as the push is a straightforward safety net that doesn't depend on
-    // that: within 30s of a change landing on either device, the other picks it up.
-    //
-    // Pull BEFORE push, not after: this push is a full-row overwrite (there's no
-    // field-level merge), so if this device pushed first and only checked for newer data
-    // afterward, an idle device's own routine tick could clobber a change the other device
-    // pushed moments earlier — the mood tap or routine step you just did elsewhere would
-    // get silently overwritten by this device's older local snapshot. Pulling first means
-    // this tick either adopts whatever's newer (and reloads, skipping its own push — the
-    // next tick pushes the now-current state instead) or confirms it's already current
-    // before pushing, so it never pushes a stale copy over a fresher one.
-    const interval = setInterval(async () => {
-      if (recentlyInteracted()) {
-        await pushLocalToRemote(userId);
-        return;
-      }
-      const changed = await pullIfNewer(userId, recentlyInteracted);
-      if (changed) {
-        window.location.reload();
-        return;
-      }
-      await pushLocalToRemote(userId);
+    const interval = setInterval(() => {
+      pushLocalToRemote(userId);
     }, 30000);
     const onHide = () => pushLocalToRemote(userId);
-    // The one-time pull on login only ever ran once per browser session — reopening a tab
-    // (or, on mobile, just switching back to an already-running installed app, which
-    // doesn't reload or clear sessionStorage) never picked up changes made on another
-    // device in the meantime. Pulling again whenever this device regains focus closes that
-    // gap; pullIfNewer only actually applies/reloads when the remote copy is newer, so
-    // switching back to a device that made the last change doesn't reload for nothing.
     const onVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        onHide();
-      } else if (document.visibilityState === "visible") {
-        if (recentlyInteracted()) return;
-        pullIfNewer(userId, recentlyInteracted).then((changed) => {
-          if (changed) window.location.reload();
-        });
-      }
+      if (document.visibilityState === "hidden") onHide();
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
     window.addEventListener("beforeunload", onHide);
-    window.addEventListener("focus", onVisibilityChange);
     return () => {
-      window.removeEventListener("pointerdown", markInteraction);
-      window.removeEventListener("keydown", markInteraction);
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("beforeunload", onHide);
-      window.removeEventListener("focus", onVisibilityChange);
     };
   }, [authState?.userId, authState?.isGuest]);
 

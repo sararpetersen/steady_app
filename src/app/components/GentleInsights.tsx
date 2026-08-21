@@ -52,7 +52,7 @@ function MoodBar({ label, value, moodEmoji }: { label: string; value: number; mo
         {label}
       </span>
       <div className="flex-1 min-w-0 rounded-full overflow-hidden" style={{ height: 8, backgroundColor: "var(--surface-1)" }}>
-        <div style={{ width: `${pct}%`, height: "100%", backgroundColor: "var(--primary)", borderRadius: 999 }} />
+        <div style={{ width: `${pct}%`, height: "100%", backgroundColor: "var(--blue-text)", borderRadius: 999 }} />
       </div>
       <span aria-hidden="true" style={{ fontSize: "1rem", flexShrink: 0 }}>{moodEmoji}</span>
     </div>
@@ -70,7 +70,7 @@ export function GentleInsights() {
   return (
     <div className="steady-card bg-card rounded-2xl p-5 border border-border">
       <div className="flex items-center gap-2 mb-1">
-        <ChartNoAxesCombined size={18} style={{ color: "var(--green-text)" }} aria-hidden="true" />
+        <ChartNoAxesCombined size={18} style={{ color: "var(--blue-text)" }} aria-hidden="true" />
         <h3 className="text-foreground">{t.insights.heading}</h3>
       </div>
       <p className="text-muted-foreground mb-3" style={{ fontSize: "0.95rem" }}>
@@ -82,7 +82,7 @@ export function GentleInsights() {
           {t.insights.notEnoughData}
         </p>
       ) : (
-        <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: "var(--green-bg)" }}>
+        <div className="rounded-xl p-4 space-y-3" style={{ backgroundColor: "var(--blue-bg)" }}>
           <div className="space-y-2">
             <MoodBar
               label={t.insights.habitDaysLabel}
@@ -95,10 +95,10 @@ export function GentleInsights() {
               moodEmoji={moods[Math.round(result.avgWithoutHabit)].emoji}
             />
           </div>
-          <p style={{ color: "var(--green-text)", fontSize: "0.9rem", lineHeight: 1.6 }}>
+          <p style={{ color: "var(--blue-text)", fontSize: "0.9rem", lineHeight: 1.6 }}>
             {t.insights[result.verdict]}
           </p>
-          <p style={{ color: "var(--green-text)", fontSize: "0.72rem", opacity: 0.8 }}>
+          <p style={{ color: "var(--blue-text)", fontSize: "0.72rem", opacity: 0.8 }}>
             {t.insights.sampleSize(result.sampleSize)}
           </p>
         </div>

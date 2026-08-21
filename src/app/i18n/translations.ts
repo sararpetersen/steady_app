@@ -426,7 +426,7 @@ const en = {
     prep: {
       buttonLabel: "Break it down",
       modalTitle: "Break it down",
-      modalIntro: "Optional — answer any of these to make the task clearer before you start. Skip whatever doesn't apply.",
+      modalIntro: "Optional – answer any of these to make the task clearer before you start. Skip whatever doesn't apply.",
       modalDone: "Done",
       viewHeading: "Breakdown",
       fields: {
@@ -437,7 +437,7 @@ const en = {
         when: "When does it start?",
         howLong: "How long will it take?",
         who: "Who's doing it with me?",
-        howMuch: "How much / how many?",
+        howMuch: "How much/how many?",
         help: "Who can I ask for help?",
         after: "What happens after?",
       },

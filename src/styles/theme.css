@@ -56,7 +56,12 @@
   --yellow-text: #7a5a00;
   --orange-bg: #ffe4cc;
   --orange-text: #8a4a12;
-  --blue-bg: #dce7ea;
+  /* Saturation nudged back up (25% -> ~45%) from the muted value chosen after the earlier
+     "clashes with the off-white background" complaint — that fix overcorrected, leaving blue
+     the only card color in the palette below ~35% saturation (green/purple/yellow/orange all
+     sit between 37-100%), so it read as flat/gray next to its siblings. Same hue and
+     lightness as before, just restored toward the app's normal pastel intensity. */
+  --blue-bg: #d6eaf0;
   --blue-text: #2c5a6c;
   --morning-bg: #fff0c8;
   --noon-bg: #fff8d6;

@@ -23,7 +23,7 @@ import { pushLocalToRemote, pullRemoteToLocal } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
-import { LayoutDashboard, ClipboardList, Repeat2, Sprout, UserCircle2, NotebookPen, Settings, CalendarDays, MoreHorizontal, Sun, Moon, MessageCircle } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Repeat2, Sprout, NotebookPen, Settings, CalendarDays, MoreHorizontal, Sun, Moon, MessageCircle } from "lucide-react";
 import { SteadyWordmark } from "./components/SteadyWordmark";
 import { IconButton } from "./components/ui/IconButton";
 import { APP_NAME } from "./version";
@@ -509,18 +509,25 @@ export default function App() {
 
   const growthStageKey = getTodaysGrowthStageKey(habitsDone, habitsTotal);
 
+  // "profile" is deliberately not a tab here — the header's AvatarButton is the one entry
+  // point into Profile now (it used to be reachable both ways, which read as a redundant
+  // duplicate rather than an intentional shortcut). Kept out of this list rather than just
+  // hidden, so it can't silently reappear in the nav if TABS is ever mapped over blindly.
   const TABS = [
     { key: "overview", label: t.nav.overview, icon: LayoutDashboard },
     { key: "tasks", label: t.nav.tasks, icon: ClipboardList },
     { key: "routines", label: t.nav.routines, icon: Repeat2 },
     { key: "habits", label: t.nav.habits, icon: Sprout },
     { key: "note", label: t.nav.note, icon: NotebookPen },
-    { key: "profile", label: t.nav.profile, icon: UserCircle2 },
     { key: "more", label: t.nav.more, icon: MoreHorizontal },
   ];
 
-  // Consistent circular avatar button — photo fills circle, emoji sits on tinted background
-  const AvatarButton = () => (
+  // Consistent circular avatar button — photo fills circle, emoji sits on tinted background.
+  // Now the only entry point into Profile (it's no longer duplicated in TABS below), so it
+  // picks up the same aria-current + visible active state a regular nav tab would have.
+  const AvatarButton = () => {
+    const active = activeTab === "profile" && !settingsOpen;
+    return (
     <button
       onClick={() => {
         setActiveTab("profile");
@@ -531,11 +538,12 @@ export default function App() {
         width: 44,
         height: 44,
         backgroundColor: profilePhoto ? "transparent" : "var(--green-bg)",
-        border: "2px solid var(--primary)",
+        border: `2px solid ${active ? "var(--primary)" : "var(--border)"}`,
         flexShrink: 0,
-        transition: "opacity 0.15s",
+        transition: "opacity 0.15s, border-color 0.15s",
       }}
       aria-label="Open profile"
+      aria-current={active ? "page" : undefined}
     >
       {profilePhoto ? (
         <img src={profilePhoto} alt="Your profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -543,7 +551,8 @@ export default function App() {
         <span style={{ fontSize: "1.3rem", lineHeight: 1 }}>{profile.avatar}</span>
       )}
     </button>
-  );
+    );
+  };
 
   const greeting = (() => {
     const h = new Date().getHours();
@@ -814,7 +823,7 @@ export default function App() {
             {/* Visually hidden — gives screen readers a real page-level heading to navigate
                 by, since the visible "Steady" wordmark is a decorative logo, not text. */}
             <h1 className="sr-only">
-              {APP_NAME} – {settingsOpen ? t.settings.title : TABS.find((tab) => tab.key === activeTab)?.label}
+              {APP_NAME} – {settingsOpen ? t.settings.title : TABS.find((tab) => tab.key === activeTab)?.label ?? t.nav.profile}
             </h1>
             {settingsOpen ? (
               <SettingsPage

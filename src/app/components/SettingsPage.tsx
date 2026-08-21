@@ -393,7 +393,7 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
         <div className="rounded-xl p-4 border-2" style={{ borderColor: "var(--destructive)", backgroundColor: "var(--surface-1)" }}>
           <p className="text-foreground mb-3" style={{ fontSize: "0.9rem" }}>{s.clearConfirm}</p>
           <div className="flex gap-2">
-            <button onClick={handleDelete} className="rounded-xl px-5 py-2 text-white hover:opacity-85" style={{ backgroundColor: "var(--destructive)", fontWeight: 700, transition: "opacity 0.15s" }}>
+            <button onClick={handleDelete} className="rounded-xl px-5 py-2 hover:opacity-85" style={{ backgroundColor: "var(--destructive)", color: "var(--destructive-foreground)", fontWeight: 700, transition: "opacity 0.15s" }}>
               {s.clearYes}
             </button>
             <button onClick={() => setConfirmDelete(false)} className="rounded-xl px-5 py-2 border border-border text-foreground hover:bg-muted" style={{ fontWeight: 600, transition: "background-color 0.15s" }}>

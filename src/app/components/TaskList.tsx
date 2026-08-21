@@ -252,8 +252,8 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
             remove(task.id);
             setPendingDeleteId(null);
           }}
-          className="w-full sm:w-auto rounded-lg px-3 py-2 text-white hover:opacity-85"
-          style={{ backgroundColor: "var(--destructive)", fontSize: "0.8rem", fontWeight: 700, transition: "opacity 0.15s" }}
+          className="w-full sm:w-auto rounded-lg px-3 py-2 hover:opacity-85"
+          style={{ backgroundColor: "var(--destructive)", color: "var(--destructive-foreground)", fontSize: "0.8rem", fontWeight: 700, transition: "opacity 0.15s" }}
         >
           {showOccurrenceOption ? t.tasks.deleteWholeSeries : t.tasks.deleteRecurringYes}
         </button>

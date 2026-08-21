@@ -377,6 +377,12 @@ export default function App() {
   }, [authState?.userId]);
 
   // Ongoing sync: debounce-push whenever tracked top-level state changes (tasks, profile, etc.).
+  // Deliberately NOT keyed on `activeTab` or `today`: neither is synced data (activeTab isn't
+  // even a field on the remote row), so including them here just meant switching tabs — or the
+  // date ticking over — re-pushed whatever this device's local copy happens to hold, with no
+  // pull-first check. On an idle/secondary device that's often a stale copy, so normal
+  // navigation was silently re-clobbering fresher changes just pushed from another device
+  // (the actual cause of "my changes don't show up on the other device").
   useEffect(() => {
     if (!authState || authState.isGuest || !authState.userId) return;
     const userId = authState.userId;
@@ -385,7 +391,7 @@ export default function App() {
     }, 1500);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authState?.userId, tasks, nextId, tasksDate, rawProfile, profilePhoto, onboarded, activeTab, today]);
+  }, [authState?.userId, tasks, nextId, tasksDate, rawProfile, profilePhoto, onboarded]);
 
   // Habits/notes/routines are written directly to localStorage by their own tabs rather
   // than through top-level state, so also push periodically and when the tab loses focus

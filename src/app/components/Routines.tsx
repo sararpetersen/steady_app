@@ -8,6 +8,7 @@ import { AnimatedCollapse } from "./AnimatedCollapse";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 import { PictogramPicker } from "./ui/PictogramPicker";
+import { DONE_TEXT_OPACITY } from "../lib/uiConstants";
 import {
   isTaskScheduledToday,
   hasPrepContent,
@@ -268,7 +269,7 @@ function SectionPanel({
             {item.emoji && <span style={{ fontSize: "1.3rem", flexShrink: 0 }} aria-hidden="true">{item.emoji}</span>}
             <span
               className="flex-1 min-w-0 text-foreground truncate steady-truncate-compact"
-              style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1 }}
+              style={{ textDecoration: done ? "line-through" : "none", opacity: done ? DONE_TEXT_OPACITY : 1 }}
             >
               {text}
             </span>
@@ -386,7 +387,7 @@ function SectionPanel({
                 </button>
                 <span
                   className="flex-1 min-w-0 truncate"
-                  style={{ fontSize: "0.88rem", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? 0.6 : 1 }}
+                  style={{ fontSize: "0.88rem", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? DONE_TEXT_OPACITY : 1 }}
                 >
                   {sub.text}
                 </span>
@@ -445,7 +446,7 @@ function SectionPanel({
                 </button>
                 <span
                   className="flex-1 min-w-0 truncate"
-                  style={{ fontSize: "0.88rem", color: "var(--muted-foreground)", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? 0.6 : 1 }}
+                  style={{ fontSize: "0.88rem", color: "var(--muted-foreground)", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? DONE_TEXT_OPACITY : 1 }}
                 >
                   {sub.text}
                 </span>

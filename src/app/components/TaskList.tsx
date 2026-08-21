@@ -6,6 +6,7 @@ import { Plus, X, CheckCircle2, Check, Pencil, Repeat, ChevronDown, ChevronUp, L
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 import { AnimatedCollapse } from "./AnimatedCollapse";
+import { DONE_TEXT_OPACITY } from "../lib/uiConstants";
 
 export type TaskRecurrence = "daily" | "weekly" | "monthly";
 
@@ -617,7 +618,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                     style={{
                       color: task.done ? "var(--green-text)" : "var(--foreground)",
                       textDecoration: task.done ? "line-through" : "none",
-                      opacity: task.done ? 0.75 : 1,
+                      opacity: task.done ? DONE_TEXT_OPACITY : 1,
                     }}
                   >
                     {task.text}
@@ -711,7 +712,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                       </button>
                       <span
                         className="flex-1 min-w-0 truncate"
-                        style={{ fontSize: "0.88rem", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? 0.6 : 1 }}
+                        style={{ fontSize: "0.88rem", textDecoration: sub.done ? "line-through" : "none", opacity: sub.done ? DONE_TEXT_OPACITY : 1 }}
                       >
                         {sub.text}
                       </span>
@@ -780,7 +781,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                           fontSize: "0.88rem",
                           color: "var(--muted-foreground)",
                           textDecoration: sub.done ? "line-through" : "none",
-                          opacity: sub.done ? 0.6 : 1,
+                          opacity: sub.done ? DONE_TEXT_OPACITY : 1,
                         }}
                       >
                         {sub.text}

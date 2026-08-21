@@ -5,6 +5,7 @@ import { useLang, type T } from "../i18n/LangContext";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { IconButton } from "./ui/IconButton";
 import { ReorderRow } from "./ui/ReorderRow";
+import { DONE_TEXT_OPACITY } from "../lib/uiConstants";
 
 interface StockItem {
   id: string;
@@ -175,7 +176,7 @@ function LocationCard({
                     </span>
                     <span
                       className="flex-1 min-w-0 text-foreground"
-                      style={{ fontSize: "0.85rem", textDecoration: item.checked ? "line-through" : "none", opacity: item.checked ? 0.55 : 1 }}
+                      style={{ fontSize: "0.85rem", textDecoration: item.checked ? "line-through" : "none", opacity: item.checked ? DONE_TEXT_OPACITY : 1 }}
                     >
                       {item.text}
                     </span>

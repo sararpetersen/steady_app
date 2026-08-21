@@ -95,12 +95,25 @@ function applyRowToLocal(row: SteadyUserDataRow) {
   writeJSON("steady-stock-locations-v2", row.stock_locations);
 }
 
+// A mobile browser tab backgrounded for a while stops running Supabase's auto-refresh
+// timer, so its access token can quietly expire; the next request then fails with a 401
+// that would otherwise be silent and permanent — no retry, no error surfaced to the user,
+// just a change that never reaches the server. Refreshing the session once and retrying
+// turns that into a same-tick recovery instead of a standing gap until something else
+// happens to trigger a refresh.
+async function refreshAndRetry<T>(attempt: () => PromiseLike<{ data: T; error: unknown }>) {
+  const first = await attempt();
+  if (!first.error) return first;
+  await supabase.auth.refreshSession();
+  return attempt();
+}
+
 export async function pushLocalToRemote(userId: string): Promise<void> {
   const row = collectLocalRow();
   const updatedAt = new Date().toISOString();
-  const { error } = await supabase
-    .from("steady_user_data")
-    .upsert({ user_id: userId, ...row, updated_at: updatedAt });
+  const { error } = await refreshAndRetry(() =>
+    supabase.from("steady_user_data").upsert({ user_id: userId, ...row, updated_at: updatedAt }),
+  );
   // Record what our own push just made the server's timestamp — so a pull shortly after
   // (e.g. this same tab regaining focus) doesn't mistake our own change for a newer one
   // written elsewhere and reload for nothing.
@@ -108,11 +121,9 @@ export async function pushLocalToRemote(userId: string): Promise<void> {
 }
 
 export async function pullRemoteToLocal(userId: string): Promise<boolean> {
-  const { data, error } = await supabase
-    .from("steady_user_data")
-    .select("*")
-    .eq("user_id", userId)
-    .maybeSingle();
+  const { data, error } = await refreshAndRetry(() =>
+    supabase.from("steady_user_data").select("*").eq("user_id", userId).maybeSingle(),
+  );
   if (error || !data) return false;
   const row = data as SteadyUserDataRow;
   applyRowToLocal(row);
@@ -131,11 +142,9 @@ export async function pullRemoteToLocal(userId: string): Promise<boolean> {
 // mood tap made in the moment right after would get silently overwritten when the pull
 // resolved a beat later, even though the interaction happened first from the user's POV.
 export async function pullIfNewer(userId: string, shouldAbort?: () => boolean): Promise<boolean> {
-  const { data, error } = await supabase
-    .from("steady_user_data")
-    .select("*")
-    .eq("user_id", userId)
-    .maybeSingle();
+  const { data, error } = await refreshAndRetry(() =>
+    supabase.from("steady_user_data").select("*").eq("user_id", userId).maybeSingle(),
+  );
   if (error || !data) return false;
   const row = data as SteadyUserDataRow;
   const localSyncedAt = getLastSyncedAt();

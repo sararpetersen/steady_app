@@ -19,7 +19,7 @@ import { FeedbackForm } from "./components/FeedbackForm";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useToday } from "./hooks/useToday";
 import { supabase } from "./lib/supabaseClient";
-import { pushLocalToRemote, pullRemoteToLocal } from "./lib/sync";
+import { pushLocalToRemote, pullRemoteToLocal, pullIfNewer } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
@@ -394,15 +394,30 @@ export default function App() {
     if (!authState || authState.isGuest || !authState.userId) return;
     const userId = authState.userId;
     const interval = setInterval(() => pushLocalToRemote(userId), 30000);
+    const onHide = () => pushLocalToRemote(userId);
+    // The one-time pull on login only ever ran once per browser session — reopening a tab
+    // (or, on mobile, just switching back to an already-running installed app, which
+    // doesn't reload or clear sessionStorage) never picked up changes made on another
+    // device in the meantime. Pulling again whenever this device regains focus closes that
+    // gap; pullIfNewer only actually applies/reloads when the remote copy is newer, so
+    // switching back to a device that made the last change doesn't reload for nothing.
     const onVisibilityChange = () => {
-      if (document.visibilityState === "hidden") pushLocalToRemote(userId);
+      if (document.visibilityState === "hidden") {
+        onHide();
+      } else if (document.visibilityState === "visible") {
+        pullIfNewer(userId).then((changed) => {
+          if (changed) window.location.reload();
+        });
+      }
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
-    window.addEventListener("beforeunload", onVisibilityChange);
+    window.addEventListener("beforeunload", onHide);
+    window.addEventListener("focus", onVisibilityChange);
     return () => {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibilityChange);
-      window.removeEventListener("beforeunload", onVisibilityChange);
+      window.removeEventListener("beforeunload", onHide);
+      window.removeEventListener("focus", onVisibilityChange);
     };
   }, [authState?.userId, authState?.isGuest]);
 

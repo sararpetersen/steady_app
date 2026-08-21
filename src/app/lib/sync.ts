@@ -34,6 +34,17 @@ interface SteadyUserDataRow {
   meal_guide_items: unknown;
   meal_guide_next_id: number;
   stock_locations: unknown;
+  updated_at?: string;
+}
+
+const LAST_SYNCED_KEY = "steady-last-synced-at";
+
+function getLastSyncedAt(): string | null {
+  return readJSON<string | null>(LAST_SYNCED_KEY, null);
+}
+
+function setLastSyncedAt(iso: string) {
+  writeJSON(LAST_SYNCED_KEY, iso);
 }
 
 function collectLocalRow(): SteadyUserDataRow {
@@ -86,9 +97,14 @@ function applyRowToLocal(row: SteadyUserDataRow) {
 
 export async function pushLocalToRemote(userId: string): Promise<void> {
   const row = collectLocalRow();
-  await supabase
+  const updatedAt = new Date().toISOString();
+  const { error } = await supabase
     .from("steady_user_data")
-    .upsert({ user_id: userId, ...row, updated_at: new Date().toISOString() });
+    .upsert({ user_id: userId, ...row, updated_at: updatedAt });
+  // Record what our own push just made the server's timestamp — so a pull shortly after
+  // (e.g. this same tab regaining focus) doesn't mistake our own change for a newer one
+  // written elsewhere and reload for nothing.
+  if (!error) setLastSyncedAt(updatedAt);
 }
 
 export async function pullRemoteToLocal(userId: string): Promise<boolean> {
@@ -98,6 +114,26 @@ export async function pullRemoteToLocal(userId: string): Promise<boolean> {
     .eq("user_id", userId)
     .maybeSingle();
   if (error || !data) return false;
-  applyRowToLocal(data as SteadyUserDataRow);
+  const row = data as SteadyUserDataRow;
+  applyRowToLocal(row);
+  if (row.updated_at) setLastSyncedAt(row.updated_at);
+  return true;
+}
+
+// Only applies the remote copy if it's actually newer than what this device last synced —
+// used when the app regains focus, so switching back to a device you left open picks up
+// changes made elsewhere without reloading (and discarding whatever's mid-edit) every time.
+export async function pullIfNewer(userId: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("steady_user_data")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error || !data) return false;
+  const row = data as SteadyUserDataRow;
+  const localSyncedAt = getLastSyncedAt();
+  if (row.updated_at && localSyncedAt && row.updated_at <= localSyncedAt) return false;
+  applyRowToLocal(row);
+  if (row.updated_at) setLastSyncedAt(row.updated_at);
   return true;
 }

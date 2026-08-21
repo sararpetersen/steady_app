@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { SteadyLogo } from "./SteadyLogo";
 import { translations } from "../i18n/translations";
@@ -45,6 +45,41 @@ export function AuthPage({ onAuth }: Props) {
   const switchMode = (m: "signup" | "login") => {
     setMode(m);
     setError("");
+  };
+
+  // Google/Apple sign-in redirects the whole page away and back rather than resolving
+  // in-place like the email/password submit() below, so it can't call onAuth directly —
+  // this listener catches the session Supabase establishes once the redirect completes.
+  // Scoped to non-"email" providers so it doesn't double-fire (and pass the wrong
+  // justSignedUp value) alongside submit()'s own explicit onAuth call.
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== "SIGNED_IN" || !session?.user) return;
+      const provider = session.user.app_metadata?.provider;
+      if (provider === "google" || provider === "apple") {
+        onAuth({ email: session.user.email ?? "", isGuest: false, userId: session.user.id }, false);
+      }
+    });
+    return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const signInWithGoogle = async () => {
+    setError("");
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
+    });
+    if (oauthError) setError(oauthError.message);
+  };
+
+  const signInWithApple = async () => {
+    setError("");
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "apple",
+      options: { redirectTo: window.location.origin },
+    });
+    if (oauthError) setError(oauthError.message);
   };
 
   const submit = async () => {
@@ -221,7 +256,7 @@ export function AuthPage({ onAuth }: Props) {
         {/* Social buttons */}
         <div className="space-y-2.5">
           <button
-            onClick={() => alert(t.socialComingSoon)}
+            onClick={signInWithGoogle}
             className="w-full flex items-center justify-center gap-3 rounded-2xl py-3 border hover:opacity-85"
             style={{ backgroundColor: "var(--card)", borderColor: "var(--border)", color: "var(--foreground)", fontWeight: 600, fontSize: "0.92rem", transition: "opacity 0.15s" }}
           >
@@ -229,7 +264,7 @@ export function AuthPage({ onAuth }: Props) {
             {t.continueWithGoogle}
           </button>
           <button
-            onClick={() => alert(t.socialComingSoon)}
+            onClick={signInWithApple}
             className="w-full flex items-center justify-center gap-3 rounded-2xl py-3 hover:opacity-85"
             style={{ backgroundColor: "var(--foreground)", color: "var(--background)", fontWeight: 600, fontSize: "0.92rem", transition: "opacity 0.15s" }}
           >

@@ -398,12 +398,22 @@ export default function App() {
     // only ever look at it without clicking into it. Checking for a newer remote copy on
     // the same interval as the push is a straightforward safety net that doesn't depend on
     // that: within 30s of a change landing on either device, the other picks it up.
-    // pullIfNewer only reloads when the remote copy actually changed, so most ticks are a
-    // no-op read rather than a disruptive reload.
+    //
+    // Pull BEFORE push, not after: this push is a full-row overwrite (there's no
+    // field-level merge), so if this device pushed first and only checked for newer data
+    // afterward, an idle device's own routine tick could clobber a change the other device
+    // pushed moments earlier — the mood tap or routine step you just did elsewhere would
+    // get silently overwritten by this device's older local snapshot. Pulling first means
+    // this tick either adopts whatever's newer (and reloads, skipping its own push — the
+    // next tick pushes the now-current state instead) or confirms it's already current
+    // before pushing, so it never pushes a stale copy over a fresher one.
     const interval = setInterval(async () => {
-      await pushLocalToRemote(userId);
       const changed = await pullIfNewer(userId);
-      if (changed) window.location.reload();
+      if (changed) {
+        window.location.reload();
+        return;
+      }
+      await pushLocalToRemote(userId);
     }, 30000);
     const onHide = () => pushLocalToRemote(userId);
     // The one-time pull on login only ever ran once per browser session — reopening a tab

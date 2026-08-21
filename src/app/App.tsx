@@ -399,6 +399,21 @@ export default function App() {
   useEffect(() => {
     if (!authState || authState.isGuest || !authState.userId) return;
     const userId = authState.userId;
+    // A pull that finds newer remote data overwrites ALL local state and reloads — there's
+    // no field-level merge, so that's destructive to anything typed/tapped on this device
+    // that hasn't been pushed yet. Without a guard, a pull landing mid-edit (e.g. the 30s
+    // interval firing while you're typing a task name, or right after a mood tap that
+    // hasn't reached the debounced push yet) reads as your change getting silently
+    // cancelled or removed. Skipping pulls for a few seconds after any local interaction
+    // gives in-flight edits a chance to actually push before a pull can clobber them.
+    const RECENT_INTERACTION_MS = 6000;
+    const lastInteractionRef = { current: 0 };
+    const markInteraction = () => {
+      lastInteractionRef.current = Date.now();
+    };
+    window.addEventListener("pointerdown", markInteraction, { passive: true });
+    window.addEventListener("keydown", markInteraction);
+    const recentlyInteracted = () => Date.now() - lastInteractionRef.current < RECENT_INTERACTION_MS;
     // Pulling only on visibilitychange/focus assumes this tab actually loses and regains
     // OS-level focus — it doesn't if e.g. it's sitting visibly on a second monitor and you
     // only ever look at it without clicking into it. Checking for a newer remote copy on
@@ -414,6 +429,10 @@ export default function App() {
     // next tick pushes the now-current state instead) or confirms it's already current
     // before pushing, so it never pushes a stale copy over a fresher one.
     const interval = setInterval(async () => {
+      if (recentlyInteracted()) {
+        await pushLocalToRemote(userId);
+        return;
+      }
       const changed = await pullIfNewer(userId);
       if (changed) {
         window.location.reload();
@@ -432,6 +451,7 @@ export default function App() {
       if (document.visibilityState === "hidden") {
         onHide();
       } else if (document.visibilityState === "visible") {
+        if (recentlyInteracted()) return;
         pullIfNewer(userId).then((changed) => {
           if (changed) window.location.reload();
         });
@@ -441,6 +461,8 @@ export default function App() {
     window.addEventListener("beforeunload", onHide);
     window.addEventListener("focus", onVisibilityChange);
     return () => {
+      window.removeEventListener("pointerdown", markInteraction);
+      window.removeEventListener("keydown", markInteraction);
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("beforeunload", onHide);

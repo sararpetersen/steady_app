@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Reorder } from "motion/react";
 import { ChevronDown, ChevronUp, Check, Pencil, X, Plus } from "lucide-react";
 import { useLang, type T } from "../i18n/LangContext";
@@ -179,6 +179,19 @@ export function MealGuide() {
   const [itemsByCategory, setItemsByCategory] = useLocalStorage<CategoryItems[]>("steady-meal-guide-items-v3", seedItems(t));
   const [nextItemId, setNextItemId] = useLocalStorage<number>("steady-meal-guide-next-id-v3", seedNextId(t));
   const [openCategory, setOpenCategory] = useState<string | null>(null);
+
+  // Categories are fixed (one per t.mealGuide.categories entry) — a user can edit or delete
+  // individual items within a category, but never the categories themselves, so an empty
+  // array here can only mean this device's local copy never got seeded in the first place
+  // (e.g. a stray sync push before this tab ever mounted MealGuide, an empty-string legacy
+  // key, or a bad remote overwrite) rather than a deliberate empty state. Self-heal it.
+  useEffect(() => {
+    if (itemsByCategory.length === 0) {
+      setItemsByCategory(seedItems(t));
+      setNextItemId(seedNextId(t));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const editColumn = (index: number, key: "green" | "yellow" | "red") => ({
     onAdd: (text: string) => {

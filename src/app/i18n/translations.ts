@@ -494,7 +494,7 @@ const en = {
 
   habits: {
     heading: "Habit Tracker",
-    description: "For habits you're building on purpose — checking one off grows your tree on Overview and builds a streak over time.",
+    description: "For habits you're building on purpose – checking one off grows your tree on 'Overview' and builds a streak over time.",
     addHabit: "Add a habit",
     namePlaceholder: "Habit name…",
     deleteHabit: "Delete habit",
@@ -504,7 +504,8 @@ const en = {
     emojiLabel: "Habit emoji",
     totalCompletionsSr: (n: number) => `${n} total completions`,
     growthLabel: "Your growth",
-    growthCaption: (n: number) => (n === 0 ? "Check off a habit below to start growing" : `${n} check-in${n === 1 ? "" : "s"} so far — same tree as on Overview`),
+    growthCaption: (n: number) =>
+      n === 0 ? "Check off a habit below to start growing" : `${n} check-in${n === 1 ? "" : "s"} so far — same tree as on Overview`,
     emojiLabels: {
       "💧": "Water drop",
       "🚶": "Walking",
@@ -1463,7 +1464,8 @@ const da: typeof en = {
     emojiLabel: "Vane-emoji",
     totalCompletionsSr: (n: number) => `${n} gennemførelser i alt`,
     growthLabel: "Din vækst",
-    growthCaption: (n: number) => (n === 0 ? "Sæt kryds ved en vane herunder for at begynde at vokse" : `${n} kryds indtil videre – samme træ som på 'Overblik'`),
+    growthCaption: (n: number) =>
+      n === 0 ? "Sæt kryds ved en vane herunder for at begynde at vokse" : `${n} kryds indtil videre – samme træ som på 'Overblik'`,
     emojiLabels: {
       "💧": "Vanddråbe",
       "🚶": "Gåtur",

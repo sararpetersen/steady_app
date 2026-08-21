@@ -246,7 +246,9 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                     fontSize: "1rem",
                     transition: "border-color 0.15s",
                     backgroundImage:
-                      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6560' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")",
+                      // #888 rather than the light-tuned muted-foreground, so this stays visible
+                      // in dark mode too — a static data URI can't reference the theme's CSS vars.
+                      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")",
                     backgroundRepeat: "no-repeat",
                     backgroundPosition: "right 16px center",
                     paddingRight: "3rem",
@@ -508,7 +510,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                       </span>
                       <div
                         className="rounded-full relative"
-                        style={{ width: 44, height: 24, backgroundColor: value ? "var(--primary)" : "var(--muted-foreground)" }}
+                        style={{ width: 44, height: 24, backgroundColor: value ? "var(--primary)" : "var(--toggle-track-off)" }}
                       >
                         <div
                           className="absolute top-1 rounded-full bg-white"

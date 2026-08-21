@@ -72,7 +72,7 @@ function ToggleRow({ label, description, value, onChange }: {
         <p className="text-foreground" style={{ fontWeight: 600 }}>{label}</p>
         {description && <p className="text-muted-foreground" style={{ fontSize: "0.82rem" }}>{description}</p>}
       </div>
-      <div className="flex-shrink-0 rounded-full relative" style={{ width: 44, height: 24, backgroundColor: value ? "var(--primary)" : "var(--muted-foreground)" }}>
+      <div className="flex-shrink-0 rounded-full relative" style={{ width: 44, height: 24, backgroundColor: value ? "var(--primary)" : "var(--toggle-track-off)" }}>
         <div className="absolute top-1 rounded-full bg-white" style={{ width: 16, height: 16, left: value ? 24 : 4, transition: "left 0.2s" }} />
       </div>
     </button>

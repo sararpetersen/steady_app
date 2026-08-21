@@ -29,7 +29,7 @@ export function hasPrepContent(prep: TenHPrep | undefined): boolean {
   return TEN_H_KEYS.some((k) => (prep[k] ?? "").trim().length > 0);
 }
 
-function emptyPrep(): Record<TenHKey, string> {
+export function emptyPrep(): Record<TenHKey, string> {
   return { what: "", why: "", how: "", where: "", when: "", howLong: "", who: "", howMuch: "", help: "", after: "" };
 }
 

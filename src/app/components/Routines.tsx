@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree, UtensilsCrossed } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree, ListChecks, Info, UtensilsCrossed } from "lucide-react";
 import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
@@ -8,7 +8,16 @@ import { AnimatedCollapse } from "./AnimatedCollapse";
 import { ReorderRow } from "./ui/ReorderRow";
 import { IconButton } from "./ui/IconButton";
 import { PictogramPicker } from "./ui/PictogramPicker";
-import { isTaskScheduledToday, type Task, type TaskRecurrence } from "./TaskList";
+import {
+  isTaskScheduledToday,
+  hasPrepContent,
+  emptyPrep,
+  TEN_H_KEYS,
+  type Task,
+  type TaskRecurrence,
+  type TenHKey,
+  type TenHPrep,
+} from "./TaskList";
 
 export const SECTION_KEYS = ["morning", "afternoon", "late", "meals"] as const;
 export type SectionKey = typeof SECTION_KEYS[number];
@@ -50,6 +59,9 @@ export interface CustomItem {
   // step's own done state — checking sub-steps doesn't auto-complete the parent, so
   // there's no surprise side effect from ticking the last one.
   subtasks?: SubTask[];
+  // Optional "De 10 H'er" task-prep breakdown, same shape and fields as Tasks' own — reused
+  // as-is since the 10 orienting questions apply equally to a routine step.
+  prep?: TenHPrep;
 }
 
 export type CustomMap = Record<SectionKey, CustomItem[]>;
@@ -83,8 +95,8 @@ function SectionPanel({
   onToggle: (id: number) => void;
   customItems: CustomItem[];
   tasks: Task[];
-  onAddCustom: (text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence) => void;
-  onEditCustom: (id: number, text: string, emoji: string, targetSection: SectionKey) => void;
+  onAddCustom: (text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence, prep: TenHPrep | undefined) => void;
+  onEditCustom: (id: number, text: string, emoji: string, targetSection: SectionKey, prep: TenHPrep | undefined) => void;
   onReorderCustom: (items: CustomItem[]) => void;
   onDeleteCustom: (id: number) => void;
   onAddSubtask: (id: number, text: string) => void;
@@ -106,6 +118,12 @@ function SectionPanel({
   const [editSection, setEditSection] = useState<SectionKey>(sectionKey);
   const [newSubtaskDraft, setNewSubtaskDraft] = useState("");
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
+  const [prepExpandedIds, setPrepExpandedIds] = useState<Set<number>>(new Set());
+  const [newPrep, setNewPrep] = useState<Record<TenHKey, string>>(emptyPrep());
+  const [editPrep, setEditPrep] = useState<Record<TenHKey, string>>(emptyPrep());
+  const [prepModalOpen, setPrepModalOpen] = useState<"new" | "edit" | null>(null);
+  const modalPrep = prepModalOpen === "new" ? newPrep : editPrep;
+  const setModalPrep = prepModalOpen === "new" ? setNewPrep : setEditPrep;
 
   // A step only counts as "linked" while its task still exists — if that task was deleted
   // from the Tasks tab, it self-heals back into a plain, locally-tracked step rather than
@@ -134,14 +152,23 @@ function SectionPanel({
     });
   };
 
+  const togglePrepExpanded = (id: number) => {
+    setPrepExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
   const submitStep = () => {
     const trimmed = stepDraft.trim();
     if (!trimmed) return;
-    onAddCustom(trimmed, linkToTasks, stepEmojiDraft.trim(), linkRecurrence);
+    onAddCustom(trimmed, linkToTasks, stepEmojiDraft.trim(), linkRecurrence, hasPrepContent(newPrep) ? newPrep : undefined);
     setStepDraft("");
     setStepEmojiDraft("");
     setLinkToTasks(false);
     setLinkRecurrence("daily");
+    setNewPrep(emptyPrep());
     setAddingStep(false);
   };
 
@@ -150,12 +177,13 @@ function SectionPanel({
     setEditDraft(linkedTask(item)?.text ?? item.text);
     setEditEmojiDraft(item.emoji ?? "");
     setEditSection(sectionKey);
+    setEditPrep({ ...emptyPrep(), ...item.prep });
   };
 
   const saveEdit = (id: number) => {
     const trimmed = editDraft.trim();
     if (!trimmed) return;
-    onEditCustom(id, trimmed, editEmojiDraft.trim(), editSection);
+    onEditCustom(id, trimmed, editEmojiDraft.trim(), editSection, hasPrepContent(editPrep) ? editPrep : undefined);
     setEditingId(null);
     setEditDraft("");
     setEditEmojiDraft("");
@@ -204,6 +232,20 @@ function SectionPanel({
               }}
               className="flex-1 min-w-0 rounded-lg px-2 py-1 border border-primary bg-input-background text-foreground outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
             />
+            <button
+              onClick={() => setPrepModalOpen("edit")}
+              className="flex-shrink-0 rounded-lg p-1.5 border-2 hover:opacity-85"
+              style={{
+                borderColor: hasPrepContent(editPrep) ? "var(--primary)" : "var(--border)",
+                backgroundColor: hasPrepContent(editPrep) ? "var(--green-bg)" : "transparent",
+                color: hasPrepContent(editPrep) ? "var(--green-text)" : "var(--muted-foreground)",
+                transition: "all 0.15s",
+              }}
+              aria-label={t.tasks.prep.buttonLabel}
+              title={t.tasks.prep.buttonLabel}
+            >
+              <ListChecks size={14} aria-hidden="true" />
+            </button>
           </div>
         ) : (
           <button
@@ -286,6 +328,18 @@ function SectionPanel({
               >
                 <ListTree size={13} aria-hidden="true" />
                 {subtaskDoneCount}/{subtasks.length}
+              </IconButton>
+            )}
+            {hasPrepContent(item.prep) && (
+              <IconButton
+                size="pill"
+                tone="default"
+                onClick={() => togglePrepExpanded(id)}
+                aria-label={t.tasks.prep.viewHeading}
+                aria-expanded={prepExpandedIds.has(id)}
+                style={{ fontSize: "0.75rem", fontWeight: 700 }}
+              >
+                <Info size={13} aria-hidden="true" />
               </IconButton>
             )}
             <IconButton
@@ -399,6 +453,16 @@ function SectionPanel({
             ))}
           </div>
         )}
+        {editingId !== id && prepExpandedIds.has(id) && hasPrepContent(item.prep) && (
+          <div className="space-y-2 pl-9 pb-1.5" style={{ flexBasis: "100%" }}>
+            {TEN_H_KEYS.filter((k) => (item.prep?.[k] ?? "").trim().length > 0).map((k) => (
+              <div key={k}>
+                <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--muted-foreground)" }}>{t.tasks.prep.fields[k]}</p>
+                <p style={{ fontSize: "0.88rem", color: "var(--foreground)", whiteSpace: "pre-wrap" }}>{item.prep![k]}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </ReorderRow>
     );
   };
@@ -467,7 +531,21 @@ function SectionPanel({
                   {t.routines.addStepButton}
                 </button>
                 <button
-                  onClick={() => { setAddingStep(false); setStepDraft(""); setStepEmojiDraft(""); setLinkToTasks(false); setLinkRecurrence("daily"); }}
+                  onClick={() => setPrepModalOpen("new")}
+                  className="rounded-xl px-3 py-2.5 border-2 flex items-center hover:opacity-85 flex-shrink-0"
+                  style={{
+                    borderColor: hasPrepContent(newPrep) ? "var(--primary)" : "var(--border)",
+                    backgroundColor: hasPrepContent(newPrep) ? "var(--green-bg)" : "transparent",
+                    color: hasPrepContent(newPrep) ? "var(--green-text)" : "var(--muted-foreground)",
+                    transition: "all 0.15s",
+                  }}
+                  aria-label={t.tasks.prep.buttonLabel}
+                  title={t.tasks.prep.buttonLabel}
+                >
+                  <ListChecks size={16} aria-hidden="true" />
+                </button>
+                <button
+                  onClick={() => { setAddingStep(false); setStepDraft(""); setStepEmojiDraft(""); setLinkToTasks(false); setLinkRecurrence("daily"); setNewPrep(emptyPrep()); }}
                   className="rounded-xl px-4 py-2.5 border border-border text-muted-foreground hover:bg-muted flex-shrink-0"
                   style={{ transition: "background-color 0.15s" }}
                   aria-label={t.routines.cancel}
@@ -523,6 +601,64 @@ function SectionPanel({
           )}
         </div>
       </AnimatedCollapse>
+
+      {prepModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setPrepModalOpen(null);
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="routine-prep-dialog-title"
+            className="w-full max-w-sm rounded-2xl border border-border flex flex-col steady-modal-dialog"
+            style={{ backgroundColor: "var(--card)" }}
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
+              <h3 id="routine-prep-dialog-title" className="text-foreground" style={{ fontFamily: "var(--app-font-heading, Nunito)" }}>
+                {t.tasks.prep.modalTitle}
+              </h3>
+              <IconButton size="md" onClick={() => setPrepModalOpen(null)} aria-label={t.tasks.prep.modalDone}>
+                <X size={18} />
+              </IconButton>
+            </div>
+            <div className="overflow-y-auto px-5 py-4 space-y-3" style={{ overflowX: "hidden", WebkitOverflowScrolling: "touch" }}>
+              <p className="text-muted-foreground" style={{ fontSize: "0.85rem", lineHeight: 1.5 }}>{t.tasks.prep.modalIntro}</p>
+              {TEN_H_KEYS.map((k) => (
+                <div key={k}>
+                  <label
+                    htmlFor={`routine-prep-field-${k}`}
+                    className="block text-foreground mb-1"
+                    style={{ fontSize: "0.82rem", fontWeight: 700 }}
+                  >
+                    {t.tasks.prep.fields[k]}
+                  </label>
+                  <input
+                    id={`routine-prep-field-${k}`}
+                    type="text"
+                    value={modalPrep[k]}
+                    onChange={(e) => setModalPrep((prev) => ({ ...prev, [k]: e.target.value }))}
+                    className="w-full rounded-xl px-3 py-2.5 border border-border bg-input-background text-foreground outline-none focus:border-primary"
+                    style={{ boxSizing: "border-box", fontSize: "0.9rem" }}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="px-5 py-4 border-t border-border flex-shrink-0">
+              <button
+                onClick={() => setPrepModalOpen(null)}
+                className="w-full rounded-xl py-3 bg-primary text-primary-foreground hover:opacity-90"
+                style={{ fontWeight: 700, transition: "opacity 0.15s" }}
+              >
+                {t.tasks.prep.modalDone}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -585,7 +721,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     setDoneIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
-  const addCustom = (section: SectionKey, text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence) => {
+  const addCustom = (section: SectionKey, text: string, linkToTasks: boolean, emoji: string, recurrence: TaskRecurrence, prep: TenHPrep | undefined) => {
     const id = nextId;
     setNextId((n) => n + 1);
     let linkedTaskId: number | undefined;
@@ -604,7 +740,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     }
     setCustom((prev) => ({
       ...prev,
-      [section]: [...(prev[section] ?? []), { id, text, linkedTaskId, emoji: emoji || undefined }],
+      [section]: [...(prev[section] ?? []), { id, text, linkedTaskId, emoji: emoji || undefined, prep }],
     }));
   };
 
@@ -620,7 +756,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     setDoneIds((prev) => prev.filter((x) => x !== id));
   };
 
-  const editCustom = (section: SectionKey, id: number, text: string, emoji: string, targetSection: SectionKey) => {
+  const editCustom = (section: SectionKey, id: number, text: string, emoji: string, targetSection: SectionKey, prep: TenHPrep | undefined) => {
     const item = (custom[section] ?? []).find((i) => i.id === id);
     if (item?.linkedTaskId != null) {
       setTasks((prev) => prev.map((tsk) => (tsk.id === item.linkedTaskId ? { ...tsk, text } : tsk)));
@@ -630,7 +766,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
       setCustom((prev) => {
         const moved = (prev[section] ?? []).find((i) => i.id === id);
         if (!moved) return prev;
-        const updated = { ...moved, text, emoji: emoji || undefined };
+        const updated = { ...moved, text, emoji: emoji || undefined, prep };
         return {
           ...prev,
           [section]: (prev[section] ?? []).filter((i) => i.id !== id),
@@ -641,7 +777,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
     }
     setCustom((prev) => ({
       ...prev,
-      [section]: (prev[section] ?? []).map((i) => i.id === id ? { ...i, text, emoji: emoji || undefined } : i),
+      [section]: (prev[section] ?? []).map((i) => i.id === id ? { ...i, text, emoji: emoji || undefined, prep } : i),
     }));
   };
 
@@ -706,8 +842,8 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
             onToggle={toggleDone}
             customItems={custom[key] ?? []}
             tasks={tasks}
-            onAddCustom={(text, linkToTasks, emoji, recurrence) => addCustom(key, text, linkToTasks, emoji, recurrence)}
-            onEditCustom={(id, text, emoji, targetSection) => editCustom(key, id, text, emoji, targetSection)}
+            onAddCustom={(text, linkToTasks, emoji, recurrence, prep) => addCustom(key, text, linkToTasks, emoji, recurrence, prep)}
+            onEditCustom={(id, text, emoji, targetSection, prep) => editCustom(key, id, text, emoji, targetSection, prep)}
             onReorderCustom={(items) => reorderCustom(key, items)}
             onDeleteCustom={(id) => deleteCustom(key, id)}
             onAddSubtask={addSubtask}

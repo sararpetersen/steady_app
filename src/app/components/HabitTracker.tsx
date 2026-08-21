@@ -37,7 +37,28 @@ function weekdayIndex(dateKey: string): number {
   return new Date(y, m - 1, d).getDay();
 }
 
-// Each habit is just a seed — the growth payoff lives in the Overview's daily tree, not here.
+// Mirrors App.tsx's lifetime growth-stage thresholds/emoji (not imported from there — that
+// file doesn't export them, and duplicating six lines beats threading them through props).
+// Shown directly on this screen, not just on Overview, since users who don't already know
+// what Habit Tracker is for won't necessarily connect a plain checklist here to a tree stat
+// tile on a different tab — the growth payoff needs to be visible where the confusion is.
+const GROWTH_STAGE_EMOJI: Record<string, string> = {
+  seed: "🌱",
+  sprouting: "🌿",
+  blooming: "🌸",
+  fullBloom: "🌳",
+  grove: "🌳🌿",
+  forest: "🌲🌳",
+};
+
+function getGrowthStageKey(total: number): string {
+  if (total >= 250) return "forest";
+  if (total >= 100) return "grove";
+  if (total >= 50) return "fullBloom";
+  if (total >= 25) return "blooming";
+  if (total >= 10) return "sprouting";
+  return "seed";
+}
 
 const EMOJI_SUGGESTIONS = [
   "💧","🚶","📵","📝","🏃","😴","🥗","🧘","📚","💊",
@@ -80,6 +101,9 @@ export function HabitTracker() {
   const [editEmoji, setEditEmoji] = useState("");
   const [editNote, setEditNote] = useState("");
   const today = useToday();
+
+  const totalGrowth = habits.reduce((sum, h) => sum + (h.totalCompletions ?? 0), 0);
+  const growthStage = getGrowthStageKey(totalGrowth);
 
   // Let App.tsx's growth/celebration state know immediately — it reads this same
   // localStorage key but doesn't otherwise learn about changes made while this tab is open.
@@ -158,6 +182,14 @@ export function HabitTracker() {
       <p className="text-muted-foreground mb-4" style={{ fontSize: "0.95rem" }}>
         {t.habits.description}
       </p>
+
+      <div className="rounded-2xl p-4 mb-4 flex items-center gap-3" style={{ backgroundColor: "var(--green-bg)" }}>
+        <span style={{ fontSize: "2.2rem", lineHeight: 1 }} aria-hidden="true">{GROWTH_STAGE_EMOJI[growthStage]}</span>
+        <div className="min-w-0">
+          <p style={{ fontWeight: 700, color: "var(--green-text)" }}>{t.habits.growthLabel}</p>
+          <p style={{ fontSize: "0.85rem", color: "var(--green-text)" }}>{t.habits.growthCaption(totalGrowth)}</p>
+        </div>
+      </div>
 
       {habits.length === 0 && !showForm && (
         <div className="text-center py-6">

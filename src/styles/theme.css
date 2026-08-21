@@ -300,3 +300,15 @@
     max-height: 85dvh;
   }
 }
+
+/* Task and routine step names render at the full body text size (--font-size, 17px+)
+   with no size override of their own — on a narrow phone that runs out of row width
+   fast, so `truncate` was cutting names off well before you'd expect. Shrinking just on
+   mobile gives the ellipsis far more room to not be needed, without touching desktop
+   (where there's width to spare) or fighting the accessibility "large text" setting,
+   which this only ever makes smaller relative to, never overrides on larger screens. */
+@media (max-width: 640px) {
+  .steady-truncate-compact {
+    font-size: 0.88rem;
+  }
+}

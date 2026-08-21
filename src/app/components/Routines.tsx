@@ -225,7 +225,7 @@ function SectionPanel({
             </span>
             {item.emoji && <span style={{ fontSize: "1.3rem", flexShrink: 0 }} aria-hidden="true">{item.emoji}</span>}
             <span
-              className="flex-1 min-w-0 text-foreground truncate"
+              className="flex-1 min-w-0 text-foreground truncate steady-truncate-compact"
               style={{ textDecoration: done ? "line-through" : "none", opacity: done ? 0.45 : 1 }}
             >
               {text}

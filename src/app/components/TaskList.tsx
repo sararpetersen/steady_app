@@ -555,7 +555,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                 // than the name growing to multiple lines.
                 <div className="flex-1 min-w-0 flex flex-col gap-0.5" style={{ flexBasis: 140 }}>
                   <span
-                    className="truncate"
+                    className="truncate steady-truncate-compact"
                     style={{
                       color: task.done ? "var(--green-text)" : "var(--foreground)",
                       textDecoration: task.done ? "line-through" : "none",

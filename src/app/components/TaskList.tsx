@@ -917,7 +917,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
         </div>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <input
           type="text"
           value={newText}
@@ -927,6 +927,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
           className="flex-1 min-w-0 rounded-xl px-4 py-3 border border-border bg-input-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
           style={{ transition: "border-color 0.15s" }}
         />
+        <div className="flex gap-2">
         <button
           onClick={() => setRecurrenceModalOpen("new")}
           className="rounded-xl px-3 py-3 border-2 flex items-center gap-1.5 hover:opacity-85 flex-shrink-0"
@@ -971,6 +972,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
           <Plus size={18} />
           <span className="hidden sm:inline">{t.tasks.add}</span>
         </button>
+        </div>
       </div>
 
       {recurrenceModalOpen && (

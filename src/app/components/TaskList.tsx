@@ -559,7 +559,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                   >
                     {task.done && (
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M2.5 7L5.5 10L11.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M2.5 7L5.5 10L11.5 4" stroke="var(--primary-foreground)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </span>
@@ -708,7 +708,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                           backgroundColor: sub.done ? "var(--primary)" : "transparent",
                         }}
                       >
-                        {sub.done && <Check size={11} color="white" />}
+                        {sub.done && <Check size={11} color="var(--primary-foreground)" />}
                       </button>
                       <span
                         className="flex-1 min-w-0 truncate"
@@ -773,7 +773,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
                           backgroundColor: sub.done ? "var(--primary)" : "transparent",
                         }}
                       >
-                        {sub.done && <Check size={11} color="white" />}
+                        {sub.done && <Check size={11} color="var(--primary-foreground)" />}
                       </button>
                       <span
                         className="flex-1 min-w-0 truncate"

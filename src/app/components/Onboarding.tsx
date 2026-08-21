@@ -344,7 +344,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                       </div>
                       {lang === l && (
                         <div className="ml-auto rounded-full bg-primary flex items-center justify-center" style={{ width: 24, height: 24 }}>
-                          <Check size={14} color="white" />
+                          <Check size={14} color="var(--primary-foreground)" />
                         </div>
                       )}
                     </button>
@@ -389,7 +389,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                         </span>
                         {active && (
                           <div className="rounded-full bg-primary flex items-center justify-center" style={{ width: 24, height: 24, flexShrink: 0 }}>
-                            <Check size={14} color="white" />
+                            <Check size={14} color="var(--primary-foreground)" />
                           </div>
                         )}
                       </button>
@@ -435,7 +435,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                             className="rounded-full flex items-center justify-center"
                             style={{ width: 24, height: 24, backgroundColor: "var(--purple-vivid)", flexShrink: 0 }}
                           >
-                            <Check size={14} color="white" />
+                            <Check size={14} color="var(--purple-vivid-foreground)" />
                           </div>
                         )}
                       </button>
@@ -513,8 +513,14 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                         style={{ width: 44, height: 24, backgroundColor: value ? "var(--primary)" : "var(--toggle-track-off)" }}
                       >
                         <div
-                          className="absolute top-1 rounded-full bg-white"
-                          style={{ width: 16, height: 16, left: value ? 24 : 4, transition: "left 0.2s" }}
+                          className="absolute top-1 rounded-full"
+                          style={{
+                            width: 16,
+                            height: 16,
+                            left: value ? 24 : 4,
+                            backgroundColor: value ? "var(--primary-foreground)" : "#ffffff",
+                            transition: "left 0.2s, background-color 0.15s",
+                          }}
                         />
                       </div>
                     </button>

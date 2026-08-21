@@ -52,6 +52,7 @@
   --purple-bg: #eae4f7;
   --purple-text: #3a2f5e;
   --purple-vivid: #7b65c0;
+  --purple-vivid-foreground: #ffffff;
   --yellow-bg: #fff0c8;
   --yellow-text: #7a5a00;
   --orange-bg: #ffe4cc;
@@ -123,6 +124,7 @@
   --purple-bg: #2a2245;
   --purple-text: #c8b0f0;
   --purple-vivid: #b09ae8;
+  --purple-vivid-foreground: #241a3d;
   --yellow-bg: #3a3018;
   --yellow-text: #d4b050;
   --orange-bg: #382518;

@@ -172,7 +172,7 @@ function LocationCard({
                         backgroundColor: item.checked ? "var(--primary)" : "transparent",
                       }}
                     >
-                      {item.checked && <Check size={12} color="white" />}
+                      {item.checked && <Check size={12} color="var(--primary-foreground)" />}
                     </span>
                     <span
                       className="flex-1 min-w-0 text-foreground"

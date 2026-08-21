@@ -249,7 +249,7 @@ export function HabitTracker() {
               >
                 {habit.doneToday && (
                   <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
-                    <path d="M2.5 7L5.5 10L11.5 4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M2.5 7L5.5 10L11.5 4" stroke="var(--primary-foreground)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}
               </div>

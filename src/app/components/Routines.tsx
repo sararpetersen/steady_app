@@ -212,7 +212,7 @@ function SectionPanel({
               }}
               aria-hidden="true"
             >
-              {done && <Check size={13} color="white" />}
+              {done && <Check size={13} color="var(--primary-foreground)" />}
             </span>
             <input
               aria-label={t.routines.emojiLabel}
@@ -264,7 +264,7 @@ function SectionPanel({
                 backgroundColor: done ? "var(--primary)" : "transparent",
               }}
             >
-              {done && <Check size={13} color="white" />}
+              {done && <Check size={13} color="var(--primary-foreground)" />}
             </span>
             {item.emoji && <span style={{ fontSize: "1.3rem", flexShrink: 0 }} aria-hidden="true">{item.emoji}</span>}
             <span
@@ -383,7 +383,7 @@ function SectionPanel({
                     backgroundColor: sub.done ? "var(--primary)" : "transparent",
                   }}
                 >
-                  {sub.done && <Check size={11} color="white" />}
+                  {sub.done && <Check size={11} color="var(--primary-foreground)" />}
                 </button>
                 <span
                   className="flex-1 min-w-0 truncate"
@@ -442,7 +442,7 @@ function SectionPanel({
                     backgroundColor: sub.done ? "var(--primary)" : "transparent",
                   }}
                 >
-                  {sub.done && <Check size={11} color="white" />}
+                  {sub.done && <Check size={11} color="var(--primary-foreground)" />}
                 </button>
                 <span
                   className="flex-1 min-w-0 truncate"

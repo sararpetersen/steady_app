@@ -73,7 +73,19 @@ function ToggleRow({ label, description, value, onChange }: {
         {description && <p className="text-muted-foreground" style={{ fontSize: "0.82rem" }}>{description}</p>}
       </div>
       <div className="flex-shrink-0 rounded-full relative" style={{ width: 44, height: 24, backgroundColor: value ? "var(--primary)" : "var(--toggle-track-off)" }}>
-        <div className="absolute top-1 rounded-full bg-white" style={{ width: 16, height: 16, left: value ? 24 : 4, transition: "left 0.2s" }} />
+        <div
+          className="absolute top-1 rounded-full"
+          style={{
+            width: 16,
+            height: 16,
+            left: value ? 24 : 4,
+            // White reads fine against --toggle-track-off, but dark mode's --primary is a
+            // light mint that a plain white knob nearly disappears against (1.9:1) — same
+            // fix as the checkmark icons, just for the ON track instead of the OFF one.
+            backgroundColor: value ? "var(--primary-foreground)" : "#ffffff",
+            transition: "left 0.2s, background-color 0.15s",
+          }}
+        />
       </div>
     </button>
   );

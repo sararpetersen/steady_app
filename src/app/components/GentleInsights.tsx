@@ -98,7 +98,7 @@ export function GentleInsights() {
           <p style={{ color: "var(--blue-text)", fontSize: "0.9rem", lineHeight: 1.6 }}>
             {t.insights[result.verdict]}
           </p>
-          <p style={{ color: "var(--blue-text)", fontSize: "0.72rem", opacity: 0.8 }}>
+          <p className="text-muted-foreground" style={{ fontSize: "0.72rem" }}>
             {t.insights.sampleSize(result.sampleSize)}
           </p>
         </div>

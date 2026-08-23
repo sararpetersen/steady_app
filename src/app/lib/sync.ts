@@ -39,6 +39,11 @@ interface SteadyUserDataRow {
 
 const LAST_SYNCED_KEY = "steady-last-synced-at";
 
+export type SyncFailureReason = "remote-newer" | "request-failed";
+export type SyncResult<T> =
+  | { ok: true; value: T }
+  | { ok: false; reason: SyncFailureReason };
+
 function getLastSyncedAt(): string | null {
   return readJSON<string | null>(LAST_SYNCED_KEY, null);
 }
@@ -60,7 +65,7 @@ function collectLocalRow(): SteadyUserDataRow {
     notes_next_id: readJSON("steady-notes-nextid", 1),
     routines_done: readJSON("steady-routines-done", []),
     routines_done_date: readJSON<string | null>("steady-routines-done-date", null),
-    routines_custom: readJSON("steady-routines-custom", { morning: [], afternoon: [], late: [] }),
+    routines_custom: readJSON("steady-routines-custom", { morning: [], afternoon: [], late: [], meals: [] }),
     routines_next_id: readJSON("steady-routines-nextid", 100),
     onboarded: readJSON("steady-onboarded", false),
     important_dates: readJSON("steady-important-dates", []),
@@ -108,25 +113,39 @@ async function refreshAndRetry<T>(attempt: () => PromiseLike<{ data: T; error: u
   return attempt();
 }
 
-export async function pushLocalToRemote(userId: string): Promise<void> {
+export async function pushLocalToRemote(userId: string): Promise<SyncResult<void>> {
   const row = collectLocalRow();
+  const lastSyncedAt = getLastSyncedAt();
+
+  // Each account is stored as one full-row snapshot. Refuse to overwrite a snapshot
+  // that another device has changed since this device last pulled or pushed it.
+  if (lastSyncedAt) {
+    const remote = await refreshAndRetry(() =>
+      supabase.from("steady_user_data").select("updated_at").eq("user_id", userId).maybeSingle(),
+    );
+    if (remote.error) return { ok: false, reason: "request-failed" };
+    if (remote.data?.updated_at && new Date(remote.data.updated_at).getTime() > new Date(lastSyncedAt).getTime()) {
+      return { ok: false, reason: "remote-newer" };
+    }
+  }
+
   const updatedAt = new Date().toISOString();
   const { error } = await refreshAndRetry(() =>
     supabase.from("steady_user_data").upsert({ user_id: userId, ...row, updated_at: updatedAt }),
   );
-  // Record what our own push just made the server's timestamp — so a pull shortly after
-  // (e.g. this same tab regaining focus) doesn't mistake our own change for a newer one
-  // written elsewhere and reload for nothing.
-  if (!error) setLastSyncedAt(updatedAt);
+  if (error) return { ok: false, reason: "request-failed" };
+  setLastSyncedAt(updatedAt);
+  return { ok: true, value: undefined };
 }
 
-export async function pullRemoteToLocal(userId: string): Promise<boolean> {
+export async function pullRemoteToLocal(userId: string): Promise<SyncResult<boolean>> {
   const { data, error } = await refreshAndRetry(() =>
     supabase.from("steady_user_data").select("*").eq("user_id", userId).maybeSingle(),
   );
-  if (error || !data) return false;
+  if (error) return { ok: false, reason: "request-failed" };
+  if (!data) return { ok: true, value: false };
   const row = data as SteadyUserDataRow;
   applyRowToLocal(row);
   if (row.updated_at) setLastSyncedAt(row.updated_at);
-  return true;
+  return { ok: true, value: true };
 }

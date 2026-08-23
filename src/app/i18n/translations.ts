@@ -64,7 +64,8 @@ const en = {
     emailInUse: "An account with this email already exists.",
     invalidCredentials: "Incorrect email or password.",
     genericError: "Something went wrong. Please try again.",
-    localDataNote: "Your data is stored locally on this device. Nothing is sent to any server.",
+    confirmEmail: "Check your email to confirm the account, then come back and log in.",
+    localDataNote: "Guest data stays on this device. Account data is securely synced so it can follow you between devices.",
   },
 
   account: {
@@ -330,6 +331,8 @@ const en = {
     notesNudgeButton: "Open 'Reflect'",
     notesNudgeDismiss: "Dismiss",
     syncingData: "Loading your data…",
+    syncError: "Your latest changes could not be saved. Check your connection or sign in again.",
+    syncConflict: "Newer account data exists on another device. Sign out and back in here before making more changes.",
     nowNext: {
       nowLabel: "Right now",
       nextLabel: "Up next",
@@ -1049,7 +1052,8 @@ const da: typeof en = {
     emailInUse: "Der findes allerede en konto med denne e-mail.",
     invalidCredentials: "Forkert e-mail eller adgangskode.",
     genericError: "Noget gik galt. Prøv igen.",
-    localDataNote: "Dine data gemmes lokalt på denne enhed. Intet sendes til nogen server.",
+    confirmEmail: "Tjek din e-mail og bekræft kontoen. Vend derefter tilbage og log ind.",
+    localDataNote: "Gæstedata bliver på denne enhed. Kontodata synkroniseres sikkert, så de kan følge dig mellem enheder.",
   },
 
   account: {
@@ -1317,6 +1321,8 @@ const da: typeof en = {
     notesNudgeButton: "Åbn 'Refleksion'",
     notesNudgeDismiss: "Afvis",
     syncingData: "Indlæser dine data…",
+    syncError: "Dine seneste ændringer kunne ikke gemmes. Tjek forbindelsen, eller log ind igen.",
+    syncConflict: "Der findes nyere kontodata på en anden enhed. Log ud og ind igen her, før du laver flere ændringer.",
     nowNext: {
       nowLabel: "Lige nu",
       nextLabel: "Det næste",

@@ -85,11 +85,11 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
         setSignUpError(error.message === "User already registered" ? t.auth.emailInUse : error.message);
         return;
       }
-      if (!data.user) {
-        setSignUpError(t.auth.genericError);
+      if (!data.user || !data.session) {
+        setSignUpError(t.auth.confirmEmail);
         return;
       }
-      onRegister?.(signUpEmail.toLowerCase(), data.user.id);
+      onRegister?.(data.session.user.email ?? signUpEmail.toLowerCase(), data.session.user.id);
       finish();
     } finally {
       setSigningUp(false);

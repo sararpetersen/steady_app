@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 import { MotionConfig } from "motion/react";
 import { MoodCheck } from "./components/MoodCheck";
 import { TaskList, type Task, isTaskScheduledToday } from "./components/TaskList";
@@ -19,7 +20,7 @@ import { FeedbackForm } from "./components/FeedbackForm";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useToday } from "./hooks/useToday";
 import { supabase } from "./lib/supabaseClient";
-import { pushLocalToRemote, pullRemoteToLocal } from "./lib/sync";
+import { pushLocalToRemote, pullRemoteToLocal, type SyncFailureReason } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
@@ -70,6 +71,8 @@ function getHabitGrowthStageKey(total: number): LifetimeGrowthStageKey {
 
 export default function App() {
   const [authState, setAuthState] = useLocalStorage<AuthState | null>("steady-auth-state", null);
+  const [authReady, setAuthReady] = useState(false);
+  const [syncIssue, setSyncIssue] = useState<SyncFailureReason | null>(null);
   const [forceAuth, setForceAuth] = useState(() => new URLSearchParams(window.location.search).has("start"));
   const [onboarded, setOnboarded] = useLocalStorage("steady-onboarded", false);
   const [activeTab, setActiveTab] = useLocalStorage("steady-active-tab", "overview");
@@ -102,6 +105,47 @@ export default function App() {
     if (!authState || authState.isGuest || !authState.userId) return false;
     return !sessionStorage.getItem(`steady-pulled-${authState.userId}`);
   });
+
+  // Supabase owns the real session. The local auth state only mirrors it for UI copy and
+  // guest mode, so an expired or revoked session cannot leave the app pretending to sync.
+  useEffect(() => {
+    let active = true;
+    const applySession = (session: Session | null) => {
+      if (!active) return;
+      if (session?.user) {
+        setAuthState({
+          email: session.user.email ?? "",
+          isGuest: false,
+          userId: session.user.id,
+        });
+      } else {
+        setAuthState((current) => (current?.isGuest ? current : null));
+        setSyncingRemote(false);
+      }
+    };
+
+    void supabase.auth.getSession().then(({ data, error }) => {
+      if (!active) return;
+      applySession(error ? null : data.session);
+      setAuthReady(true);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      applySession(session);
+      setAuthReady(true);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [setAuthState]);
+
+  const pushAndReport = async (userId: string) => {
+    const result = await pushLocalToRemote(userId);
+    setSyncIssue(result.ok ? null : result.reason);
+    return result.ok;
+  };
 
   const today = useToday();
 
@@ -320,11 +364,16 @@ export default function App() {
     }
   }, [profile.a11y]);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      setSyncIssue("request-failed");
+      return;
+    }
     setSettingsOpen(false);
     setActiveTab("overview");
     setAuthState(null);
-    supabase.auth.signOut();
+    setSyncIssue(null);
   };
 
   const closeSettings = () => {
@@ -347,8 +396,8 @@ export default function App() {
   // reload — guarded per-session so we don't loop — to make every useLocalStorage-backed
   // field (tasks, profile, onboarded, ...) pick up the newly synced values.
   useEffect(() => {
-    if (!authState || authState.isGuest || !authState.userId) {
-      setSyncingRemote(false);
+    if (!authReady || !authState || authState.isGuest || !authState.userId) {
+      if (authReady) setSyncingRemote(false);
       return;
     }
     const userId = authState.userId;
@@ -357,7 +406,7 @@ export default function App() {
       if (justConvertedRef.current) {
         justConvertedRef.current = false;
         setSyncingRemote(false);
-        await pushLocalToRemote(userId);
+        await pushAndReport(userId);
         return;
       }
       const syncedFlag = `steady-pulled-${userId}`;
@@ -367,20 +416,26 @@ export default function App() {
       }
       const pulled = await pullRemoteToLocal(userId);
       if (cancelled) return;
+      if (!pulled.ok) {
+        setSyncIssue(pulled.reason);
+        setSyncingRemote(false);
+        return;
+      }
+      setSyncIssue(null);
       sessionStorage.setItem(syncedFlag, "1");
-      if (pulled) {
+      if (pulled.value) {
         window.location.reload();
         return; // stay in the syncing state — the reload takes over from here
       }
-      // No remote row yet for this account — push current local state up.
-      await pushLocalToRemote(userId);
+      // A successful pull found no row, so it is safe to create one from local data.
+      await pushAndReport(userId);
       if (!cancelled) setSyncingRemote(false);
     })();
     return () => {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authState?.userId]);
+  }, [authReady, authState?.userId]);
 
   // Ongoing sync: debounce-push whenever tracked top-level state changes (tasks, profile, etc.).
   // Deliberately NOT keyed on `activeTab` or `today`: neither is synced data (activeTab isn't
@@ -390,14 +445,14 @@ export default function App() {
   // navigation was silently re-clobbering fresher changes just pushed from another device
   // (the actual cause of "my changes don't show up on the other device").
   useEffect(() => {
-    if (!authState || authState.isGuest || !authState.userId) return;
+    if (!authReady || !authState || authState.isGuest || !authState.userId) return;
     const userId = authState.userId;
     const timeout = setTimeout(() => {
-      pushLocalToRemote(userId);
+      void pushAndReport(userId);
     }, 1500);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authState?.userId, tasks, nextId, tasksDate, rawProfile, profilePhoto, onboarded]);
+  }, [authReady, authState?.userId, tasks, nextId, tasksDate, rawProfile, profilePhoto, onboarded]);
 
   // Habits/notes/routines are written directly to localStorage by their own tabs rather
   // than through top-level state, so also push periodically and when the tab loses focus
@@ -410,12 +465,12 @@ export default function App() {
   // in ways that were more disruptive than useful, so this device now only ever pushes its
   // own changes up; it picks up other devices' changes on next sign-in, not continuously.
   useEffect(() => {
-    if (!authState || authState.isGuest || !authState.userId) return;
+    if (!authReady || !authState || authState.isGuest || !authState.userId) return;
     const userId = authState.userId;
     const interval = setInterval(() => {
-      pushLocalToRemote(userId);
+      void pushAndReport(userId);
     }, 30000);
-    const onHide = () => pushLocalToRemote(userId);
+    const onHide = () => { void pushAndReport(userId); };
     const onVisibilityChange = () => {
       if (document.visibilityState === "hidden") onHide();
     };
@@ -426,7 +481,7 @@ export default function App() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("beforeunload", onHide);
     };
-  }, [authState?.userId, authState?.isGuest]);
+  }, [authReady, authState?.userId, authState?.isGuest]);
 
   const clearAllData = () => {
     setTasks([]);
@@ -451,6 +506,20 @@ export default function App() {
     clearAllData();
     setOnboarded(true);
   };
+
+  if (!authReady) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        className="min-h-screen flex flex-col items-center justify-center gap-3"
+        style={{ backgroundColor: "var(--background)" }}
+      >
+        <SteadyWordmark height={28} className="opacity-70" aria-hidden="true" />
+        <span className="text-muted-foreground" style={{ fontSize: "0.85rem" }}>{t.overview.syncingData}</span>
+      </div>
+    );
+  }
 
   if (!authState || forceAuth) {
     return (
@@ -825,6 +894,15 @@ export default function App() {
             <h1 className="sr-only">
               {APP_NAME} – {settingsOpen ? t.settings.title : TABS.find((tab) => tab.key === activeTab)?.label ?? t.nav.profile}
             </h1>
+            {syncIssue && (
+              <div
+                role="alert"
+                className="mb-4 rounded-2xl border border-border px-4 py-3"
+                style={{ backgroundColor: "var(--destructive-bg)", color: "var(--destructive)", fontSize: "0.88rem", fontWeight: 600 }}
+              >
+                {syncIssue === "remote-newer" ? t.overview.syncConflict : t.overview.syncError}
+              </div>
+            )}
             {settingsOpen ? (
               <SettingsPage
                 settings={profile.a11y}

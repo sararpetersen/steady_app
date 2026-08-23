@@ -217,8 +217,8 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
     if (signUpPw !== signUpConfirm) { setSignUpError(a.passwordsNoMatch); return; }
     const { data, error } = await supabase.auth.signUp({ email: signUpEmail.toLowerCase(), password: signUpPw });
     if (error) { setSignUpError(error.message === "User already registered" ? a.emailInUse : error.message); return; }
-    if (!data.user) { setSignUpError(a.emailRequired); return; }
-    onAuthUpdate(signUpEmail.toLowerCase(), data.user.id, true);
+    if (!data.user || !data.session) { setSignUpError(t.auth.confirmEmail); return; }
+    onAuthUpdate(data.session.user.email ?? signUpEmail.toLowerCase(), data.session.user.id, true);
   };
 
   if (isGuest) {

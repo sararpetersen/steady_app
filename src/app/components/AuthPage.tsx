@@ -49,8 +49,8 @@ export function AuthPage({ onAuth }: Props) {
           setError(signUpError.message === "User already registered" ? t.emailInUse : signUpError.message);
           return;
         }
-        if (!data.user) { setError(t.invalidCredentials); return; }
-        onAuth({ email: email.toLowerCase(), isGuest: false, userId: data.user.id }, true);
+        if (!data.user || !data.session) { setError(t.confirmEmail); return; }
+        onAuth({ email: data.session.user.email ?? email.toLowerCase(), isGuest: false, userId: data.session.user.id }, true);
       } else {
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
           email: email.toLowerCase(),

@@ -370,6 +370,11 @@ export default function App() {
       setSyncIssue("request-failed");
       return;
     }
+    // The pull-once-per-session guard below is keyed on this flag, not on auth state — without
+    // clearing it here, signing back in (in the same tab) would skip re-pulling entirely and
+    // leave a "remote-newer" conflict banner stuck showing forever, since only a fresh pull
+    // updates the local last-synced-at far enough to resolve it.
+    if (authState?.userId) sessionStorage.removeItem(`steady-pulled-${authState.userId}`);
     setSettingsOpen(false);
     setActiveTab("overview");
     setAuthState(null);

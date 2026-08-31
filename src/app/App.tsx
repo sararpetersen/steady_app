@@ -450,14 +450,20 @@ export default function App() {
   // navigation was silently re-clobbering fresher changes just pushed from another device
   // (the actual cause of "my changes don't show up on the other device").
   useEffect(() => {
-    if (!authReady || !authState || authState.isGuest || !authState.userId) return;
+    // Guards against racing the initial pull above: on a fresh launch this fires 1.5s after
+    // mount regardless of whether that pull (which can easily take longer, especially on a
+    // cold connection right after a browser restart) has finished reconciling last-synced-at.
+    // Pushing early meant comparing against a stale marker and misreading this device's own
+    // not-yet-caught-up state as a conflict from another device — the exact false "Newer
+    // account data" banner this was causing on every Chrome relaunch.
+    if (!authReady || !authState || authState.isGuest || !authState.userId || syncingRemote) return;
     const userId = authState.userId;
     const timeout = setTimeout(() => {
       void pushAndReport(userId);
     }, 1500);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authReady, authState?.userId, tasks, nextId, tasksDate, rawProfile, profilePhoto, onboarded]);
+  }, [authReady, authState?.userId, syncingRemote, tasks, nextId, tasksDate, rawProfile, profilePhoto, onboarded]);
 
   // Habits/notes/routines are written directly to localStorage by their own tabs rather
   // than through top-level state, so also push periodically and when the tab loses focus
@@ -470,7 +476,9 @@ export default function App() {
   // in ways that were more disruptive than useful, so this device now only ever pushes its
   // own changes up; it picks up other devices' changes on next sign-in, not continuously.
   useEffect(() => {
-    if (!authReady || !authState || authState.isGuest || !authState.userId) return;
+    // Same syncingRemote guard as the debounced-push effect above — a push here before the
+    // initial pull has landed would compare against a still-stale last-synced-at marker.
+    if (!authReady || !authState || authState.isGuest || !authState.userId || syncingRemote) return;
     const userId = authState.userId;
     const interval = setInterval(() => {
       void pushAndReport(userId);
@@ -486,7 +494,7 @@ export default function App() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("beforeunload", onHide);
     };
-  }, [authReady, authState?.userId, authState?.isGuest]);
+  }, [authReady, authState?.userId, authState?.isGuest, syncingRemote]);
 
   const clearAllData = () => {
     setTasks([]);

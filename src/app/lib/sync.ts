@@ -44,7 +44,7 @@ export type SyncResult<T> =
   | { ok: true; value: T }
   | { ok: false; reason: SyncFailureReason };
 
-function getLastSyncedAt(): string | null {
+export function getLastSyncedAt(): string | null {
   return readJSON<string | null>(LAST_SYNCED_KEY, null);
 }
 

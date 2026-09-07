@@ -20,7 +20,7 @@ import { FeedbackForm } from "./components/FeedbackForm";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useToday } from "./hooks/useToday";
 import { supabase } from "./lib/supabaseClient";
-import { pushLocalToRemote, pullRemoteToLocal, type SyncFailureReason } from "./lib/sync";
+import { pushLocalToRemote, pullRemoteToLocal, getLastSyncedAt, type SyncFailureReason } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
@@ -101,10 +101,19 @@ export default function App() {
   // hold off on the `!onboarded` check below — otherwise a real returning user briefly flashes
   // onto the Onboarding screen (this device's local "onboarded" is still its stale/default
   // value) before the pull finishes and reloads the page with their actual synced data.
-  const [syncingRemote, setSyncingRemote] = useState(() => {
-    if (!authState || authState.isGuest || !authState.userId) return false;
-    return !sessionStorage.getItem(`steady-pulled-${authState.userId}`);
-  });
+  //
+  // This used to skip re-pulling once a sessionStorage flag was set, to pull only once per
+  // tab. But sessionStorage survives Chrome's crash/update-relaunch tab restore (by design —
+  // that's what lets a restored tab pick back up where it left off), so a device that closed
+  // mid-push (see the beforeunload handler below) came back from a restart with the flag
+  // already set, skipped the very pull that would have caught it up, and permanently
+  // misread its own unconfirmed last save as a conflict from another device. Every real page
+  // load now always attempts a pull — cheap and safe, since the reload after it (further
+  // down) is now gated on whether the pull actually taught us anything new, not on whether
+  // we've pulled before.
+  const [syncingRemote, setSyncingRemote] = useState(
+    () => !!authState && !authState.isGuest && !!authState.userId,
+  );
 
   // Supabase owns the real session. The local auth state only mirrors it for UI copy and
   // guest mode, so an expired or revoked session cannot leave the app pretending to sync.
@@ -370,11 +379,6 @@ export default function App() {
       setSyncIssue("request-failed");
       return;
     }
-    // The pull-once-per-session guard below is keyed on this flag, not on auth state — without
-    // clearing it here, signing back in (in the same tab) would skip re-pulling entirely and
-    // leave a "remote-newer" conflict banner stuck showing forever, since only a fresh pull
-    // updates the local last-synced-at far enough to resolve it.
-    if (authState?.userId) sessionStorage.removeItem(`steady-pulled-${authState.userId}`);
     setSettingsOpen(false);
     setActiveTab("overview");
     setAuthState(null);
@@ -414,11 +418,7 @@ export default function App() {
         await pushAndReport(userId);
         return;
       }
-      const syncedFlag = `steady-pulled-${userId}`;
-      if (sessionStorage.getItem(syncedFlag)) {
-        setSyncingRemote(false);
-        return;
-      }
+      const syncedAtBeforePull = getLastSyncedAt();
       const pulled = await pullRemoteToLocal(userId);
       if (cancelled) return;
       if (!pulled.ok) {
@@ -427,14 +427,20 @@ export default function App() {
         return;
       }
       setSyncIssue(null);
-      sessionStorage.setItem(syncedFlag, "1");
-      if (pulled.value) {
+      if (!pulled.value) {
+        // A successful pull found no row, so it is safe to create one from local data.
+        await pushAndReport(userId);
+        if (!cancelled) setSyncingRemote(false);
+        return;
+      }
+      // Only reload if the pull actually changed what's stored locally — otherwise every
+      // fresh page load (now that it always pulls) would reload itself forever, since a
+      // found row always used to mean "reload," whether or not it was already what we had.
+      if (getLastSyncedAt() !== syncedAtBeforePull) {
         window.location.reload();
         return; // stay in the syncing state — the reload takes over from here
       }
-      // A successful pull found no row, so it is safe to create one from local data.
-      await pushAndReport(userId);
-      if (!cancelled) setSyncingRemote(false);
+      setSyncingRemote(false);
     })();
     return () => {
       cancelled = true;
@@ -541,7 +547,7 @@ export default function App() {
           setSettingsOpen(false);
           if (justSignedUp) justConvertedRef.current = true;
           if (!s.isGuest && s.userId && !justSignedUp) {
-            setSyncingRemote(!sessionStorage.getItem(`steady-pulled-${s.userId}`));
+            setSyncingRemote(true);
           }
           setAuthState(s);
           if (forceAuth) {

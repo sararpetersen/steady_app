@@ -338,6 +338,10 @@ const en = {
       nextLabel: "Up next",
       allDone: "Nothing left on your routines for now – however you spend this moment is okay.",
     },
+    mealSnapshot: {
+      heading: "What to eat right now",
+      seeGuide: "See full Meal Guide",
+    },
   },
 
   supportTips: {
@@ -1297,6 +1301,10 @@ const da: typeof en = {
       nowLabel: "Lige nu",
       nextLabel: "Det næste",
       allDone: "Intet tilbage på dine rutiner lige nu – hvordan end du bruger dette øjeblik, er okay.",
+    },
+    mealSnapshot: {
+      heading: "Hvad du kan spise lige nu",
+      seeGuide: "Se hele madguiden",
     },
   },
 

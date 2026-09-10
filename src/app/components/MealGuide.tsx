@@ -12,7 +12,7 @@ interface MealItem {
   text: string;
 }
 
-interface CategoryItems {
+export interface CategoryItems {
   green: MealItem[];
   yellow: MealItem[];
   red: MealItem[];
@@ -28,7 +28,7 @@ interface CategoryItems {
 // (not just on drop), so an id derived from the item's current index would change on every
 // one of those in-flight updates, remounting the dragged row's DOM node mid-gesture and
 // killing the drag. A stable id (same pattern as Emergency Stock's items) avoids that.
-function seedItems(t: T): CategoryItems[] {
+export function seedItems(t: T): CategoryItems[] {
   let id = 0;
   return t.mealGuide.categories.map((c) => ({
     green: c.green.map((text) => ({ id: id++, text })),

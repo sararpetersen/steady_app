@@ -1,15 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLang } from "../i18n/LangContext";
 import { Timer, CalendarHeart, ChevronLeft, ChevronRight, UtensilsCrossed } from "lucide-react";
 import { FocusTimer } from "./FocusTimer";
 import { ImportantDates } from "./ImportantDates";
 import { MealGuide } from "./MealGuide";
 
-type MoreSection = "focus" | "dates" | "mealGuide";
+export type MoreSection = "focus" | "dates" | "mealGuide";
 
-export function MorePage() {
+interface Props {
+  initialSection?: MoreSection | null;
+  /** Called once right after `initialSection` is consumed, so the caller can clear it —
+   * otherwise navigating away and back to "More" through the tab bar (not the original
+   * shortcut) would keep reopening the same section instead of showing the menu. */
+  onInitialSectionConsumed?: () => void;
+}
+
+export function MorePage({ initialSection = null, onInitialSectionConsumed }: Props) {
   const t = useLang();
-  const [section, setSection] = useState<MoreSection | null>(null);
+  const [section, setSection] = useState<MoreSection | null>(initialSection);
+
+  useEffect(() => {
+    if (initialSection) onInitialSectionConsumed?.();
+    // Only ever meant to run once, right after mount — re-running on a later prop change
+    // would defeat the one-shot handoff this exists for.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (section === "focus") return <BackHeader onBack={() => setSection(null)}><FocusTimer /></BackHeader>;
   if (section === "dates") return <BackHeader onBack={() => setSection(null)}><ImportantDates /></BackHeader>;

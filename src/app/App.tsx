@@ -9,7 +9,8 @@ import { UpcomingDateReminder } from "./components/UpcomingDateReminder";
 import { HabitTracker, type Habit } from "./components/HabitTracker";
 import { DailyNote } from "./components/DailyNote";
 import { NotesNudge } from "./components/NotesNudge";
-import { MorePage } from "./components/MorePage";
+import { MealSnapshot } from "./components/MealSnapshot";
+import { MorePage, type MoreSection } from "./components/MorePage";
 import { Profile } from "./components/Profile";
 import { DEFAULT_PROFILE, type ProfileData } from "./components/profileTypes";
 import { PersonalizedTip } from "./components/PersonalizedTip";
@@ -78,6 +79,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useLocalStorage("steady-active-tab", "overview");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [moreSection, setMoreSection] = useState<MoreSection | null>(null);
   const [rawProfile, setProfile] = useLocalStorage<ProfileData>("steady-profile", DEFAULT_PROFILE);
   const [profilePhoto, setProfilePhoto] = useLocalStorage<string | null>("steady-profile-photo", null);
 
@@ -1005,6 +1007,12 @@ export default function App() {
                       onDismiss={() => setPersonalizeDismissed(true)}
                     />
                     <NotesNudge onOpenNotes={() => setActiveTab("note")} suppressed={showPersonalizeNudge} />
+                    <MealSnapshot
+                      onOpenGuide={() => {
+                        setMoreSection("mealGuide");
+                        setActiveTab("more");
+                      }}
+                    />
                     <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
                   </>
                 )}
@@ -1012,7 +1020,9 @@ export default function App() {
                 {activeTab === "routines" && <Routines tasks={tasks} setTasks={setTasks} taskNextId={nextId} setTaskNextId={setNextId} />}
                 {activeTab === "habits" && <HabitTracker />}
                 {activeTab === "note" && <DailyNote />}
-                {activeTab === "more" && <MorePage />}
+                {activeTab === "more" && (
+                  <MorePage initialSection={moreSection} onInitialSectionConsumed={() => setMoreSection(null)} />
+                )}
                 {activeTab === "profile" && <Profile profile={profile} onChange={setProfile} photo={profilePhoto} onPhotoChange={setProfilePhoto} />}
               </div>
             )}

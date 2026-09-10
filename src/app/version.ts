@@ -1,2 +1,2 @@
 export const APP_NAME = "Steady";
-export const APP_VERSION = "0.8.4";
+export const APP_VERSION = "0.8.5";

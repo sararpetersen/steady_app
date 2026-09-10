@@ -20,12 +20,12 @@ const CATEGORY_EMOJIS = ["🥤", "🍳", "🍽️", "🍗", "🍎"];
 const MEAL_CATEGORY_INDICES = [1, 2];
 const DRINKS_CATEGORY_INDEX = 0;
 
-// Chip/badge backgrounds are a fixed light tint (rather than the theme-flipping var(--card))
-// with fixed dark text — var(--card) is warm neutral in both themes, which visually clashed
-// against --blue-bg's cool navy in dark mode specifically, reading as a muddy mismatch even
-// though the contrast math was fine. A light chip with dark text sits cleanly on top of the
-// blue container regardless of how dark or light that container itself currently is.
-const CHIP_BG = "rgba(255,255,255,0.55)";
+// Chip/badge backgrounds are a fixed, solid near-white (rather than the theme-flipping
+// var(--card)) with fixed dark text — var(--card) is warm neutral in both themes, which
+// visually clashed against --blue-bg's cool navy in dark mode specifically, reading as a
+// muddy mismatch even though the contrast math was fine. A translucent white overlay still
+// picked up too much of the blue behind it to read as genuinely light, so this is solid.
+const CHIP_BG = "#ffffff";
 const CHIP_TEXT = "#2d2a26";
 
 // A permanent, non-dismissible fixture (unlike NotesNudge/PersonalizedTip) — the whole point
@@ -50,7 +50,7 @@ export function MealSnapshot({ onOpenGuide }: Props) {
   if (!category || mainItems.length === 0) return null;
 
   return (
-    <div className="rounded-2xl p-4 border" style={{ backgroundColor: "var(--blue-bg)", borderColor: "var(--blue-text)" }}>
+    <div className="rounded-2xl p-4 border border-border" style={{ backgroundColor: "var(--blue-bg)" }}>
       <div className="flex items-center gap-3 mb-2.5">
         <div
           className="rounded-full flex items-center justify-center flex-shrink-0"

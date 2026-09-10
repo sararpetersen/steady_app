@@ -43,7 +43,6 @@ const EXPORT_KEYS = [
   "steady-focus-sessions",
   "steady-meal-guide-items-v3",
   "steady-meal-guide-next-id-v3",
-  "steady-stock-locations-v2",
 ];
 
 function SectionHeading({ children }: { children: React.ReactNode }) {

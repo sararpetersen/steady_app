@@ -517,7 +517,6 @@ export default function App() {
     localStorage.setItem("steady-focus-sessions", JSON.stringify({}));
     localStorage.setItem("steady-meal-guide-items-v3", JSON.stringify([]));
     localStorage.setItem("steady-meal-guide-next-id-v3", JSON.stringify(0));
-    localStorage.setItem("steady-stock-locations-v2", JSON.stringify([]));
   };
 
   const handleOnboardingComplete = (newProfile: ProfileData) => {

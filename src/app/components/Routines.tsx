@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree, ListChecks, Info, UtensilsCrossed } from "lucide-react";
+import { ChevronDown, ChevronUp, Sun, Sunset, MoonStar, Plus, X, CheckCircle2, Check, Pencil, Link2, ListTree, ListChecks, Info } from "lucide-react";
 import { Reorder } from "motion/react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useToday } from "../hooks/useToday";
@@ -20,21 +20,19 @@ import {
   type TenHPrep,
 } from "./TaskList";
 
-export const SECTION_KEYS = ["morning", "afternoon", "late", "meals"] as const;
+export const SECTION_KEYS = ["morning", "afternoon", "late"] as const;
 export type SectionKey = typeof SECTION_KEYS[number];
 
 export const SECTION_ICONS: Record<SectionKey, React.ReactNode> = {
   morning: <Sun size={20} />,
   afternoon: <Sunset size={20} />,
   late: <MoonStar size={20} />,
-  meals: <UtensilsCrossed size={20} />,
 };
 
 const SECTION_COLOR_VARS: Record<SectionKey, string> = {
   morning: "var(--morning-bg)",
   afternoon: "var(--afternoon-bg)",
   late: "var(--late-bg)",
-  meals: "var(--green-bg)",
 };
 
 export interface SubTask {
@@ -318,7 +316,7 @@ function SectionPanel({
         {linked && <span className="sr-only">{t.routines.linkedToTasks}</span>}
         {editingId !== id && (
           <div className="flex items-center gap-0.5 flex-shrink-0">
-            {sectionKey !== "meals" && subtasks.length > 0 && (
+            {subtasks.length > 0 && (
               <IconButton
                 size="pill"
                 tone="default"
@@ -365,7 +363,7 @@ function SectionPanel({
         {/* flexBasis 100% forces this onto its own row within the flex-wrap parent; the
             top border keeps it from visually blending into the save/cancel row above,
             which belongs to the step itself rather than to sub-steps. */}
-        {editingId === id && sectionKey !== "meals" && (
+        {editingId === id && (
           <div className="space-y-1.5 pb-1.5 pt-2 mt-1" style={{ flexBasis: "100%", borderTop: "1px solid var(--border)" }}>
             <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--muted-foreground)" }}>
               {t.routines.subtasksLabel}
@@ -427,7 +425,7 @@ function SectionPanel({
             </div>
           </div>
         )}
-        {editingId !== id && sectionKey !== "meals" && expanded && subtasks.length > 0 && (
+        {editingId !== id && expanded && subtasks.length > 0 && (
           <div className="space-y-1.5 pl-9 pb-1.5" style={{ flexBasis: "100%" }}>
             {subtasks.map((sub) => (
               <div key={sub.id} className="flex items-center gap-2">
@@ -554,19 +552,17 @@ function SectionPanel({
                   <X size={16} />
                 </button>
               </div>
-              {sectionKey !== "meals" && (
-                <label className="flex items-center gap-2 pl-1" style={{ fontSize: "0.85rem", color: "var(--muted-foreground)" }}>
-                  <input
-                    type="checkbox"
-                    checked={linkToTasks}
-                    onChange={(e) => setLinkToTasks(e.target.checked)}
-                    className="rounded"
-                    style={{ width: 16, height: 16, accentColor: "var(--primary)" }}
-                  />
-                  {t.routines.alsoAddToTasks}
-                </label>
-              )}
-              {sectionKey !== "meals" && linkToTasks && (
+              <label className="flex items-center gap-2 pl-1" style={{ fontSize: "0.85rem", color: "var(--muted-foreground)" }}>
+                <input
+                  type="checkbox"
+                  checked={linkToTasks}
+                  onChange={(e) => setLinkToTasks(e.target.checked)}
+                  className="rounded"
+                  style={{ width: 16, height: 16, accentColor: "var(--primary)" }}
+                />
+                {t.routines.alsoAddToTasks}
+              </label>
+              {linkToTasks && (
                 <div className="flex items-center gap-1.5 pl-1" role="group" aria-label={t.tasks.repeatButtonLabel}>
                   {(["daily", "weekly", "monthly"] as const).map((option) => (
                     <button
@@ -676,7 +672,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
   const [doneIds, setDoneIds] = useLocalStorage<number[]>("steady-routines-done", []);
   const [doneDate, setDoneDate] = useLocalStorage<string | null>("steady-routines-done-date", null);
   const [custom, setCustom] = useLocalStorage<CustomMap>("steady-routines-custom", {
-    morning: [], afternoon: [], late: [], meals: [],
+    morning: [], afternoon: [], late: [],
   });
   const [nextId, setNextId] = useLocalStorage<number>("steady-routines-nextid", CUSTOM_NEXT_ID_START);
   const today = useToday();
@@ -691,7 +687,7 @@ export function Routines({ tasks, setTasks, taskNextId, setTaskNextId }: Routine
       setDoneIds([]);
       setDoneDate(today);
       setCustom((prev) => {
-        const next: CustomMap = { morning: [], afternoon: [], late: [], meals: [] };
+        const next: CustomMap = { morning: [], afternoon: [], late: [] };
         for (const key of SECTION_KEYS) {
           next[key] = (prev[key] ?? []).map((item) =>
             item.subtasks ? { ...item, subtasks: item.subtasks.map((s) => ({ ...s, done: false })) } : item

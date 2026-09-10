@@ -33,7 +33,6 @@ interface SteadyUserDataRow {
   focus_sessions: unknown;
   meal_guide_items: unknown;
   meal_guide_next_id: number;
-  stock_locations: unknown;
   updated_at?: string;
 }
 
@@ -65,7 +64,7 @@ function collectLocalRow(): SteadyUserDataRow {
     notes_next_id: readJSON("steady-notes-nextid", 1),
     routines_done: readJSON("steady-routines-done", []),
     routines_done_date: readJSON<string | null>("steady-routines-done-date", null),
-    routines_custom: readJSON("steady-routines-custom", { morning: [], afternoon: [], late: [], meals: [] }),
+    routines_custom: readJSON("steady-routines-custom", { morning: [], afternoon: [], late: [] }),
     routines_next_id: readJSON("steady-routines-nextid", 100),
     onboarded: readJSON("steady-onboarded", false),
     important_dates: readJSON("steady-important-dates", []),
@@ -73,7 +72,6 @@ function collectLocalRow(): SteadyUserDataRow {
     focus_sessions: readJSON("steady-focus-sessions", {}),
     meal_guide_items: readJSON("steady-meal-guide-items-v3", []),
     meal_guide_next_id: readJSON("steady-meal-guide-next-id-v3", 0),
-    stock_locations: readJSON("steady-stock-locations-v2", []),
   };
 }
 
@@ -97,7 +95,6 @@ function applyRowToLocal(row: SteadyUserDataRow) {
   writeJSON("steady-focus-sessions", row.focus_sessions);
   writeJSON("steady-meal-guide-items-v3", row.meal_guide_items);
   writeJSON("steady-meal-guide-next-id-v3", row.meal_guide_next_id);
-  writeJSON("steady-stock-locations-v2", row.stock_locations);
 }
 
 // A mobile browser tab backgrounded for a while stops running Supabase's auto-refresh

@@ -505,7 +505,6 @@ const en = {
         time: "12:00 - 3:00 PM",
       },
       late: { label: "Evening", time: "6:00 - 10:00 PM" },
-      meals: { label: "Meals", time: "Try to eat 5-6 small meals a day" },
     },
     items: {
       1: "Wake up",
@@ -728,35 +727,6 @@ const en = {
         green: ["Crackers", "Nuts", "Fruit", "A yogurt cup", "A granola bar"],
         yellow: ["Cutting up fruit or veg"],
         red: ["Baking or making snacks from scratch"],
-      },
-    ],
-  },
-
-  stockChecklist: {
-    heading: "Emergency Stock",
-    description: "Keep a few easy options on hand for the days cooking feels impossible.",
-    resetLabel: "Uncheck all",
-    addItemPlaceholder: "Add item…",
-    addLocationPlaceholder: "New location name…",
-    addLocationButton: "Add location",
-    deleteLocationLabel: "Delete location",
-    locationNameLabel: "Location name",
-    locations: [
-      {
-        name: "Fridge",
-        items: ["Yogurt", "Eggs", "Cheese", "A pre-made meal"],
-      },
-      {
-        name: "Freezer",
-        items: ["Frozen ready meals", "Frozen fruit", "Frozen chicken or fish portions"],
-      },
-      {
-        name: "Pantry",
-        items: ["Instant noodles", "Canned soup", "Crackers", "Peanut butter"],
-      },
-      {
-        name: "On the go",
-        items: ["A granola bar", "A piece of fruit", "Trail mix", "An applesauce pouch"],
       },
     ],
   },
@@ -1496,7 +1466,6 @@ const da: typeof en = {
         time: "12:00 - 15:00",
       },
       late: { label: "Aften", time: "18:00 - 22:00" },
-      meals: { label: "Måltider", time: "Prøv at spise 5-6 små måltider om dagen" },
     },
     items: {
       1: "Vågn op",
@@ -1715,35 +1684,6 @@ const da: typeof en = {
         green: ["Kiks", "Nødder", "Frugt", "Et bæger yoghurt", "En müslibar"],
         yellow: ["At skære frugt eller grønt ud"],
         red: ["At bage eller lave snacks fra bunden"],
-      },
-    ],
-  },
-
-  stockChecklist: {
-    heading: "Nød-lageret",
-    description: "Hav altid nogle nemme muligheder klar til de dage, hvor madlavning føles umuligt.",
-    resetLabel: "Afmarker alle",
-    addItemPlaceholder: "Tilføj ting…",
-    addLocationPlaceholder: "Nyt stednavn…",
-    addLocationButton: "Tilføj sted",
-    deleteLocationLabel: "Slet sted",
-    locationNameLabel: "Stednavn",
-    locations: [
-      {
-        name: "Køleskab",
-        items: ["Yoghurt", "Æg", "Ost", "En færdiglavet ret"],
-      },
-      {
-        name: "Fryser",
-        items: ["Frosne færdigretter", "Frossen frugt", "Frosne kylling- eller fiskeportioner"],
-      },
-      {
-        name: "Skab",
-        items: ["Instant nudler", "Suppe på dåse", "Kiks", "Peanutbutter"],
-      },
-      {
-        name: "Tag-med",
-        items: ["En müslibar", "Et stykke frugt", "Studenterhavre", "En æblemos-pose"],
       },
     ],
   },

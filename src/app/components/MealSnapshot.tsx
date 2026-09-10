@@ -43,11 +43,14 @@ export function MealSnapshot({ onOpenGuide }: Props) {
   const mainIndex = MEAL_CATEGORY_INDICES[dayOfMonth % MEAL_CATEGORY_INDICES.length];
   const category = t.mealGuide.categories[mainIndex];
   const mainItems = itemsByCategory[mainIndex]?.green ?? [];
+  // A single dish, not the whole category — the category's list is a menu of alternatives
+  // (cereal OR yogurt OR toast), not something you'd eat all of in one sitting.
+  const dish = mainItems.length > 0 ? mainItems[dayOfMonth % mainItems.length] : null;
 
   const drinkItems = itemsByCategory[DRINKS_CATEGORY_INDEX]?.green ?? [];
   const drink = drinkItems.length > 0 ? drinkItems[dayOfMonth % drinkItems.length] : null;
 
-  if (!category || mainItems.length === 0) return null;
+  if (!category || !dish) return null;
 
   return (
     <div className="rounded-2xl p-4 border border-border" style={{ backgroundColor: "var(--blue-bg)" }}>
@@ -65,15 +68,12 @@ export function MealSnapshot({ onOpenGuide }: Props) {
         </div>
       </div>
       <div className="flex flex-wrap gap-1.5 mb-2.5">
-        {mainItems.map((item) => (
-          <span
-            key={item.id}
-            className="rounded-full px-2.5 py-1"
-            style={{ backgroundColor: CHIP_BG, color: CHIP_TEXT, fontSize: "0.8rem", fontWeight: 600 }}
-          >
-            {item.text}
-          </span>
-        ))}
+        <span
+          className="rounded-full px-2.5 py-1"
+          style={{ backgroundColor: CHIP_BG, color: CHIP_TEXT, fontSize: "0.8rem", fontWeight: 600 }}
+        >
+          {dish.text}
+        </span>
         {drink && (
           <span
             className="rounded-full px-2.5 py-1"

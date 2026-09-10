@@ -339,7 +339,7 @@ const en = {
       allDone: "Nothing left on your routines for now – however you spend this moment is okay.",
     },
     mealSnapshot: {
-      heading: "What to eat right now",
+      heading: "Today's meal idea",
       seeGuide: "See full 'Meal Guide'",
     },
   },
@@ -1303,7 +1303,7 @@ const da: typeof en = {
       allDone: "Intet tilbage på dine rutiner lige nu – hvordan end du bruger dette øjeblik, er okay.",
     },
     mealSnapshot: {
-      heading: "Hvad du kan spise lige nu",
+      heading: "Dagens madidé",
       seeGuide: "Se hele madguiden",
     },
   },

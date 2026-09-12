@@ -539,7 +539,7 @@ const en = {
     totalCompletionsSr: (n: number) => `${n} total completions`,
     growthLabel: "Your growth",
     growthCaption: (n: number) =>
-      n === 0 ? "Check off a habit below to start growing" : `${n} check-in${n === 1 ? "" : "s"} so far – keep going to keep growing!'`,
+      n === 0 ? "Check off a habit below to start growing" : `${n} check-in${n === 1 ? "" : "s"} so far – keep going to keep growing!`,
     emojiLabels: {
       "💧": "Water drop",
       "🚶": "Walking",

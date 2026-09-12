@@ -539,7 +539,7 @@ const en = {
     totalCompletionsSr: (n: number) => `${n} total completions`,
     growthLabel: "Your growth",
     growthCaption: (n: number) =>
-      n === 0 ? "Check off a habit below to start growing" : `${n} check-in${n === 1 ? "" : "s"} so far – same tree as on 'Overview'`,
+      n === 0 ? "Check off a habit below to start growing" : `${n} check-in${n === 1 ? "" : "s"} so far – keep going to keep growing!'`,
     emojiLabels: {
       "💧": "Water drop",
       "🚶": "Walking",
@@ -1512,7 +1512,7 @@ const da: typeof en = {
     totalCompletionsSr: (n: number) => `${n} gennemførelser i alt`,
     growthLabel: "Din vækst",
     growthCaption: (n: number) =>
-      n === 0 ? "Sæt kryds ved en vane herunder for at begynde at vokse" : `${n} kryds indtil videre – samme træ som på 'Overblik'`,
+      n === 0 ? "Sæt kryds ved en vane herunder for at begynde at vokse" : `${n} kryds indtil videre – fortsæt med at sætte kryds for at vokse mere!`,
     emojiLabels: {
       "💧": "Vanddråbe",
       "🚶": "Gåtur",

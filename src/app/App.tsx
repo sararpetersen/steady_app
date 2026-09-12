@@ -70,6 +70,47 @@ function getHabitGrowthStageKey(total: number): LifetimeGrowthStageKey {
   return "seed";
 }
 
+// One-time migration: Meal Guide's "Lunch & dinner" category was split into separate
+// "Lunch" and "Dinner" categories, so steady-meal-guide-items-v3 grew from 5 entries to 6
+// (Dinner inserted at index 3). Returns whether it actually changed anything, so callers
+// that also sync to a server know whether they need to push the fix up — a local-only fix
+// that never gets pushed is invisible: the next pull just re-fetches the still-old 5-entry
+// row from the server and clobbers the local fix right back (this shipped once already,
+// as a standalone reload-on-mount effect racing the pull effect — the pull nearly always
+// won, since it fetches over the network, so the fix never actually stuck for a synced
+// account).
+type MealItem = { id: number; text: string };
+type MealCategoryItems = { green: MealItem[]; yellow: MealItem[]; red: MealItem[] };
+function migrateMealGuideCategories(): boolean {
+  try {
+    const raw = localStorage.getItem("steady-meal-guide-items-v3");
+    if (!raw) return false;
+    const items = JSON.parse(raw) as MealCategoryItems[];
+    if (!Array.isArray(items) || items.length !== 5) return false;
+    const oldLunchAndDinner = items[2];
+    const nextIdRaw = localStorage.getItem("steady-meal-guide-next-id-v3");
+    let nextId = nextIdRaw ? (JSON.parse(nextIdRaw) as number) : 0;
+    const withFreshIds = (category: MealCategoryItems): MealCategoryItems => ({
+      green: category.green.map((it) => ({ ...it, id: nextId++ })),
+      yellow: category.yellow.map((it) => ({ ...it, id: nextId++ })),
+      red: category.red.map((it) => ({ ...it, id: nextId++ })),
+    });
+    const migrated = [
+      items[0],
+      items[1],
+      oldLunchAndDinner, // Lunch keeps the original items and ids
+      withFreshIds(oldLunchAndDinner), // Dinner gets a duplicate with fresh ids
+      items[3],
+      items[4],
+    ];
+    localStorage.setItem("steady-meal-guide-items-v3", JSON.stringify(migrated));
+    localStorage.setItem("steady-meal-guide-next-id-v3", JSON.stringify(nextId));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default function App() {
   const [authState, setAuthState] = useLocalStorage<AuthState | null>("steady-auth-state", null);
   const [authReady, setAuthReady] = useState(false);
@@ -258,41 +299,15 @@ export default function App() {
     }
   }, [today]);
 
-  // One-time migration: Meal Guide's "Lunch & dinner" category was split into separate
-  // "Lunch" and "Dinner" categories, so steady-meal-guide-items-v3 grew from 5 entries to 6
-  // (Dinner inserted at index 3). This has to run here, once, on raw localStorage before any
-  // component reads the key — not inside MealGuide itself, since the Home meal-snapshot card
-  // reads the same key and can render before MealGuide is ever opened, and both index into
-  // the array positionally. Reloads once, same as the sync pull flow, so every
-  // useLocalStorage-backed read of this key picks up the corrected shape.
+  // Runs the Meal Guide category migration (see migrateMealGuideCategories above) for
+  // guests and not-yet-logged-in devices, where there's no server copy that could pull the
+  // old shape right back — safe to just fix locally and reload. A logged-in account's local
+  // data is instead migrated inside the sync pull effect below, right before deciding
+  // whether to push, so the fix reaches the server before any pull can re-fetch the old
+  // shape and clobber it.
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("steady-meal-guide-items-v3");
-      if (!raw) return;
-      const items = JSON.parse(raw);
-      if (!Array.isArray(items) || items.length !== 5) return;
-      const oldLunchAndDinner = items[2];
-      const nextIdRaw = localStorage.getItem("steady-meal-guide-next-id-v3");
-      let nextId = nextIdRaw ? (JSON.parse(nextIdRaw) as number) : 0;
-      const withFreshIds = (category: { green: { id: number; text: string }[]; yellow: { id: number; text: string }[]; red: { id: number; text: string }[] }) => ({
-        green: category.green.map((it) => ({ ...it, id: nextId++ })),
-        yellow: category.yellow.map((it) => ({ ...it, id: nextId++ })),
-        red: category.red.map((it) => ({ ...it, id: nextId++ })),
-      });
-      const migrated = [
-        items[0],
-        items[1],
-        oldLunchAndDinner, // Lunch keeps the original items and ids
-        withFreshIds(oldLunchAndDinner), // Dinner gets a duplicate with fresh ids
-        items[3],
-        items[4],
-      ];
-      localStorage.setItem("steady-meal-guide-items-v3", JSON.stringify(migrated));
-      localStorage.setItem("steady-meal-guide-next-id-v3", JSON.stringify(nextId));
-      window.location.reload();
-    } catch {
-      /* ignore */
-    }
+    if (authState && !authState.isGuest && authState.userId) return;
+    if (migrateMealGuideCategories()) window.location.reload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -467,10 +482,22 @@ export default function App() {
         return;
       }
       setSyncIssue(null);
+      const migratedMealGuide = migrateMealGuideCategories();
       if (!pulled.value) {
         // A successful pull found no row, so it is safe to create one from local data.
         await pushAndReport(userId);
         if (!cancelled) setSyncingRemote(false);
+        return;
+      }
+      if (migratedMealGuide) {
+        // The data just pulled from the server still had Meal Guide's old 5-category
+        // shape. Push the fix back up immediately — a local-only fix otherwise only lives
+        // until the next pull re-fetches the still-old server copy and clobbers it right
+        // back, which is exactly what happened when this migration first shipped as a
+        // plain reload-on-mount effect racing this same pull (the pull, being a network
+        // request, consistently won).
+        await pushAndReport(userId);
+        window.location.reload();
         return;
       }
       // Only reload if the pull actually changed what's stored locally — otherwise every

@@ -45,12 +45,12 @@ export function PersonalizedTip({ support, sensory, onPersonalize, suppressNudge
       {tip && (
         <div
           className="rounded-2xl p-4 border border-border"
-          style={{ backgroundColor: "var(--purple-bg)" }}
+          style={{ backgroundColor: "var(--pink-bg)" }}
         >
-          <p style={{ fontWeight: 700, color: "var(--purple-text)", marginBottom: 4 }}>
+          <p style={{ fontWeight: 700, color: "var(--pink-text)", marginBottom: 4 }}>
             {t.overview.tipForYou}
           </p>
-          <p style={{ color: "var(--purple-text)", fontSize: "0.95rem", lineHeight: 1.6 }}>
+          <p style={{ color: "var(--pink-text)", fontSize: "0.95rem", lineHeight: 1.6 }}>
             {tip}
           </p>
         </div>

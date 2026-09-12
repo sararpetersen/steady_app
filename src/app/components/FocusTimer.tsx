@@ -61,7 +61,19 @@ export function FocusTimer() {
   const circumference = 2 * Math.PI * 52;
   const strokeDash = circumference * progress;
 
-  const companionMessage = progress > 0.66 ? t.focus.companion.early : progress > 0.33 ? t.focus.companion.mid : t.focus.companion.late;
+  // Autistic-flow research (Heasman et al., 2024) points to the exit from a focus/flow
+  // state — not the focus itself — as the hard part: an abrupt stop is jarring for a
+  // hyperfocused mind. A fixed one-minute heads-up (rather than a % of total, which would
+  // swing from ~4s on the shortest preset to several minutes on the longest) gives advance
+  // notice before the timer just ends, at a threshold every preset is long enough to reach.
+  const wrappingUp = running && remaining > 0 && remaining <= 60;
+  const companionMessage = wrappingUp
+    ? t.focus.companion.wrappingUp
+    : progress > 0.66
+    ? t.focus.companion.early
+    : progress > 0.33
+    ? t.focus.companion.mid
+    : t.focus.companion.late;
 
   return (
     <>
@@ -78,10 +90,24 @@ export function FocusTimer() {
           {running && (
             <span
               className="flex items-center gap-1.5 rounded-full px-3 py-1"
-              style={{ backgroundColor: "var(--green-bg)", color: "var(--green-text)", fontSize: "0.78rem", fontWeight: 700 }}
+              style={{
+                backgroundColor: wrappingUp ? "var(--yellow-bg)" : "var(--green-bg)",
+                color: wrappingUp ? "var(--yellow-text)" : "var(--green-text)",
+                fontSize: "0.78rem",
+                fontWeight: 700,
+                transition: "background-color 0.4s, color 0.4s",
+              }}
             >
-              <span style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: "var(--primary)", display: "inline-block" }} />
-              {t.focus.focusing}
+              <span
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: "50%",
+                  backgroundColor: wrappingUp ? "var(--yellow-text)" : "var(--primary)",
+                  display: "inline-block",
+                }}
+              />
+              {wrappingUp ? t.focus.wrappingUp : t.focus.focusing}
             </span>
           )}
         </div>
@@ -157,7 +183,7 @@ export function FocusTimer() {
           {running && (
             <div
               className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 w-full"
-              style={{ backgroundColor: "var(--green-bg)" }}
+              style={{ backgroundColor: wrappingUp ? "var(--yellow-bg)" : "var(--green-bg)", transition: "background-color 0.4s" }}
             >
               <motion.img
                 src="/sprout2.webp"
@@ -167,7 +193,9 @@ export function FocusTimer() {
                 animate={{ scale: [1, 1.08, 1] }}
                 transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
               />
-              <p style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--green-text)" }}>{companionMessage}</p>
+              <p style={{ fontSize: "0.85rem", fontWeight: 600, color: wrappingUp ? "var(--yellow-text)" : "var(--green-text)" }}>
+                {companionMessage}
+              </p>
             </div>
           )}
 

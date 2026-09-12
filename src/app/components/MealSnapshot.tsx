@@ -7,17 +7,17 @@ interface Props {
   onOpenGuide: () => void;
 }
 
-// Indexed to match t.mealGuide.categories (Drinks/Breakfast/Lunch & dinner/Protein/Snacks),
+// Indexed to match t.mealGuide.categories (Drinks/Breakfast/Lunch/Dinner/Protein/Snacks),
 // same positional-correspondence convention MealGuide.tsx itself uses for editable items —
 // these are purely decorative and don't need to survive a category being added/reordered.
-const CATEGORY_EMOJIS = ["🥤", "🍳", "🍽️", "🍗", "🍎"];
+const CATEGORY_EMOJIS = ["🥤", "🍳", "🥪", "🍲", "🍗", "🍎"];
 
-// Only Breakfast (1) and Lunch & dinner (2) are actually meal-shaped — featuring Drinks,
+// Only Breakfast (1), Lunch (2), and Dinner (3) are actually meal-shaped — featuring Drinks,
 // Protein, or Snacks on their own (as the first version did) made "Today's meal idea" read
 // as nonsense, since a drink or a protein source alone isn't something you'd call a meal.
 // Drinks (0) is instead paired in as a side, below, so the card still varies which of the
-// two feels like more than a single flat category list.
-const MEAL_CATEGORY_INDICES = [1, 2];
+// three feels like more than a single flat category list.
+const MEAL_CATEGORY_INDICES = [1, 2, 3];
 const DRINKS_CATEGORY_INDEX = 0;
 
 // Chip/badge backgrounds are a fixed, solid near-white (rather than the theme-flipping
@@ -32,7 +32,7 @@ const CHIP_TEXT = "#2d2a26";
 // is that "what to eat" should sit somewhere visible without having to remember to check it.
 // The category is picked from the day-of-month, not per mount: a card that visibly changes
 // its answer on every refresh reads as arbitrary noise rather than "today's idea," and with
-// 2 meal categories to alternate between (unlike PersonalizedTip's old date-based bug, where
+// 3 meal categories to alternate between (unlike PersonalizedTip's old date-based bug, where
 // a size-1 tip pool never changed) it still varies day to day.
 export function MealSnapshot({ onOpenGuide }: Props) {
   const t = useLang();

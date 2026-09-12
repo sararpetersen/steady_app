@@ -715,7 +715,13 @@ const en = {
         red: ["A full cooked breakfast"],
       },
       {
-        name: "Lunch & dinner",
+        name: "Lunch",
+        green: ["Frozen ready meal", "Sandwich", "Leftovers", "Instant noodles"],
+        yellow: ["Pasta with a jarred sauce", "Rice with a pre-cooked protein"],
+        red: ["A recipe with several ingredients or steps"],
+      },
+      {
+        name: "Dinner",
         green: ["Frozen ready meal", "Sandwich", "Leftovers", "Instant noodles"],
         yellow: ["Pasta with a jarred sauce", "Rice with a pre-cooked protein"],
         red: ["A recipe with several ingredients or steps"],
@@ -1676,7 +1682,13 @@ const da: typeof en = {
         red: ["En hel tilberedt morgenmad"],
       },
       {
-        name: "Frokost & aftensmad",
+        name: "Frokost",
+        green: ["Frossen færdigret", "Sandwich", "Rester", "Instant nudler"],
+        yellow: ["Pasta med sauce fra et glas", "Ris med forberedt protein"],
+        red: ["En opskrift med flere ingredienser eller trin"],
+      },
+      {
+        name: "Aftensmad",
         green: ["Frossen færdigret", "Sandwich", "Rester", "Instant nudler"],
         yellow: ["Pasta med sauce fra et glas", "Ris med forberedt protein"],
         red: ["En opskrift med flere ingredienser eller trin"],

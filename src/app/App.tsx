@@ -258,6 +258,44 @@ export default function App() {
     }
   }, [today]);
 
+  // One-time migration: Meal Guide's "Lunch & dinner" category was split into separate
+  // "Lunch" and "Dinner" categories, so steady-meal-guide-items-v3 grew from 5 entries to 6
+  // (Dinner inserted at index 3). This has to run here, once, on raw localStorage before any
+  // component reads the key — not inside MealGuide itself, since the Home meal-snapshot card
+  // reads the same key and can render before MealGuide is ever opened, and both index into
+  // the array positionally. Reloads once, same as the sync pull flow, so every
+  // useLocalStorage-backed read of this key picks up the corrected shape.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("steady-meal-guide-items-v3");
+      if (!raw) return;
+      const items = JSON.parse(raw);
+      if (!Array.isArray(items) || items.length !== 5) return;
+      const oldLunchAndDinner = items[2];
+      const nextIdRaw = localStorage.getItem("steady-meal-guide-next-id-v3");
+      let nextId = nextIdRaw ? (JSON.parse(nextIdRaw) as number) : 0;
+      const withFreshIds = (category: { green: { id: number; text: string }[]; yellow: { id: number; text: string }[]; red: { id: number; text: string }[] }) => ({
+        green: category.green.map((it) => ({ ...it, id: nextId++ })),
+        yellow: category.yellow.map((it) => ({ ...it, id: nextId++ })),
+        red: category.red.map((it) => ({ ...it, id: nextId++ })),
+      });
+      const migrated = [
+        items[0],
+        items[1],
+        oldLunchAndDinner, // Lunch keeps the original items and ids
+        withFreshIds(oldLunchAndDinner), // Dinner gets a duplicate with fresh ids
+        items[3],
+        items[4],
+      ];
+      localStorage.setItem("steady-meal-guide-items-v3", JSON.stringify(migrated));
+      localStorage.setItem("steady-meal-guide-next-id-v3", JSON.stringify(nextId));
+      window.location.reload();
+    } catch {
+      /* ignore */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Habit stats — habits live in HabitTracker's own localStorage-backed state, so we re-read
   // on tab/day change AND on "steady-habits-changed" (fired by HabitTracker on every edit) —
   // otherwise checking off the last habit while staying on the Habits tab wouldn't be noticed

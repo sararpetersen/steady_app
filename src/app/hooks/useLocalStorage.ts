@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { SYNCED_KEYS, markPendingPush } from "../lib/sync";
 
 export function useLocalStorage<T>(
   key: string,
@@ -23,6 +24,11 @@ export function useLocalStorage<T>(
       const next = typeof v === "function" ? (v as (prev: T) => T)(prev) : v;
       try {
         localStorage.setItem(key, JSON.stringify(next));
+        // Marked here, on the actual write, rather than from a component-level effect
+        // watching the value — an effect fires on every mount/remount too (e.g. switching
+        // tabs remounts HabitTracker), which would misreport "changed" far more often than
+        // real edits happen. This only runs when a consumer actually calls the setter.
+        if (SYNCED_KEYS.has(key)) markPendingPush();
       } catch {
         // storage full or unavailable — silently continue
       }

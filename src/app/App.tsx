@@ -21,7 +21,7 @@ import { FeedbackForm } from "./components/FeedbackForm";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useToday } from "./hooks/useToday";
 import { supabase } from "./lib/supabaseClient";
-import { pushLocalToRemote, pullRemoteToLocal, getLastSyncedAt, type SyncFailureReason } from "./lib/sync";
+import { pushLocalToRemote, pullRemoteToLocal, getLastSyncedAt, hasPendingPush, type SyncFailureReason } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
@@ -472,6 +472,23 @@ export default function App() {
         setSyncingRemote(false);
         await pushAndReport(userId);
         return;
+      }
+      if (hasPendingPush()) {
+        // This device has a change from a previous session that may never have reached the
+        // server (useLocalStorage marks this flag on every write to a synced key) — give it
+        // a chance to push before the pull below gets a chance to overwrite it. The push's
+        // own remote-newer check still protects against clobbering something genuinely
+        // newer from elsewhere.
+        const pushedPending = await pushAndReport(userId);
+        if (cancelled) return;
+        if (pushedPending) {
+          setSyncingRemote(false);
+          return;
+        }
+        // Push failed — either a request error or a genuine remote-newer conflict. Fall
+        // through to the normal pull below so this device at least catches up; the
+        // pending flag stays set until a push actually succeeds, so this keeps retrying
+        // on every future load rather than silently giving up.
       }
       const syncedAtBeforePull = getLastSyncedAt();
       const pulled = await pullRemoteToLocal(userId);

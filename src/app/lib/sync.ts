@@ -37,6 +37,39 @@ interface SteadyUserDataRow {
 }
 
 const LAST_SYNCED_KEY = "steady-last-synced-at";
+const PENDING_PUSH_KEY = "steady-pending-push";
+
+// Marks that local data has changed since the last confirmed push — set synchronously
+// (a plain localStorage write, not delayed like the actual network push) the moment a
+// tracked field changes, so it survives even if the tab closes before the debounced or
+// beforeunload push gets a chance to run or complete. Checked on the next load so that
+// device's pending change gets a chance to reach the server before a pull can silently
+// discard it — the bug this exists to close: add a task, close the tab within the
+// debounce window, reopen, and the pull-on-load fetches the still-old server row and
+// overwrites the local addition with no trace it ever happened.
+export function markPendingPush() {
+  try {
+    localStorage.setItem(PENDING_PUSH_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+export function hasPendingPush(): boolean {
+  try {
+    return localStorage.getItem(PENDING_PUSH_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function clearPendingPush() {
+  try {
+    localStorage.removeItem(PENDING_PUSH_KEY);
+  } catch {
+    /* ignore */
+  }
+}
 
 export type SyncFailureReason = "remote-newer" | "request-failed";
 export type SyncResult<T> =
@@ -50,6 +83,35 @@ export function getLastSyncedAt(): string | null {
 function setLastSyncedAt(iso: string) {
   writeJSON(LAST_SYNCED_KEY, iso);
 }
+
+// The exact set of keys that make up the synced row (mirrors collectLocalRow/applyRowToLocal
+// below) — exported so useLocalStorage can mark a pending push precisely on writes to these
+// keys only. Plenty of other steady-* keys exist (active tab, dismissed-nudge flags, the
+// onboarding step, auth state itself) that are real localStorage but never synced; marking
+// pending for those would just make every load attempt a pointless push, and — since a push
+// bumps the row's updated_at even when nothing synced actually changed — could reintroduce
+// the false "newer data on another device" conflict this app has already chased down twice.
+export const SYNCED_KEYS = new Set([
+  "steady-profile",
+  "steady-profile-photo",
+  "steady-tasks",
+  "steady-task-nextid",
+  "steady-tasks-date",
+  "steady-habits-v2",
+  "steady-mood-history",
+  "steady-notes",
+  "steady-notes-nextid",
+  "steady-routines-done",
+  "steady-routines-done-date",
+  "steady-routines-custom",
+  "steady-routines-nextid",
+  "steady-onboarded",
+  "steady-important-dates",
+  "steady-date-reminders-enabled",
+  "steady-focus-sessions",
+  "steady-meal-guide-items-v3",
+  "steady-meal-guide-next-id-v3",
+]);
 
 function collectLocalRow(): SteadyUserDataRow {
   return {
@@ -132,6 +194,7 @@ export async function pushLocalToRemote(userId: string): Promise<SyncResult<void
   );
   if (error) return { ok: false, reason: "request-failed" };
   setLastSyncedAt(updatedAt);
+  clearPendingPush();
   return { ok: true, value: undefined };
 }
 
@@ -144,5 +207,10 @@ export async function pullRemoteToLocal(userId: string): Promise<SyncResult<bool
   const row = data as SteadyUserDataRow;
   applyRowToLocal(row);
   if (row.updated_at) setLastSyncedAt(row.updated_at);
+  // Local now mirrors the server exactly, so any pending-push flag from before this pull
+  // no longer refers to anything real — either it already reached the server (this row
+  // reflects it) or it's been superseded by a genuinely newer remote copy, in which case
+  // retrying that stale push would be pointless.
+  clearPendingPush();
   return { ok: true, value: true };
 }

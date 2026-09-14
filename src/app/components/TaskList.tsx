@@ -339,23 +339,24 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
   const saveEdit = (id: number) => {
     const text = editText.trim();
     if (!text) return;
+    const recurrenceFields = {
+      recurrence: editRecurrence,
+      recurrenceStartDate: editRecurrence ? editStartDate : undefined,
+      weeklyWeekdays: editRecurrence === "weekly" ? editWeekdays : undefined,
+      weeklyIntervalWeeks: editRecurrence === "weekly" ? editWeeklyInterval : undefined,
+      weeklyAnchorDate: editRecurrence === "weekly" ? editStartDate : undefined,
+      monthlyDays: editRecurrence === "monthly" ? editMonthlyDays : undefined,
+    };
     setTasks((prev) =>
       prev.map((task) =>
         task.id === id
-          ? {
-              ...task,
-              text,
-              recurrence: editRecurrence,
-              recurrenceStartDate: editRecurrence ? editStartDate : undefined,
-              weeklyWeekdays: editRecurrence === "weekly" ? editWeekdays : undefined,
-              weeklyIntervalWeeks: editRecurrence === "weekly" ? editWeeklyInterval : undefined,
-              weeklyAnchorDate: editRecurrence === "weekly" ? editStartDate : undefined,
-              monthlyDays: editRecurrence === "monthly" ? editMonthlyDays : undefined,
-              prep: hasPrepContent(editPrep) ? editPrep : undefined,
-            }
+          ? { ...task, text, ...recurrenceFields, prep: hasPrepContent(editPrep) ? editPrep : undefined }
           : task,
       ),
     );
+    // Same reasoning as add(): an edit that moves a task's schedule off today would
+    // otherwise make it look like the edit deleted the task.
+    if (editRecurrence && !isTaskScheduledToday({ id, text, done: false, ...recurrenceFields }, today)) setOtherOpen(true);
     setEditingId(null);
   };
 
@@ -399,21 +400,23 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
   const add = () => {
     const trimmed = newText.trim();
     if (!trimmed) return;
-    setTasks((prev) => [
-      ...prev,
-      {
-        id: nextId,
-        text: trimmed,
-        done: false,
-        recurrence: newRecurrence,
-        recurrenceStartDate: newRecurrence ? newStartDate : undefined,
-        weeklyWeekdays: newRecurrence === "weekly" ? newWeekdays : undefined,
-        weeklyIntervalWeeks: newRecurrence === "weekly" ? newWeeklyInterval : undefined,
-        weeklyAnchorDate: newRecurrence === "weekly" ? newStartDate : undefined,
-        monthlyDays: newRecurrence === "monthly" ? newMonthlyDays : undefined,
-        prep: hasPrepContent(newPrep) ? newPrep : undefined,
-      },
-    ]);
+    const newTask: Task = {
+      id: nextId,
+      text: trimmed,
+      done: false,
+      recurrence: newRecurrence,
+      recurrenceStartDate: newRecurrence ? newStartDate : undefined,
+      weeklyWeekdays: newRecurrence === "weekly" ? newWeekdays : undefined,
+      weeklyIntervalWeeks: newRecurrence === "weekly" ? newWeeklyInterval : undefined,
+      weeklyAnchorDate: newRecurrence === "weekly" ? newStartDate : undefined,
+      monthlyDays: newRecurrence === "monthly" ? newMonthlyDays : undefined,
+      prep: hasPrepContent(newPrep) ? newPrep : undefined,
+    };
+    setTasks((prev) => [...prev, newTask]);
+    // A recurring task whose schedule doesn't include today lands in the "Recurring tasks"
+    // section below instead of today's list — expand it so adding one doesn't look like it
+    // just vanished (that section is collapsed by default).
+    if (newRecurrence && !isTaskScheduledToday(newTask, today)) setOtherOpen(true);
     setNextId((n) => n + 1);
     setNewText("");
     setNewRecurrence(undefined);

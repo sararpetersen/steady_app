@@ -6,6 +6,7 @@ import { IconButton } from "./ui/IconButton";
 import { useLang } from "../i18n/LangContext";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { markPendingPush } from "../lib/sync";
 import type { A11ySettings } from "./a11yTypes";
 import type { Lang } from "../i18n/translations";
 import type { AuthState } from "./AuthPage";
@@ -463,6 +464,10 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
         }
       }
       if (!wrote) throw new Error("no recognizable data");
+      // Raw writes (this needs to set several keys as one batch before reloading, not
+      // through useLocalStorage's setter), so mark this explicitly — otherwise an import
+      // has no pending-push protection and a stale pull could silently undo it.
+      markPendingPush();
       window.location.reload();
     } catch {
       setImportError(true);

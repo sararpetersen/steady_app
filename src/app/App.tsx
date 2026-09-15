@@ -21,7 +21,7 @@ import { FeedbackForm } from "./components/FeedbackForm";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useToday } from "./hooks/useToday";
 import { supabase } from "./lib/supabaseClient";
-import { pushLocalToRemote, pullRemoteToLocal, getLastSyncedAt, hasPendingPush, type SyncFailureReason } from "./lib/sync";
+import { pushLocalToRemote, pullRemoteToLocal, getLastSyncedAt, hasPendingPush, markPendingPush, type SyncFailureReason } from "./lib/sync";
 import { LangContext } from "./i18n/LangContext";
 import { translations } from "./i18n/translations";
 import { DEFAULT_A11Y } from "./components/a11yTypes";
@@ -279,7 +279,13 @@ export default function App() {
         }
         return h;
       });
-      if (changed) localStorage.setItem("steady-habits-v2", JSON.stringify(next));
+      if (changed) {
+        localStorage.setItem("steady-habits-v2", JSON.stringify(next));
+        // Bypasses useLocalStorage (this writes raw, since it needs to run even when
+        // HabitTracker isn't mounted), so it has to mark this itself — otherwise this
+        // specific change has no pending-push protection if the tab closes right after.
+        markPendingPush();
+      }
     } catch {
       /* ignore */
     }
@@ -293,6 +299,7 @@ export default function App() {
       if (doneDate !== today) {
         localStorage.setItem("steady-routines-done", JSON.stringify([]));
         localStorage.setItem("steady-routines-done-date", JSON.stringify(today));
+        markPendingPush();
       }
     } catch {
       /* ignore */
@@ -601,6 +608,10 @@ export default function App() {
     localStorage.setItem("steady-focus-sessions", JSON.stringify({}));
     localStorage.setItem("steady-meal-guide-items-v3", JSON.stringify([]));
     localStorage.setItem("steady-meal-guide-next-id-v3", JSON.stringify(0));
+    // setTasks([]) above already marks this indirectly, but marking it explicitly here too
+    // means the wipe stays protected even if that call's presence ever changes — a "delete
+    // everything" that silently gets un-done by a stale pull would be a bad surprise.
+    markPendingPush();
   };
 
   const handleOnboardingComplete = (newProfile: ProfileData) => {

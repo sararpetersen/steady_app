@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SYNCED_KEYS, markPendingPush } from "../lib/sync";
 
 export function useLocalStorage<T>(
@@ -34,6 +34,28 @@ export function useLocalStorage<T>(
       }
       return next;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+
+  // Keeps this tab's in-memory copy in sync with writes made in OTHER tabs of the same
+  // origin — the browser only fires `storage` in tabs that did NOT make the change, never
+  // the one that made it, so without this a second open tab's React state can drift
+  // arbitrarily stale. That's not just cosmetic: if anything in the stale tab later calls
+  // its OWN setter for the same key — even something unrelated to what changed, like a
+  // daily-rollover effect re-saving the tasks list — it writes that stale in-memory copy
+  // straight back to localStorage, silently overwriting whatever the other, active tab had
+  // just saved. No error, no warning, just data that was there a moment ago and now isn't.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== key) return;
+      try {
+        setValue(e.newValue !== null ? (JSON.parse(e.newValue) as T) : initial);
+      } catch {
+        // malformed write from elsewhere — ignore rather than propagate garbage
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 

@@ -572,15 +572,28 @@ export default function App() {
   // doing on a device, no matter how carefully the timing was guarded. That kept happening
   // in ways that were more disruptive than useful, so this device now only ever pushes its
   // own changes up; it picks up other devices' changes on next sign-in, not continuously.
+  //
+  // Gated on hasPendingPush() — this used to fire unconditionally every 30s, which meant an
+  // idle tab with nothing new to say (e.g. a phone tab left open in the background) kept
+  // re-pushing its own possibly-stale snapshot anyway. The remote-newer check inside
+  // pushLocalToRemote is supposed to block a stale push, but every successful push — even a
+  // no-op one reasserting old data — bumps this device's own last-synced-at to "now." That
+  // let a truly idle tab win a race against another device that was actively adding data:
+  // once the idle tab's heartbeat happened to land, the active device's very next real push
+  // saw the server as "newer than what I last synced" and got refused, so its new task
+  // silently never made it up. Only pushing when something has actually changed locally
+  // closes that: an idle tab with nothing pending never touches the server, so it can't
+  // reset the timestamp out from under a device that's genuinely making changes.
   useEffect(() => {
     // Same syncingRemote guard as the debounced-push effect above — a push here before the
     // initial pull has landed would compare against a still-stale last-synced-at marker.
     if (!authReady || !authState || authState.isGuest || !authState.userId || syncingRemote) return;
     const userId = authState.userId;
-    const interval = setInterval(() => {
-      void pushAndReport(userId);
-    }, 30000);
-    const onHide = () => { void pushAndReport(userId); };
+    const pushIfPending = () => {
+      if (hasPendingPush()) void pushAndReport(userId);
+    };
+    const interval = setInterval(pushIfPending, 30000);
+    const onHide = () => { pushIfPending(); };
     const onVisibilityChange = () => {
       if (document.visibilityState === "hidden") onHide();
     };

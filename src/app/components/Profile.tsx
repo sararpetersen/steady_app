@@ -30,7 +30,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
   const p = t.profile;
   const [expandedLists, setExpandedLists] = useState<Record<string, boolean>>({});
   const toggleExpanded = (field: string) => setExpandedLists((prev) => ({ ...prev, [field]: !prev[field] }));
-  const COLLAPSED_COUNT = 6;
+  const COLLAPSED_COUNT = 5;
   // Collapsed lists still show anything already selected, so a chosen option is never hidden.
   const visibleOptions = <O extends { key: string }>(field: string, options: O[], selected: string[]) =>
     expandedLists[field] ? options : options.filter((opt, i) => i < COLLAPSED_COUNT || selected.includes(opt.key));

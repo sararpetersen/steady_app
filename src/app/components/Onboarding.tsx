@@ -132,7 +132,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
   }
 
   return (
-    <div
+    <main
       className="min-h-screen flex flex-col"
       style={{ backgroundColor: "var(--background)", fontFamily: "var(--app-font-body, 'Nunito Sans', sans-serif)" }}
     >
@@ -659,6 +659,6 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
           </div>
         </>
       )}
-    </div>
+    </main>
   );
 }

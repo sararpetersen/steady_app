@@ -476,7 +476,8 @@ function SectionPanel({
         <span className="text-foreground flex-shrink-0">{SECTION_ICONS[sectionKey]}</span>
         <div className="flex-1 min-w-0">
           <p style={{ fontWeight: 700, fontSize: "1rem" }} className="text-foreground truncate">{section.label}</p>
-          <p style={{ fontSize: "0.8rem" }} className="text-muted-foreground truncate">{section.time}</p>
+          {/* Foreground at reduced opacity rather than muted-foreground: the grey was 3.59:1 on the lavender "late" header, which is only visible when that slot is the current one. */}
+          <p style={{ fontSize: "0.8rem", opacity: 0.8 }} className="text-foreground truncate">{section.time}</p>
         </div>
         {allIds.length > 0 && doneCount === allIds.length ? (
           <CheckCircle2

@@ -65,7 +65,7 @@ export function AuthPage({ onAuth }: Props) {
   };
 
   return (
-    <div
+    <main
       className="min-h-screen flex flex-col items-center justify-center px-5 py-12"
       style={{ backgroundColor: "var(--background)", fontFamily: "var(--app-font-body, 'Nunito Sans', sans-serif)" }}
     >
@@ -77,9 +77,9 @@ export function AuthPage({ onAuth }: Props) {
         >
           <SteadyLogo size={34} />
         </div>
-        <span style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800, fontSize: "2rem", color: "var(--primary)", letterSpacing: "-0.02em" }}>
+        <h1 style={{ fontFamily: "var(--app-font-heading, Nunito)", fontWeight: 800, fontSize: "2rem", lineHeight: 1.5, margin: 0, color: "var(--primary)", letterSpacing: "-0.02em" }}>
           Steady
-        </span>
+        </h1>
       </div>
 
       {/* Card */}
@@ -212,6 +212,6 @@ export function AuthPage({ onAuth }: Props) {
       >
         {t.localDataNote}
       </p>
-    </div>
+    </main>
   );
 }

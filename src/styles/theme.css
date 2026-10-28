@@ -13,7 +13,7 @@
   --card-foreground: #2d2a26;
   --popover: #fefcf8;
   --popover-foreground: #2d2a26;
-  --primary: #4e7c6a;
+  --primary: #456e5e;
   --primary-foreground: #ffffff;
   --secondary: #eae4f7;
   --secondary-foreground: #3a2f5e;
@@ -33,7 +33,7 @@
   --toggle-track-off: #6b6560;
   --font-weight-medium: 600;
   --font-weight-normal: 400;
-  --ring: #4e7c6a;
+  --ring: #456e5e;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -232,6 +232,7 @@
   button,
   [role="button"],
   label[for],
+  select,
   summary {
     cursor: pointer;
   }

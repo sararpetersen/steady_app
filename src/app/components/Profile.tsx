@@ -40,7 +40,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
         type="button"
         onClick={() => toggleExpanded(field)}
         aria-expanded={!!expandedLists[field]}
-        className="mt-3 flex items-center gap-1 text-muted-foreground hover:text-foreground"
+        className="mt-1 min-h-[44px] flex items-center gap-1 text-muted-foreground hover:text-foreground"
         style={{ fontSize: "0.9rem", fontWeight: 600 }}
       >
         {expandedLists[field] ? (

@@ -151,10 +151,11 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
           <div>
-            <label className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>
+            <label htmlFor="profile-name" className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>
               {p.namePlaceholder}
             </label>
             <input
+              id="profile-name"
               type="text"
               value={profile.name}
               onChange={(e) => update({ name: e.target.value })}
@@ -164,11 +165,12 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
             />
           </div>
           <div>
-            <label className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>
+            <label htmlFor="profile-pronouns" className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>
               {p.pronounsLabel}{" "}
               <span className="text-muted-foreground">({p.optionalSuffix})</span>
             </label>
             <select
+              id="profile-pronouns"
               value={pronoun}
               onChange={(e) => update({ pronoun: e.target.value })}
               className="w-full rounded-xl px-4 py-3 border border-border bg-input-background text-foreground outline-none focus:border-primary appearance-none"
@@ -194,11 +196,12 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           </div>
         </div>
         <div>
-          <label className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>
+          <label htmlFor="profile-about" className="text-foreground" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem" }}>
             {p.aboutLabel}{" "}
             <span className="text-muted-foreground">({p.optionalSuffix})</span>
           </label>
           <textarea
+            id="profile-about"
             value={profile.about}
             onChange={(e) => update({ about: e.target.value })}
             placeholder={p.aboutPlaceholder}

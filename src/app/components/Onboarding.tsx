@@ -234,12 +234,14 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t.onboarding.name.namePlaceholder}
+                  aria-label={t.onboarding.name.namePlaceholder}
                   autoFocus
                   className="w-full rounded-2xl px-5 py-4 border border-border bg-card text-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
                   style={{ fontSize: "1.1rem", transition: "border-color 0.15s" }}
                 />
                 <select
                   value={pronoun}
+                  aria-label={t.onboarding.name.pronounPlaceholder}
                   onChange={(e) => setPronoun(e.target.value)}
                   className="w-full rounded-2xl px-5 py-4 border border-border bg-card text-foreground outline-none focus:border-primary appearance-none"
                   style={{

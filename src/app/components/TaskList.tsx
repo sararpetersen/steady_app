@@ -977,6 +977,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
         </button>
         <button
           onClick={add}
+          aria-label={t.tasks.add}
           className="rounded-xl px-4 py-3 bg-primary text-primary-foreground flex items-center gap-2 hover:opacity-90 flex-shrink-0"
           style={{
             fontWeight: 700,

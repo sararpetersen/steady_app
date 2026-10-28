@@ -5,7 +5,6 @@ import { AnimatedCollapse } from "./AnimatedCollapse";
 import { IconButton } from "./ui/IconButton";
 import { useLang } from "../i18n/LangContext";
 import { useFocusTrap } from "../hooks/useFocusTrap";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 import { markPendingPush } from "../lib/sync";
 import type { A11ySettings } from "./a11yTypes";
 import type { Lang } from "../i18n/translations";
@@ -429,7 +428,6 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
   const privacyTrapRef = useFocusTrap<HTMLDivElement>(privacyOpen);
   const [importError, setImportError] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
-  const [dateRemindersEnabled, setDateRemindersEnabled] = useLocalStorage<boolean>("steady-date-reminders-enabled", true);
   const update = (patch: Partial<A11ySettings>) => onChange({ ...settings, ...patch });
 
   const exportData = () => {
@@ -554,12 +552,6 @@ export function SettingsPage({ settings, onChange, onClose, onResetOnboarding, o
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Notifications */}
-      <div className="steady-card bg-card rounded-2xl p-5 border border-border space-y-3">
-        <SectionHeading>{s.sections.notifications}</SectionHeading>
-        <ToggleRow label={s.dateReminders.label} description={s.dateReminders.description} value={dateRemindersEnabled} onChange={setDateRemindersEnabled} />
       </div>
 
       {/* Data & Privacy */}

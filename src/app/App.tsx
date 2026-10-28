@@ -5,7 +5,6 @@ import { MoodCheck } from "./components/MoodCheck";
 import { TaskList, type Task, isTaskScheduledToday } from "./components/TaskList";
 import { Routines } from "./components/Routines";
 import { NowNextBanner } from "./components/NowNextBanner";
-import { UpcomingDateReminder } from "./components/UpcomingDateReminder";
 import { HabitTracker, type Habit } from "./components/HabitTracker";
 import { DailyNote } from "./components/DailyNote";
 import { NotesNudge } from "./components/NotesNudge";
@@ -1105,7 +1104,6 @@ export default function App() {
                         </div>
                       ))}
                     </div>
-                    <UpcomingDateReminder />
                     <NowNextBanner tasks={tasks} />
                     <MoodCheck />
                     <PersonalizedTip

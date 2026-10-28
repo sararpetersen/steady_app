@@ -108,13 +108,8 @@ const en = {
       appearance: "Appearance",
       readability: "Readability",
       language: "Language",
-      notifications: "Notifications",
       data: "Data & Privacy",
       account: "Account",
-    },
-    dateReminders: {
-      label: "Remind me about upcoming dates",
-      description: "A little nudge on 'Home' when a date is coming up in the next few days (not sent as a push notification).",
     },
     darkMode: { label: "Dark mode", description: "Switch to a dark colour theme" },
     fontSize: { label: "Text size", normal: "Normal", large: "Large", xlarge: "Extra large" },
@@ -679,11 +674,6 @@ const en = {
     agoSuffix: "ago",
     day: "day",
     days: "days",
-    upcoming: {
-      today: (name: string) => `${name} is today!`,
-      tomorrow: (name: string) => `${name} is tomorrow.`,
-      inDays: (name: string, n: number) => `${name} is in ${n} days.`,
-    },
   },
 
   mealGuide: {
@@ -1083,13 +1073,8 @@ const da: typeof en = {
       appearance: "Udseende",
       readability: "Læsbarhed",
       language: "Sprog",
-      notifications: "Notifikationer",
       data: "Data og privatliv",
       account: "Konto",
-    },
-    dateReminders: {
-      label: "Mind mig om kommende datoer",
-      description: "Et lille ryk på 'Hjem', når en dato nærmer sig i de kommende dage (sendes ikke som push-notifikation).",
     },
     darkMode: { label: "Mørk tilstand", description: "Skift til et mørkt farvetema" },
     fontSize: { label: "Tekststørrelse", normal: "Normal", large: "Stor", xlarge: "Ekstra stor" },
@@ -1653,11 +1638,6 @@ const da: typeof en = {
     agoSuffix: "siden",
     day: "dag",
     days: "dage",
-    upcoming: {
-      today: (name: string) => `${name} er i dag!`,
-      tomorrow: (name: string) => `${name} er i morgen.`,
-      inDays: (name: string, n: number) => `${name} er om ${n} dage.`,
-    },
   },
 
   mealGuide: {

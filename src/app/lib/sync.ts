@@ -71,6 +71,65 @@ function clearPendingPush() {
   }
 }
 
+const TASKS_BASE_KEY = "steady-tasks-base";
+
+interface IdItem {
+  id: number;
+}
+
+// The tasks this device last confirmed as identical to the server's — the common ancestor
+// a three-way merge needs to tell "deleted on one side" from "never existed there".
+function saveTasksBase(tasks: unknown) {
+  try {
+    writeJSON(TASKS_BASE_KEY, tasks);
+  } catch {
+    /* ignore */
+  }
+}
+
+function readTasksBase(): IdItem[] | null {
+  const base = readJSON<IdItem[] | null>(TASKS_BASE_KEY, null);
+  return Array.isArray(base) ? base : null;
+}
+
+const sameJSON = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+
+// Merges two diverged task lists by id against their last common state, so a stale copy
+// of the list on one device can't undo changes made on another: additions from either side
+// are kept, a deletion on either side sticks unless the other side changed that task since,
+// and when both sides edited the same task this device's version wins. Without a base
+// (first sync after this shipped) nothing counts as a deletion, only additions are unioned.
+export function mergeTasks(base: IdItem[] | null, local: IdItem[], remote: IdItem[]) {
+  const baseMap = new Map((base ?? []).map((t) => [t.id, t]));
+  const localMap = new Map(local.map((t) => [t.id, t]));
+  const remoteMap = new Map(remote.map((t) => [t.id, t]));
+  const merged: IdItem[] = [];
+  const collided: IdItem[] = [];
+
+  for (const l of local) {
+    const b = baseMap.get(l.id);
+    const r = remoteMap.get(l.id);
+    if (!b) {
+      merged.push(l);
+      // Both devices created different tasks that happened to get the same id.
+      if (base && r && !sameJSON(l, r)) collided.push(r);
+    } else if (!r) {
+      if (!sameJSON(b, l)) merged.push(l);
+    } else {
+      merged.push(sameJSON(l, b) ? r : l);
+    }
+  }
+  for (const r of remote) {
+    if (localMap.has(r.id)) continue;
+    const b = baseMap.get(r.id);
+    if (!b || !sameJSON(b, r)) merged.push(r);
+  }
+
+  let maxId = merged.reduce((m, t) => Math.max(m, t.id), 0);
+  for (const c of collided) merged.push({ ...c, id: ++maxId });
+  return { tasks: merged, maxId };
+}
+
 export type SyncFailureReason = "remote-newer" | "request-failed";
 export type SyncResult<T> =
   | { ok: true; value: T }
@@ -172,7 +231,7 @@ async function refreshAndRetry<T>(attempt: () => PromiseLike<{ data: T; error: u
   return attempt();
 }
 
-export async function pushLocalToRemote(userId: string): Promise<SyncResult<void>> {
+export async function pushLocalToRemote(userId: string): Promise<SyncResult<{ merged: boolean }>> {
   const row = collectLocalRow();
   const lastSyncedAt = getLastSyncedAt();
 
@@ -184,7 +243,7 @@ export async function pushLocalToRemote(userId: string): Promise<SyncResult<void
     );
     if (remote.error) return { ok: false, reason: "request-failed" };
     if (remote.data?.updated_at && new Date(remote.data.updated_at).getTime() > new Date(lastSyncedAt).getTime()) {
-      return { ok: false, reason: "remote-newer" };
+      return mergeWithRemote(userId, row);
     }
   }
 
@@ -194,8 +253,49 @@ export async function pushLocalToRemote(userId: string): Promise<SyncResult<void
   );
   if (error) return { ok: false, reason: "request-failed" };
   setLastSyncedAt(updatedAt);
+  saveTasksBase(row.tasks);
   clearPendingPush();
-  return { ok: true, value: undefined };
+  return { ok: true, value: { merged: false } };
+}
+
+// The server holds a newer snapshot than this device last synced. Rather than refusing to
+// save (leaving this device's changes stranded until a pull overwrote them) or overwriting
+// (destroying the other device's changes), merge the task lists and take the server's copy
+// of everything else — which is what a refused push followed by a pull used to end up with.
+async function mergeWithRemote(userId: string, localRow: SteadyUserDataRow): Promise<SyncResult<{ merged: boolean }>> {
+  const { data, error } = await refreshAndRetry(() =>
+    supabase.from("steady_user_data").select("*").eq("user_id", userId).maybeSingle(),
+  );
+  if (error || !data) return { ok: false, reason: "request-failed" };
+  const remoteRow = data as SteadyUserDataRow;
+
+  const { tasks, maxId } = mergeTasks(
+    readTasksBase(),
+    (Array.isArray(localRow.tasks) ? localRow.tasks : []) as IdItem[],
+    (Array.isArray(remoteRow.tasks) ? remoteRow.tasks : []) as IdItem[],
+  );
+  const nextRow: SteadyUserDataRow = {
+    ...remoteRow,
+    tasks,
+    task_next_id: Math.max(localRow.task_next_id, remoteRow.task_next_id, maxId + 1),
+    tasks_date:
+      [localRow.tasks_date, remoteRow.tasks_date].filter((d): d is string => !!d).sort().pop() ?? null,
+  };
+
+  const updatedAt = new Date().toISOString();
+  const { error: upsertError } = await refreshAndRetry(() =>
+    supabase.from("steady_user_data").upsert({ user_id: userId, ...nextRow, updated_at: updatedAt }),
+  );
+  if (upsertError) return { ok: false, reason: "request-failed" };
+
+  const { updated_at: _ignored, ...localComparable } = localRow;
+  const { updated_at: _ignored2, ...nextComparable } = nextRow;
+  const changedLocally = !sameJSON(localComparable, nextComparable);
+  applyRowToLocal(nextRow);
+  setLastSyncedAt(updatedAt);
+  saveTasksBase(tasks);
+  clearPendingPush();
+  return { ok: true, value: { merged: changedLocally } };
 }
 
 export async function pullRemoteToLocal(userId: string): Promise<SyncResult<boolean>> {
@@ -206,6 +306,7 @@ export async function pullRemoteToLocal(userId: string): Promise<SyncResult<bool
   if (!data) return { ok: true, value: false };
   const row = data as SteadyUserDataRow;
   applyRowToLocal(row);
+  saveTasksBase(row.tasks);
   if (row.updated_at) setLastSyncedAt(row.updated_at);
   // Local now mirrors the server exactly, so any pending-push flag from before this pull
   // no longer refers to anything real — either it already reached the server (this row

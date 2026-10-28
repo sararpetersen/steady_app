@@ -196,6 +196,9 @@ export default function App() {
   const pushAndReport = async (userId: string) => {
     const result = await pushLocalToRemote(userId);
     setSyncIssue(result.ok ? null : result.reason);
+    // The merge rewrote local storage directly (bypassing React state), so reload to pick
+    // up the merged tasks — same approach as a pull that brings in new data.
+    if (result.ok && result.value.merged) window.location.reload();
     return result.ok;
   };
 

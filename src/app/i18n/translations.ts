@@ -338,10 +338,6 @@ const en = {
       nextLabel: "Up next",
       allDone: "Nothing left on your routines for now – however you spend this moment is okay.",
     },
-    mealSnapshot: {
-      heading: "Today's meal idea",
-      seeGuide: "See full 'Meal Guide'",
-    },
   },
 
   supportTips: {
@@ -922,6 +918,8 @@ const en = {
 
     save: "Save my profile",
     saved: "✓ Profile saved!",
+    showMore: (n: number) => `Show ${n} more`,
+    showLess: "Show less",
   },
 
   a11y: {
@@ -1309,10 +1307,6 @@ const da: typeof en = {
       nowLabel: "Lige nu",
       nextLabel: "Det næste",
       allDone: "Intet tilbage på dine rutiner lige nu – hvordan end du bruger dette øjeblik, er okay.",
-    },
-    mealSnapshot: {
-      heading: "Dagens madidé",
-      seeGuide: "Se hele madguiden",
     },
   },
 
@@ -1891,6 +1885,8 @@ const da: typeof en = {
 
     save: "Gem min profil",
     saved: "✓ Profil gemt!",
+    showMore: (n: number) => `Vis ${n} mere`,
+    showLess: "Vis færre",
   },
 
   a11y: {

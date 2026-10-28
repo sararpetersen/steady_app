@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Save, Camera, X } from "lucide-react";
+import { Save, Camera, X, ChevronDown, ChevronUp } from "lucide-react";
 import { useLang } from "../i18n/LangContext";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { resizeImageToBase64 } from "../lib/image";
@@ -28,6 +28,32 @@ function last7Days() {
 export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProps) {
   const t = useLang();
   const p = t.profile;
+  const [expandedLists, setExpandedLists] = useState<Record<string, boolean>>({});
+  const toggleExpanded = (field: string) => setExpandedLists((prev) => ({ ...prev, [field]: !prev[field] }));
+  const COLLAPSED_COUNT = 6;
+  // Collapsed lists still show anything already selected, so a chosen option is never hidden.
+  const visibleOptions = <O extends { key: string }>(field: string, options: O[], selected: string[]) =>
+    expandedLists[field] ? options : options.filter((opt, i) => i < COLLAPSED_COUNT || selected.includes(opt.key));
+  const renderToggle = (field: string, total: number, shown: number) =>
+    total > COLLAPSED_COUNT && (expandedLists[field] || shown < total) && (
+      <button
+        type="button"
+        onClick={() => toggleExpanded(field)}
+        aria-expanded={!!expandedLists[field]}
+        className="mt-3 flex items-center gap-1 text-muted-foreground hover:text-foreground"
+        style={{ fontSize: "0.9rem", fontWeight: 600 }}
+      >
+        {expandedLists[field] ? (
+          <>
+            {p.showLess} <ChevronUp size={16} />
+          </>
+        ) : (
+          <>
+            {p.showMore(total - shown)} <ChevronDown size={16} />
+          </>
+        )}
+      </button>
+    );
   const [saved, setSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [moodHistory] = useLocalStorage<MoodEntry[]>("steady-mood-history", []);
@@ -259,7 +285,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           {t.strengths.description}
         </p>
         <div className="flex flex-wrap gap-2">
-          {t.strengths.options.map((opt) => {
+          {visibleOptions("strengths", t.strengths.options, profile.strengths).map((opt) => {
             const active = profile.strengths.includes(opt.key);
             return (
               <button
@@ -281,6 +307,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
             );
           })}
         </div>
+        {renderToggle("strengths", t.strengths.options.length, visibleOptions("strengths", t.strengths.options, profile.strengths).length)}
       </div>
 
       {/* Sensory */}
@@ -290,7 +317,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           {p.sensory.description}
         </p>
         <div className="flex flex-wrap gap-2">
-          {p.sensory.options.map((opt) => {
+          {visibleOptions("sensory", p.sensory.options, profile.sensory).map((opt) => {
             const active = profile.sensory.includes(opt.key);
             return (
               <button
@@ -312,6 +339,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
             );
           })}
         </div>
+        {renderToggle("sensory", p.sensory.options.length, visibleOptions("sensory", p.sensory.options, profile.sensory).length)}
       </div>
 
       {/* Support */}
@@ -321,7 +349,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           {p.support.description}
         </p>
         <div className="flex flex-wrap gap-2">
-          {p.support.options.map((opt) => {
+          {visibleOptions("support", p.support.options, profile.support).map((opt) => {
             const active = profile.support.includes(opt.key);
             return (
               <button
@@ -343,6 +371,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
             );
           })}
         </div>
+        {renderToggle("support", p.support.options.length, visibleOptions("support", p.support.options, profile.support).length)}
       </div>
 
       <button

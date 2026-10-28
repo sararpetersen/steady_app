@@ -9,7 +9,6 @@ import { UpcomingDateReminder } from "./components/UpcomingDateReminder";
 import { HabitTracker, type Habit } from "./components/HabitTracker";
 import { DailyNote } from "./components/DailyNote";
 import { NotesNudge } from "./components/NotesNudge";
-import { MealSnapshot } from "./components/MealSnapshot";
 import { MorePage, type MoreSection } from "./components/MorePage";
 import { Profile } from "./components/Profile";
 import { DEFAULT_PROFILE, type ProfileData } from "./components/profileTypes";
@@ -1116,12 +1115,6 @@ export default function App() {
                       onDismiss={() => setPersonalizeDismissed(true)}
                     />
                     <NotesNudge onOpenNotes={() => setActiveTab("note")} suppressed={showPersonalizeNudge} />
-                    <MealSnapshot
-                      onOpenGuide={() => {
-                        setMoreSection("mealGuide");
-                        setActiveTab("more");
-                      }}
-                    />
                     <TaskList tasks={tasks} setTasks={setTasks} nextId={nextId} setNextId={setNextId} />
                   </>
                 )}

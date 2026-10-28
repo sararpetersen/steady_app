@@ -452,6 +452,16 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
   // Completed tasks sink to the bottom instead of staying scattered wherever
   // they were checked off — sort is stable, so drag order within each group holds.
   const sortedTasks = [...todayTasks].sort((a, b) => Number(a.done) - Number(b.done));
+
+  // The reorder list only contains today's tasks, so its result must be merged back into
+  // the full list — saving it directly would delete every task not scheduled for today
+  // (e.g. a recurring task due on other weekdays).
+  const reorderToday = (next: Task[]) =>
+    setTasks((prev) => {
+      const reorderedIds = new Set(next.map((task) => task.id));
+      let i = 0;
+      return prev.map((task) => (reorderedIds.has(task.id) ? next[i++] : task));
+    });
   const firstCompletedIndex = sortedTasks.findIndex((task) => task.done);
 
   const weekdaysBadge = (days: number[] | undefined) => (days ?? []).map((d) => t.tasks.weekdaysAbbr[d]).join(", ");
@@ -518,7 +528,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
         </p>
       )}
 
-      <Reorder.Group axis="y" values={sortedTasks} onReorder={setTasks} className="space-y-2 mb-4">
+      <Reorder.Group axis="y" values={sortedTasks} onReorder={reorderToday} className="space-y-2 mb-4">
         {sortedTasks.map((task, index) => (
           <div key={task.id}>
             {task.done && index === firstCompletedIndex && (
@@ -532,7 +542,7 @@ export function TaskList({ tasks, setTasks, nextId, setNextId }: Props) {
             <ReorderRow
               value={task}
               values={sortedTasks}
-              onReorder={setTasks}
+              onReorder={reorderToday}
               moveUpLabel={t.common.moveUp}
               moveDownLabel={t.common.moveDown}
               dragDisabled={editingId === task.id}

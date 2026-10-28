@@ -342,3 +342,11 @@
     font-size: 0.88rem;
   }
 }
+
+/* The base-layer `outline-ring/50` is a half-transparent colour — roughly 2:1 against the card
+   background, under the 3:1 a focus indicator needs. This is deliberately unlayered so it also
+   beats the `outline-none` on text fields, which otherwise only changed their 1px border colour. */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

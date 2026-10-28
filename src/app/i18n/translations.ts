@@ -45,6 +45,13 @@ const en = {
     dates: "Dates",
     profile: "Profile",
     more: "More",
+    goToOverview: "Go to overview",
+    sidebarNav: "Sidebar navigation",
+    tabNav: "Tab navigation",
+    openProfile: "Open profile",
+    openSettings: "Open settings",
+    yourProfile: "Your profile",
+    todayLabel: "Today",
   },
 
   auth: {
@@ -1013,6 +1020,13 @@ const da: typeof en = {
     dates: "Datoer",
     profile: "Profil",
     more: "Mere",
+    goToOverview: "Gå til oversigt",
+    sidebarNav: "Sidenavigation",
+    tabNav: "Fanenavigation",
+    openProfile: "Åbn profil",
+    openSettings: "Åbn indstillinger",
+    yourProfile: "Din profil",
+    todayLabel: "I dag",
   },
 
   auth: {

@@ -685,8 +685,8 @@ export default function App() {
   if (!onboarded) {
     return (
       <LangContext.Provider value={t}>
-        <style>{`.reduce-motion * { transition: none !important; animation: none !important; } body { line-height: var(--app-line-height, 1.5); }`}</style>
-        <MotionConfig reducedMotion={profile.a11y.reduceMotion ? "always" : "never"}>
+        <style>{`.reduce-motion * { transition: none !important; animation: none !important; } @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } } body { line-height: var(--app-line-height, 1.5); }`}</style>
+        <MotionConfig reducedMotion={profile.a11y.reduceMotion ? "always" : "user"}>
           <Onboarding
             onComplete={handleOnboardingComplete}
             onSkip={() => setOnboarded(true)}
@@ -739,11 +739,11 @@ export default function App() {
         flexShrink: 0,
         transition: "opacity 0.15s, border-color 0.15s",
       }}
-      aria-label="Open profile"
+      aria-label={t.nav.openProfile}
       aria-current={active ? "page" : undefined}
     >
       {profilePhoto ? (
-        <img src={profilePhoto} alt="Your profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={profilePhoto} alt={t.nav.yourProfile} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       ) : (
         <span style={{ fontSize: "1.3rem", lineHeight: 1 }}>{profile.avatar}</span>
       )}
@@ -763,6 +763,7 @@ export default function App() {
     <LangContext.Provider value={t}>
       <style>{`
         .reduce-motion * { transition: none !important; animation: none !important; }
+        @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
         body { line-height: var(--app-line-height, 1.5); }
         .steady-card { box-shadow: var(--shadow-card); }
         .nav-tab { transition: background-color 0.18s, color 0.18s; }
@@ -779,11 +780,11 @@ export default function App() {
         }
       `}</style>
 
-      <MotionConfig reducedMotion={profile.a11y.reduceMotion ? "always" : "never"}>
+      <MotionConfig reducedMotion={profile.a11y.reduceMotion ? "always" : "user"}>
       <div className="min-h-screen bg-background" style={{ fontFamily: "var(--app-font-body, 'Nunito Sans', sans-serif)" }}>
         {/* ── Desktop sidebar (lg+) ─────────────────────────────────── */}
         <aside
-          aria-label="Sidebar navigation"
+          aria-label={t.nav.sidebarNav}
           className="hidden lg:flex flex-col fixed top-0 left-0 h-screen w-60 border-r border-border z-20"
           style={{ backgroundColor: "var(--card)" }}
         >
@@ -795,7 +796,7 @@ export default function App() {
                 setSettingsOpen(false);
               }}
               className="flex flex-col items-start gap-1.5 rounded-xl w-full p-2 cursor-default text-left"
-              aria-label="Go to Overview"
+              aria-label={`Steady, ${greeting}. ${t.nav.goToOverview}`}
             >
               <SteadyWordmark height={26} className="transition-transform hover:scale-[1.04] cursor-pointer" />
               <p className="text-muted-foreground truncate w-full text-left" style={{ fontSize: "0.75rem", lineHeight: 1.3 }}>
@@ -821,7 +822,7 @@ export default function App() {
                     marginBottom: 8,
                   }}
                 >
-                  Today
+                  {t.nav.todayLabel}
                 </p>
                 <p style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--green-text)", lineHeight: 1.3 }} className="truncate">
                   {dateStr}
@@ -854,7 +855,7 @@ export default function App() {
                     style={{
                       fontSize: "0.9rem",
                       fontWeight: active ? 700 : 500,
-                      color: active ? "var(--primary)" : "var(--muted-foreground)",
+                      color: active ? "var(--green-text)" : "var(--muted-foreground)",
                       fontFamily: "var(--app-font-heading, Nunito)",
                       whiteSpace: "nowrap",
                       overflow: "hidden",
@@ -894,7 +895,7 @@ export default function App() {
                 active={settingsOpen}
                 style={{ backgroundColor: settingsOpen ? "var(--green-bg)" : undefined }}
                 onClick={() => setSettingsOpen((open) => !open)}
-                aria-label="Open settings"
+                aria-label={t.nav.openSettings}
                 aria-pressed={settingsOpen}
               >
                 <Settings size={18} />
@@ -927,7 +928,7 @@ export default function App() {
                   setSettingsOpen(false);
                 }}
                 className="flex flex-col items-start gap-1 rounded-xl min-w-0 p-2 cursor-default text-left"
-                aria-label="Go to Overview"
+                aria-label={`Steady, ${greeting}. ${t.nav.goToOverview}`}
               >
                 <SteadyWordmark height={24} className="flex-shrink-0 transition-transform hover:scale-[1.04] cursor-pointer" />
                 {/* items-start on the button (so the logo doesn't stretch full-width) means
@@ -954,7 +955,7 @@ export default function App() {
                   size="lg"
                   active={settingsOpen}
                   onClick={() => setSettingsOpen((o) => !o)}
-                  aria-label="Open settings"
+                  aria-label={t.nav.openSettings}
                   aria-pressed={settingsOpen}
                 >
                   <Settings size={20} />
@@ -966,7 +967,7 @@ export default function App() {
 
           {/* Mobile / tablet tab navigation */}
           <nav
-            aria-label="Tab navigation"
+            aria-label={t.nav.tabNav}
             className="border-b border-border"
             style={{ backgroundColor: "var(--card)" }}
           >
@@ -996,7 +997,7 @@ export default function App() {
                           // over into wrapping only when it became active, making the whole nav
                           // bar's height jump depending on which tab was selected.
                           fontWeight: 600,
-                          color: active ? "var(--primary)" : "var(--muted-foreground)",
+                          color: active ? "var(--green-text)" : "var(--muted-foreground)",
                           fontFamily: "var(--app-font-heading, Nunito)",
                           whiteSpace: "nowrap",
                           overflow: "hidden",

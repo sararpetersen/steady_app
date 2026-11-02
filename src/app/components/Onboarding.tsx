@@ -143,7 +143,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
             className="rounded-3xl flex items-center justify-center"
             style={{ width: 96, height: 96, backgroundColor: "var(--green-bg)", border: "2px solid var(--border)" }}
           >
-            <img src="/sprout1.webp" alt="Sprout, Steady's mascot" style={{ width: 80, height: 80, objectFit: "contain" }} />
+            <img src="/sprout1.webp" alt={t.onboarding.mascotAlt} style={{ width: 80, height: 80, objectFit: "contain" }} />
           </div>
           <div>
             <h1
@@ -596,6 +596,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                         <div className="px-4 pb-4 space-y-2.5 border-t border-border" style={{ paddingTop: 12 }}>
                           <input
                             type="email"
+                            aria-label={t.auth.emailLabel}
                             value={signUpEmail}
                             onChange={(e) => setSignUpEmail(e.target.value)}
                             placeholder="you@example.com"
@@ -605,6 +606,7 @@ export function Onboarding({ onComplete, onSkip, isGuest, onRegister, onPhotoCha
                           />
                           <input
                             type="password"
+                            aria-label={t.auth.passwordLabel}
                             value={signUpPassword}
                             onChange={(e) => setSignUpPassword(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && registerAndFinish()}

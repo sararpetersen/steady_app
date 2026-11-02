@@ -47,9 +47,9 @@ const EXPORT_KEYS = [
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--green-text)", marginBottom: 8 }}>
+    <h3 style={{ fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--green-text)", marginBottom: 8, lineHeight: 1.5 }}>
       {children}
-    </p>
+    </h3>
   );
 }
 
@@ -227,10 +227,11 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
 
         {/* Email */}
         <div>
-          <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>
+          <label htmlFor="settings-signup-email" style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>
             {a.emailLabel}
           </label>
           <input
+            id="settings-signup-email"
             type="email"
             value={signUpEmail}
             onChange={(e) => setSignUpEmail(e.target.value)}
@@ -243,11 +244,12 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
 
         {/* Password */}
         <div>
-          <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>
+          <label htmlFor="settings-signup-password" style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>
             {a.newPasswordLabel}
           </label>
           <div className="relative">
             <input
+              id="settings-signup-password"
               type={signUpShowPw ? "text" : "password"}
               value={signUpPw}
               onChange={(e) => setSignUpPw(e.target.value)}
@@ -270,10 +272,11 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
 
         {/* Confirm */}
         <div>
-          <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>
+          <label htmlFor="settings-signup-confirm" style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>
             {a.confirmNewPasswordLabel}
           </label>
           <input
+            id="settings-signup-confirm"
             type={signUpShowPw ? "text" : "password"}
             value={signUpConfirm}
             onChange={(e) => setSignUpConfirm(e.target.value)}
@@ -331,12 +334,12 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
         <AnimatedCollapse open={emailOpen}>
           <div className="px-4 pb-4 space-y-3 border-t border-border" style={{ paddingTop: 12 }}>
             <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{a.newEmailLabel}</label>
-              <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder={a.newEmailPlaceholder} className={inputCls} style={inputStyle} />
+              <label htmlFor="settings-new-email" style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{a.newEmailLabel}</label>
+              <input id="settings-new-email" type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder={a.newEmailPlaceholder} className={inputCls} style={inputStyle} />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{a.verifyPasswordLabel}</label>
-              <input type="password" value={verifyPw} onChange={(e) => setVerifyPw(e.target.value)} placeholder="••••••" className={inputCls} style={inputStyle} autoComplete="current-password" />
+              <label htmlFor="settings-verify-password" style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{a.verifyPasswordLabel}</label>
+              <input id="settings-verify-password" type="password" value={verifyPw} onChange={(e) => setVerifyPw(e.target.value)} placeholder="••••••" className={inputCls} style={inputStyle} autoComplete="current-password" />
             </div>
             {emailError && <p role="alert" style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{emailError}</p>}
             <div className="flex gap-2">
@@ -363,10 +366,10 @@ function AccountSection({ auth, onSignOut, onAuthUpdate, onClearData }: {
               { label: a.currentPasswordLabel, value: currentPw, set: setCurrentPw, autocomplete: "current-password" },
               { label: a.newPasswordLabel, value: newPw, set: setNewPw, autocomplete: "new-password" },
               { label: a.confirmNewPasswordLabel, value: confirmPw, set: setConfirmPw, autocomplete: "new-password" },
-            ].map(({ label, value, set, autocomplete }) => (
+            ].map(({ label, value, set, autocomplete }, i) => (
               <div key={label}>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{label}</label>
-                <input type="password" value={value} onChange={(e) => set(e.target.value)} placeholder="••••••" className={inputCls} style={inputStyle} autoComplete={autocomplete} />
+                <label htmlFor={`settings-change-pw-${i}`} style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 5, color: "var(--foreground)" }}>{label}</label>
+                <input id={`settings-change-pw-${i}`} type="password" value={value} onChange={(e) => set(e.target.value)} placeholder="••••••" className={inputCls} style={inputStyle} autoComplete={autocomplete} />
               </div>
             ))}
             {pwError && <p role="alert" style={{ color: "var(--destructive)", fontSize: "0.82rem", fontWeight: 600 }}>{pwError}</p>}

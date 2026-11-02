@@ -884,7 +884,7 @@ export default function App() {
                 size="lg"
                 bordered
                 onClick={() => setProfile({ ...profile, a11y: { ...profile.a11y, darkMode: !profile.a11y.darkMode } })}
-                aria-label={profile.a11y.darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                aria-label={profile.a11y.darkMode ? t.nav.switchToLight : t.nav.switchToDark}
               >
                 {profile.a11y.darkMode ? <Sun size={18} /> : <Moon size={18} />}
               </IconButton>

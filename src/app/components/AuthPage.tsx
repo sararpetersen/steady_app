@@ -113,10 +113,11 @@ export function AuthPage({ onAuth }: Props) {
 
         {/* Email */}
         <div>
-          <label style={{ display: "block", fontSize: "0.88rem", fontWeight: 600, marginBottom: 6, color: "var(--foreground)" }}>
+          <label htmlFor="auth-email" style={{ display: "block", fontSize: "0.88rem", fontWeight: 600, marginBottom: 6, color: "var(--foreground)" }}>
             {t.emailLabel}
           </label>
           <input
+            id="auth-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -130,11 +131,12 @@ export function AuthPage({ onAuth }: Props) {
 
         {/* Password */}
         <div>
-          <label style={{ display: "block", fontSize: "0.88rem", fontWeight: 600, marginBottom: 6, color: "var(--foreground)" }}>
+          <label htmlFor="auth-password" style={{ display: "block", fontSize: "0.88rem", fontWeight: 600, marginBottom: 6, color: "var(--foreground)" }}>
             {t.passwordLabel}
           </label>
           <div className="relative">
             <input
+              id="auth-password"
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -159,10 +161,11 @@ export function AuthPage({ onAuth }: Props) {
         {/* Confirm password — sign-up only */}
         {mode === "signup" && (
           <div>
-            <label style={{ display: "block", fontSize: "0.88rem", fontWeight: 600, marginBottom: 6, color: "var(--foreground)" }}>
+            <label htmlFor="auth-confirm-password" style={{ display: "block", fontSize: "0.88rem", fontWeight: 600, marginBottom: 6, color: "var(--foreground)" }}>
               {t.confirmPasswordLabel}
             </label>
             <input
+              id="auth-confirm-password"
               type={showPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

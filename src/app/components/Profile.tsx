@@ -107,7 +107,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
               style={{ width: 80, height: 80, backgroundColor: "var(--surface-2)", flexShrink: 0 }}
             >
               {photo ? (
-                <img src={photo} alt="Your profile" style={{ width: 80, height: 80, objectFit: "cover" }} />
+                <img src={photo} alt={t.nav.yourProfile} style={{ width: 80, height: 80, objectFit: "cover" }} />
               ) : (
                 <span style={{ fontSize: "2.4rem", lineHeight: 1 }}>{profile.avatar}</span>
               )}
@@ -219,7 +219,7 @@ export function Profile({ profile, onChange, photo, onPhotoChange }: ProfileProp
           style={{ width: 60, height: 60, backgroundColor: "var(--card)", border: "2px solid var(--purple-vivid)" }}
         >
           {photo ? (
-            <img src={photo} alt="Profile" style={{ width: 60, height: 60, objectFit: "cover" }} />
+            <img src={photo} alt={t.nav.yourProfile} style={{ width: 60, height: 60, objectFit: "cover" }} />
           ) : (
             <span style={{ fontSize: "1.7rem" }}>{profile.avatar}</span>
           )}

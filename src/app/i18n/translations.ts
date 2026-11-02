@@ -52,6 +52,8 @@ const en = {
     openSettings: "Open settings",
     yourProfile: "Your profile",
     todayLabel: "Today",
+    switchToLight: "Switch to light mode",
+    switchToDark: "Switch to dark mode",
   },
 
   auth: {
@@ -257,6 +259,7 @@ const en = {
   },
 
   onboarding: {
+    mascotAlt: "Sprout, Steady's mascot",
     welcome: {
       title: "Welcome to Steady!",
       subtitle: "Your calm daily companion for neurodivergent minds.",
@@ -1017,6 +1020,8 @@ const da: typeof en = {
     openSettings: "Åbn indstillinger",
     yourProfile: "Din profil",
     todayLabel: "I dag",
+    switchToLight: "Skift til lys tilstand",
+    switchToDark: "Skift til mørk tilstand",
   },
 
   auth: {
@@ -1224,6 +1229,7 @@ const da: typeof en = {
   },
 
   onboarding: {
+    mascotAlt: "Sprout, Steadys maskot",
     welcome: {
       title: "Velkommen til Steady!",
       subtitle: "Din rolige følgesvend i hverdagen – til neurodivergente sind.",

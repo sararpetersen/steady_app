@@ -528,9 +528,18 @@ export default function App() {
         // a chance to push before the pull below gets a chance to overwrite it. The push's
         // own remote-newer check still protects against clobbering something genuinely
         // newer from elsewhere.
+        // The Meal Guide migrations normally run after the pull further down, but this
+        // branch returns before reaching it — and since the startup task-list effect marks
+        // a pending push on every load, that meant a signed-in account never got migrated.
+        // Run them on the local copy here so the push below carries the fix to the server.
+        const migratedBeforePush = migrateMealGuide();
         const pushedPending = await pushAndReport(userId);
         if (cancelled) return;
         if (pushedPending) {
+          if (migratedBeforePush) {
+            window.location.reload();
+            return;
+          }
           setSyncingRemote(false);
           return;
         }

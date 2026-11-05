@@ -109,6 +109,47 @@ function migrateMealGuideCategories(): boolean {
   }
 }
 
+// The v0.9.0 split copied the old combined "Lunch & dinner" list into both new categories,
+// leaving Lunch and Dinner with identical items. If they are still exactly identical (i.e.
+// untouched — any edit to either makes them differ and this leaves them alone), swap in the
+// distinct defaults. The language is read from the items themselves, since stored items keep
+// whatever language they were first seeded in.
+function migrateIdenticalLunchDinner(): boolean {
+  try {
+    const raw = localStorage.getItem("steady-meal-guide-items-v3");
+    if (!raw) return false;
+    const items = JSON.parse(raw) as MealCategoryItems[];
+    if (!Array.isArray(items) || items.length !== 6) return false;
+    const texts = (c: MealCategoryItems) => JSON.stringify([c.green, c.yellow, c.red].map((l) => l.map((i) => i.text)));
+    if (texts(items[2]) !== texts(items[3])) return false;
+    const first = items[2].green[0]?.text;
+    const lang = first === "Frozen ready meal" ? "en" : first === "Frossen færdigret" ? "da" : null;
+    if (!lang) return false;
+    const defaults = translations[lang].mealGuide.categories;
+    const nextIdRaw = localStorage.getItem("steady-meal-guide-next-id-v3");
+    let nextId = nextIdRaw ? (JSON.parse(nextIdRaw) as number) : 0;
+    const fresh = (c: { green: string[]; yellow: string[]; red: string[] }): MealCategoryItems => ({
+      green: c.green.map((text) => ({ id: nextId++, text })),
+      yellow: c.yellow.map((text) => ({ id: nextId++, text })),
+      red: c.red.map((text) => ({ id: nextId++, text })),
+    });
+    const next = [...items];
+    next[2] = fresh(defaults[2]);
+    next[3] = fresh(defaults[3]);
+    localStorage.setItem("steady-meal-guide-items-v3", JSON.stringify(next));
+    localStorage.setItem("steady-meal-guide-next-id-v3", JSON.stringify(nextId));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function migrateMealGuide(): boolean {
+  const split = migrateMealGuideCategories();
+  const deduped = migrateIdenticalLunchDinner();
+  return split || deduped;
+}
+
 export default function App() {
   const [authState, setAuthState] = useLocalStorage<AuthState | null>("steady-auth-state", null);
   const [authReady, setAuthReady] = useState(false);
@@ -315,7 +356,7 @@ export default function App() {
   // shape and clobber it.
   useEffect(() => {
     if (authState && !authState.isGuest && authState.userId) return;
-    if (migrateMealGuideCategories()) window.location.reload();
+    if (migrateMealGuide()) window.location.reload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -507,7 +548,7 @@ export default function App() {
         return;
       }
       setSyncIssue(null);
-      const migratedMealGuide = migrateMealGuideCategories();
+      const migratedMealGuide = migrateMealGuide();
       if (!pulled.value) {
         // A successful pull found no row, so it is safe to create one from local data.
         await pushAndReport(userId);
